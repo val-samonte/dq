@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { sha256 } from '../utils/sha256'
 import { Element } from '../enums/Element'
 import { ElementSymbol } from './ElementSymbol'
+import { GuideOverlay } from './GuideOverlay'
 
 export function Board() {
   const [random] = useState(Math.random())
@@ -19,10 +20,13 @@ export function Board() {
   }, [random])
 
   return (
-    <div className='grid grid-cols-3 grid-rows-4 aspect-[3/4] max-h-screen mx-auto'>
-      {boardData.map((element, i) => (
-        <ElementSymbol key={i} elem={element} />
-      ))}
+    <div className='w-full h-screen flex items-center justify-center'>
+      <div className='grid grid-cols-3 grid-rows-4 aspect-[3/4] max-h-[60vh] mx-auto relative'>
+        {boardData.map((element, i) => (
+          <ElementSymbol key={i} elem={element} />
+        ))}
+        <GuideOverlay />
+      </div>
     </div>
   )
 }
