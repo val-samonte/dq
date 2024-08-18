@@ -1,5 +1,5 @@
 import { atom } from 'jotai'
-import { Skill } from '../types/Skill'
-import { skills } from '../constants/skills'
+import { Command } from '../types/Command'
+import { commands } from '../constants/commands'
 
-export const commandsAtom = atom<Skill[]>(skills)
+export const commandsAtom = atom<Command[]>(commands)

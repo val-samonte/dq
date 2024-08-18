@@ -1,8 +1,10 @@
 import { Element } from '../enums/Element'
-import { Skill } from '../types/Skill'
+import { Command } from '../types/Command'
 
-export const skills: Skill[] = [
+export const commands: Command[] = [
   {
+    type: 'skill',
+    skillType: 'offensive',
     name: 'Fireball',
     links: [
       {
@@ -12,6 +14,8 @@ export const skills: Skill[] = [
     cost: 3,
   },
   {
+    type: 'skill',
+    skillType: 'supportive',
     name: 'Harden',
     links: [
       {
@@ -21,6 +25,8 @@ export const skills: Skill[] = [
     cost: 2,
   },
   {
+    type: 'skill',
+    skillType: 'special',
     name: 'Shuffle',
     links: [
       {
@@ -35,6 +41,7 @@ export const skills: Skill[] = [
     cost: 4,
   },
   {
+    type: 'enhance',
     name: 'Enhance Chaos',
     links: [
       {
@@ -51,6 +58,7 @@ export const skills: Skill[] = [
     cost: 1,
   },
   {
+    type: 'enhance',
     name: 'Enhance Life',
     links: [
       {
@@ -65,6 +73,7 @@ export const skills: Skill[] = [
     cost: 1,
   },
   {
+    type: 'enhance',
     name: 'Enhance Arcane',
     links: [
       {
@@ -79,6 +88,7 @@ export const skills: Skill[] = [
     cost: 1,
   },
   {
+    type: 'transmute',
     name: 'Transmute Chaos',
     links: [
       {
@@ -95,6 +105,7 @@ export const skills: Skill[] = [
     cost: 2,
   },
   {
+    type: 'transmute',
     name: 'Transmute Life',
     links: [
       {
@@ -111,6 +122,7 @@ export const skills: Skill[] = [
     cost: 2,
   },
   {
+    type: 'transmute',
     name: 'Transmute Arcane',
     links: [
       {
@@ -128,6 +140,7 @@ export const skills: Skill[] = [
   },
   // tier 2
   {
+    type: 'manifest',
     name: 'Manifest Oblivion',
     links: [
       {
@@ -154,6 +167,7 @@ export const skills: Skill[] = [
     cost: 1,
   },
   {
+    type: 'manifest',
     name: 'Manifest Fate',
     links: [
       {
@@ -180,6 +194,7 @@ export const skills: Skill[] = [
     cost: 1,
   },
   {
+    type: 'manifest',
     name: 'Manifest Essence',
     links: [
       {
@@ -206,6 +221,7 @@ export const skills: Skill[] = [
     cost: 1,
   },
   {
+    type: 'enhance',
     name: 'Enhance Oblivion',
     links: [
       {
@@ -222,6 +238,7 @@ export const skills: Skill[] = [
     cost: 1,
   },
   {
+    type: 'enhance',
     name: 'Enhance Fate',
     links: [
       {
@@ -238,6 +255,7 @@ export const skills: Skill[] = [
     cost: 1,
   },
   {
+    type: 'enhance',
     name: 'Enhance Essence',
     links: [
       {
