@@ -126,4 +126,131 @@ export const skills: Skill[] = [
     ],
     cost: 2,
   },
+  // tier 2
+  {
+    name: 'Manifest Oblivion',
+    links: [
+      {
+        strictLevel: true,
+        elements: [Element.ChaosI, Element.ArcaneII],
+        output: Element.OblivionI,
+      },
+      {
+        strictLevel: true,
+        elements: [Element.ChaosII, Element.ArcaneI],
+        output: Element.OblivionI,
+      },
+      {
+        strictLevel: true,
+        elements: [Element.ArcaneII, Element.ChaosI],
+        output: Element.OblivionI,
+      },
+      {
+        strictLevel: true,
+        elements: [Element.ArcaneI, Element.ChaosII],
+        output: Element.OblivionI,
+      },
+    ],
+    cost: 1,
+  },
+  {
+    name: 'Manifest Fate',
+    links: [
+      {
+        strictLevel: true,
+        elements: [Element.LifeI, Element.ChaosII],
+        output: Element.FateI,
+      },
+      {
+        strictLevel: true,
+        elements: [Element.LifeII, Element.ChaosI],
+        output: Element.FateI,
+      },
+      {
+        strictLevel: true,
+        elements: [Element.ChaosII, Element.LifeI],
+        output: Element.FateI,
+      },
+      {
+        strictLevel: true,
+        elements: [Element.ChaosI, Element.LifeII],
+        output: Element.FateI,
+      },
+    ],
+    cost: 1,
+  },
+  {
+    name: 'Manifest Essence',
+    links: [
+      {
+        strictLevel: true,
+        elements: [Element.ArcaneI, Element.LifeII],
+        output: Element.EssenceI,
+      },
+      {
+        strictLevel: true,
+        elements: [Element.ArcaneII, Element.LifeI],
+        output: Element.EssenceI,
+      },
+      {
+        strictLevel: true,
+        elements: [Element.LifeII, Element.ArcaneI],
+        output: Element.EssenceI,
+      },
+      {
+        strictLevel: true,
+        elements: [Element.LifeI, Element.ArcaneII],
+        output: Element.EssenceI,
+      },
+    ],
+    cost: 1,
+  },
+  {
+    name: 'Enhance Oblivion',
+    links: [
+      {
+        strictLevel: true,
+        elements: [Element.OblivionI, Element.OblivionI, Element.OblivionI],
+        output: Element.OblivionII,
+      },
+      {
+        strictLevel: true,
+        elements: [Element.OblivionII, Element.OblivionII, Element.OblivionII],
+        output: Element.OblivionIII,
+      },
+    ],
+    cost: 1,
+  },
+  {
+    name: 'Enhance Fate',
+    links: [
+      {
+        strictLevel: true,
+        elements: [Element.FateI, Element.FateI, Element.FateI],
+        output: Element.FateII,
+      },
+      {
+        strictLevel: true,
+        elements: [Element.FateII, Element.FateII, Element.FateII],
+        output: Element.FateIII,
+      },
+    ],
+    cost: 1,
+  },
+  {
+    name: 'Enhance Essence',
+    links: [
+      {
+        strictLevel: true,
+        elements: [Element.EssenceI, Element.EssenceI, Element.EssenceI],
+        output: Element.EssenceII,
+      },
+      {
+        strictLevel: true,
+        elements: [Element.EssenceII, Element.EssenceII, Element.EssenceII],
+        output: Element.EssenceIII,
+      },
+    ],
+    cost: 1,
+  },
 ]
