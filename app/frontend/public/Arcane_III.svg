@@ -1,4 +1,10 @@
-<svg width="101" height="101" viewBox="0 0 101 101" fill="none" xmlns="http://www.w3.org/2000/svg">
-<circle cx="50.1655" cy="50.2962" r="50" fill="#3B82F6"/>
-<path d="M42.7921 60.2962H35.4961V59.5522L37.7521 57.7762V43.2322L35.2561 42.3922L35.7361 41.4322H43.0321V42.1762L40.7521 43.9522V58.4722L43.2721 59.3362L42.7921 60.2962ZM53.1984 60.2962H45.9024V59.5522L48.1584 57.7762V43.2322L45.6624 42.3922L46.1424 41.4322H53.4384V42.1762L51.1584 43.9522V58.4722L53.6784 59.3362L53.1984 60.2962ZM63.6046 60.2962H56.3086V59.5522L58.5646 57.7762V43.2322L56.0686 42.3922L56.5486 41.4322H63.8446V42.1762L61.5646 43.9522V58.4722L64.0846 59.3362L63.6046 60.2962Z" fill="white"/>
+<svg width="101" height="100" viewBox="0 0 101 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+<circle cx="50.1655" cy="49.993" r="50" fill="#3B82F6"/>
+<mask id="mask0_31_35" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="0" y="-1" width="101" height="101">
+<circle cx="50.1655" cy="49.993" r="50" fill="#3B82F6"/>
+</mask>
+<g mask="url(#mask0_31_35)">
+<path d="M30.1655 0.0396118V100.04" stroke="black" stroke-opacity="0.8" stroke-width="10"/>
+<path d="M70.1655 0.0396118V100.04" stroke="black" stroke-opacity="0.8" stroke-width="10"/>
+</g>
 </svg>

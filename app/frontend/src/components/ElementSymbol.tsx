@@ -1,26 +1,16 @@
 import { useMemo } from 'react'
-import { byteToName } from '../enums/Element'
-import cn from 'classnames'
-import { useAtomValue } from 'jotai'
-import { cellsAtom } from '../atoms/cellsAtom'
+import { byteToName, Element } from '../enums/Element'
 
-export function ElementSymbol({ index }: { index: number }) {
-  const cell = useAtomValue(cellsAtom)
+export function ElementSymbol({ elem }: { elem: Element }) {
   const name = useMemo(() => {
-    return byteToName(cell[index])
-  }, [cell, index])
+    return byteToName(elem)
+  }, [elem])
 
   return (
-    <div
-      className={cn(
-        'aspect-square flex items-center justify-center select-none'
-      )}
-    >
-      <img
-        src={`/${name}.svg`}
-        alt={name}
-        className='w-1/2 aspect-square object-contain select-none pointer-events-none'
-      />
-    </div>
+    <img
+      src={`/${name}.svg`}
+      alt={name}
+      className='w-4 h-4 aspect-square object-contain select-none pointer-events-none'
+    />
   )
 }

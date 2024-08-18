@@ -3,7 +3,7 @@ import { Element } from '../enums/Element'
 export interface CommandLinks {
   strictLevel?: boolean
   elements: Element[]
-  output: Element
+  output?: Element
 }
 
 export type Command =
@@ -12,10 +12,10 @@ export type Command =
       skillType: 'offensive' | 'supportive' | 'special'
       name: string
       cost: number
-      links: Omit<CommandLinks, 'output'>[]
+      links: CommandLinks[]
     }
   | {
-      type: 'enhance' | 'transmute' | 'manifest'
+      type: 'enhance' | 'transmute' | 'conjure'
       name: string
       cost: number
       links: CommandLinks[]

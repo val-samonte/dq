@@ -41,6 +41,44 @@ export const commands: Command[] = [
     cost: 4,
   },
   {
+    type: 'skill',
+    skillType: 'offensive',
+    name: 'Lightning Bolt',
+    links: [
+      {
+        elements: [Element.OblivionI, Element.ChaosI, Element.ArcaneI],
+      },
+    ],
+    cost: 3,
+  },
+  {
+    type: 'skill',
+    skillType: 'supportive',
+    name: 'Heal',
+    links: [
+      {
+        elements: [Element.LifeI, Element.FateI, Element.ArcaneI],
+      },
+    ],
+    cost: 2,
+  },
+  {
+    type: 'skill',
+    skillType: 'special',
+    name: 'Tornado',
+    links: [
+      {
+        elements: [
+          Element.EssenceI,
+          Element.EssenceI,
+          Element.ChaosI,
+          Element.LifeI,
+        ],
+      },
+    ],
+    cost: 4,
+  },
+  {
     type: 'enhance',
     name: 'Enhance Chaos',
     links: [
@@ -140,8 +178,8 @@ export const commands: Command[] = [
   },
   // tier 2
   {
-    type: 'manifest',
-    name: 'Manifest Oblivion',
+    type: 'conjure',
+    name: 'Conjure Oblivion',
     links: [
       {
         strictLevel: true,
@@ -167,8 +205,8 @@ export const commands: Command[] = [
     cost: 1,
   },
   {
-    type: 'manifest',
-    name: 'Manifest Fate',
+    type: 'conjure',
+    name: 'Conjure Fate',
     links: [
       {
         strictLevel: true,
@@ -194,8 +232,8 @@ export const commands: Command[] = [
     cost: 1,
   },
   {
-    type: 'manifest',
-    name: 'Manifest Essence',
+    type: 'conjure',
+    name: 'Conjure Essence',
     links: [
       {
         strictLevel: true,
