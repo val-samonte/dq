@@ -4,10 +4,12 @@ import cn from 'classnames'
 import { useAtomValue } from 'jotai'
 import { cellsAtom } from '../atoms/cellsAtom'
 import { availableNextLinkAtom } from '../atoms/availableNextLinkAtom'
+import { inputUnitPointsAtom } from '../atoms/inputUnitPointsAtom'
 
 export function Cell({ index }: { index: number }) {
   const cell = useAtomValue(cellsAtom)
   const next = useAtomValue(availableNextLinkAtom)
+  const points = useAtomValue(inputUnitPointsAtom)
   const name = useMemo(() => {
     return byteToName(cell[index])
   }, [cell, index])
@@ -15,8 +17,13 @@ export function Cell({ index }: { index: number }) {
   const isAvailable = useMemo(() => {
     if (!next) return true
     const point = { x: index % 3, y: Math.floor(index / 3) }
+
+    const tail = points[points.length - 1]
+    if (!tail) return true
+    if (point.x === tail.x && point.y === tail.y) return true
+
     return next.some((p) => p.x === point.x && p.y === point.y)
-  }, [next, index])
+  }, [next, points, index])
 
   return (
     <div

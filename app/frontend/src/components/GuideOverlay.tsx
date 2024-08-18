@@ -1,9 +1,11 @@
 import cn from 'classnames'
 import { useMemo, useState } from 'react'
 import { Point } from '../types/Point'
-import { useAtom } from 'jotai'
+import { useAtom, useAtomValue } from 'jotai'
 import { inputUnitPointsAtom } from '../atoms/inputUnitPointsAtom'
 import { useMeasure } from '@uidotdev/usehooks'
+import { availableNextLinkAtom } from '../atoms/availableNextLinkAtom'
+import { commandsAtom } from '../atoms/commandsAtom'
 
 export function GuideOverlay({
   onDraw,
@@ -12,12 +14,16 @@ export function GuideOverlay({
 }) {
   const [isDrawing, setIsDrawing] = useState(false)
   const [unitPoints, setUnitPoints] = useAtom(inputUnitPointsAtom)
+  const next = useAtomValue(availableNextLinkAtom)
+  const command = useAtomValue(commandsAtom)
   const [cursor, setCursor] = useState<Point | null>(null)
   const [containerRef, { width, height }] = useMeasure()
   const cellSize = useMemo(() => {
     if (!width || !height) return null
     return Math.min(width / 3, height / 4)
   }, [width, height])
+
+  const tail = unitPoints[unitPoints.length - 1]
 
   const displayPoints = useMemo(() => {
     if (!cellSize) return []
@@ -35,7 +41,6 @@ export function GuideOverlay({
   const adjacentCells = useMemo(() => {
     if (!cellSize) return []
     if (unitPoints.length === 0) return []
-    const tail = unitPoints[unitPoints.length - 1]
     return getAdjacentCells(tail, cellSize)
   }, [unitPoints, cellSize])
 
@@ -55,7 +60,6 @@ export function GuideOverlay({
 
   const handleMouseMove = (event: React.MouseEvent) => {
     if (!cellSize) return
-    const tail = unitPoints[unitPoints.length - 1]
     if (!isDrawing || !tail) return
 
     const t = (event.target as HTMLElement).getBoundingClientRect()
@@ -69,7 +73,10 @@ export function GuideOverlay({
         const x = Math.floor(cell.x / cellSize)
         const y = Math.floor(cell.y / cellSize)
         const newPoint = { x, y }
-        if (unitPoints.every((point) => point.x !== x || point.y !== y)) {
+        if (
+          unitPoints.every((point) => point.x !== x || point.y !== y) &&
+          (next?.some((p) => p.x === x && p.y === y) ?? true)
+        ) {
           setUnitPoints([...unitPoints, newPoint])
         }
       }
@@ -102,6 +109,12 @@ export function GuideOverlay({
     >
       <svg className='absolute inset-0 w-full h-full pointer-events-none select-none'>
         {displayPoints.map((point, i) => {
+          if (
+            next?.length === 0 &&
+            command.length < 2 &&
+            i === displayPoints.length - 1
+          )
+            return null
           const nextPoint = displayPoints[i + 1] ?? cursor
           if (!nextPoint) return null
           return (
@@ -118,6 +131,40 @@ export function GuideOverlay({
           )
         })}
       </svg>
+      {next?.length === 0 && command.length === 1 && tail && cellSize && (
+        <svg className='absolute inset-0 w-full h-full pointer-events-none select-none'>
+          <circle
+            cx={tail.x * cellSize + cellSize / 2}
+            cy={tail.y * cellSize + cellSize / 2}
+            r={cellSize / 4}
+            stroke='white'
+            strokeWidth='8'
+            fill='transparent'
+          />
+        </svg>
+      )}
+      {next?.length === 0 && command.length === 0 && tail && cellSize && (
+        <svg className='absolute inset-0 w-full h-full pointer-events-none select-none'>
+          <line
+            x1={tail.x * cellSize + cellSize / 4}
+            y1={tail.y * cellSize + cellSize / 4}
+            x2={tail.x * cellSize + (cellSize * 3) / 4}
+            y2={tail.y * cellSize + (cellSize * 3) / 4}
+            stroke='white'
+            strokeWidth='8'
+            strokeLinecap='round'
+          />
+          <line
+            x1={tail.x * cellSize + (cellSize * 3) / 4}
+            y1={tail.y * cellSize + cellSize / 4}
+            x2={tail.x * cellSize + cellSize / 4}
+            y2={tail.y * cellSize + (cellSize * 3) / 4}
+            stroke='white'
+            strokeWidth='8'
+            strokeLinecap='round'
+          />
+        </svg>
+      )}
     </div>
   )
 }
