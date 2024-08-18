@@ -57,6 +57,12 @@ export function GuideOverlay() {
     })
   }, [unitPoints, width, height])
 
+  const adjacentCells = useMemo(() => {
+    if (unitPoints.length === 0) return []
+    const tail = unitPoints[unitPoints.length - 1]
+    return getAdjacentCells(tail, width, height)
+  }, [unitPoints, width, height])
+
   const handleMouseDown = (event: React.MouseEvent) => {
     if (!rect) return
 
@@ -75,9 +81,24 @@ export function GuideOverlay() {
     const tail = unitPoints[unitPoints.length - 1]
     if (!isDrawing || !tail) return
 
-    // todo: get adjacent
+    const cursor = { x: event.clientX - rect.x, y: event.clientY - rect.y }
+    // todo: compare distance to each adjacent cells
+    // if distance is less than half of width or height, add that cell to unitPoints
+    adjacentCells.forEach((cell) => {
+      const distance = Math.sqrt(
+        (cell.x - cursor.x) ** 2 + (cell.y - cursor.y) ** 2
+      )
+      if (distance < width / 6) {
+        const x = Math.floor(cell.x / width)
+        const y = Math.floor(cell.y / height)
+        const newPoint = { x, y }
+        if (unitPoints.every((point) => point.x !== x || point.y !== y)) {
+          setUnitPoints([...unitPoints, newPoint])
+        }
+      }
+    })
 
-    setCursor({ x: event.clientX - rect.x, y: event.clientY - rect.y })
+    setCursor(cursor)
   }
 
   const handleMouseUp = () => {
@@ -116,24 +137,23 @@ export function GuideOverlay() {
   )
 }
 
-// function getAdjacentCells(boardSize: DOMRect, point: Point): Point[] {
-//   const { x, y, width, height } = snapToCell(boardSize, point)
+function getAdjacentCells(
+  point: Point,
+  width: number,
+  height: number
+): Point[] {
+  const { x: unitX, y: unitY } = point
+  const x = unitX * width + width / 2
+  const y = unitY * height + height / 2
 
-//   return [
-//     { x: x - width, y },
-//     { x: x + width, y },
-//     { x, y: y - height },
-//     { x, y: y + height },
-//     { x: x - width, y: y - height },
-//     { x: x + width, y: y - height },
-//     { x: x - width, y: y + height },
-//     { x: x + width, y: y + height },
-//   ]
-
-//   // return [
-//   //   { x: point.x - 1, y: point.y },
-//   //   { x: point.x + 1, y: point.y },
-//   //   { x: point.x, y: point.y - 1 },
-//   //   { x: point.x, y: point.y + 1 },
-//   // ]
-// }
+  return [
+    { x: x - width, y },
+    { x: x + width, y },
+    { x, y: y - height },
+    { x, y: y + height },
+    { x: x - width, y: y - height },
+    { x: x + width, y: y - height },
+    { x: x - width, y: y + height },
+    { x: x + width, y: y + height },
+  ]
+}
