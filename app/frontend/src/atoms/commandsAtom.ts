@@ -2,7 +2,7 @@ import { atom } from 'jotai'
 import { Command } from '../types/Command'
 import { commands } from '../constants/commands'
 import { inputUnitPointsAtom } from './inputUnitPointsAtom'
-import { cellsAtom } from './cellsAtom'
+import { boardRawAtom } from './gameBoardAtom'
 
 export const commandsBaseAtom = atom<Command[]>(commands)
 
@@ -16,7 +16,7 @@ interface CommandGroups {
 export const commandsAtom = atom<Command[]>((get) => {
   const commands = get(commandsBaseAtom)
   const input = get(inputUnitPointsAtom)
-  const board = get(cellsAtom)
+  const board = get(boardRawAtom)
 
   const linkSelection = input.map((point) => board[point.y * 3 + point.x])
   return commands

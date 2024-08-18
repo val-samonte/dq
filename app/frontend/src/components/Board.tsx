@@ -3,13 +3,13 @@ import { sha256 } from '../utils/sha256'
 import { Element } from '../enums/Element'
 import { GuideOverlay } from './GuideOverlay'
 import { useAtom } from 'jotai'
-import { cellsAtom } from '../atoms/cellsAtom'
+import { boardRawAtom } from '../atoms/gameBoardAtom'
 import { Cell } from './Cell'
 import { CommandList } from './CommandList'
 
 export function Board() {
   const [random] = useState(Math.random())
-  const [boardData, setBoardData] = useAtom(cellsAtom)
+  const [boardData, setBoardData] = useAtom(boardRawAtom)
 
   useEffect(() => {
     const generate = async () => {

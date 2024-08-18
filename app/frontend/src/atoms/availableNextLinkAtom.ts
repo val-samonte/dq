@@ -1,7 +1,7 @@
 import { atom } from 'jotai'
 import { commandsAtom } from './commandsAtom'
 import { inputUnitPointsAtom } from './inputUnitPointsAtom'
-import { cellsAtom } from './cellsAtom'
+import { boardRawAtom } from './gameBoardAtom'
 import { Point } from '../types/Point'
 import { Element } from '../enums/Element'
 
@@ -33,7 +33,7 @@ export const availableNextLinkAtom = atom((get) => {
   if (validCells.length === 0) return []
 
   const commands = get(commandsAtom)
-  const board = get(cellsAtom)
+  const board = get(boardRawAtom)
 
   // get all next elements available
   const availableElements = Array.from(

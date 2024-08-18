@@ -2,12 +2,12 @@ import { useMemo } from 'react'
 import { byteToName } from '../enums/Element'
 import cn from 'classnames'
 import { useAtomValue } from 'jotai'
-import { cellsAtom } from '../atoms/cellsAtom'
+import { boardRawAtom } from '../atoms/gameBoardAtom'
 import { availableNextLinkAtom } from '../atoms/availableNextLinkAtom'
 import { inputUnitPointsAtom } from '../atoms/inputUnitPointsAtom'
 
 export function Cell({ index }: { index: number }) {
-  const cell = useAtomValue(cellsAtom)
+  const cell = useAtomValue(boardRawAtom)
   const next = useAtomValue(availableNextLinkAtom)
   const points = useAtomValue(inputUnitPointsAtom)
   const name = useMemo(() => {
