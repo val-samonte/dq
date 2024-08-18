@@ -1,75 +1,52 @@
 import cn from 'classnames'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useMemo, useState } from 'react'
+import { Point } from '../types/Point'
+import { useAtom } from 'jotai'
+import { inputUnitPointsAtom } from '../atoms/inputUnitPointsAtom'
+import { useMeasure } from '@uidotdev/usehooks'
 
-interface Point {
-  x: number
-  y: number
-}
-
-interface Rect extends Point {
-  width: number
-  height: number
-}
-
-export function GuideOverlay() {
-  const containerRef = useRef<HTMLDivElement>(null)
+export function GuideOverlay({
+  onDraw,
+}: {
+  onDraw?: (points: Point[]) => void
+}) {
   const [isDrawing, setIsDrawing] = useState(false)
-  const [rect, setRect] = useState<Rect | null>(null)
-  const [unitPoints, setUnitPoints] = useState<Point[]>([])
+  const [unitPoints, setUnitPoints] = useAtom(inputUnitPointsAtom)
   const [cursor, setCursor] = useState<Point | null>(null)
-
-  useEffect(() => {
-    if (!containerRef.current) return
-    const resize = () => {
-      if (!containerRef.current) return
-      const rect = containerRef.current.getBoundingClientRect()
-      setRect({
-        width: rect.width,
-        height: rect.height,
-        x: rect.left,
-        y: rect.top,
-      })
-    }
-    window.addEventListener('resize', resize)
-    return () => {
-      window.removeEventListener('resize', resize)
-    }
-  }, [])
-
-  const { width, height } = useMemo(() => {
-    if (!rect) return { width: 0, height: 0 }
-    return {
-      width: rect.width / 3,
-      height: rect.height / 4,
-    }
-  }, [rect])
+  const [containerRef, { width, height }] = useMeasure()
+  const cellSize = useMemo(() => {
+    if (!width || !height) return null
+    return Math.min(width / 3, height / 4)
+  }, [width, height])
 
   const displayPoints = useMemo(() => {
+    if (!cellSize) return []
     if (unitPoints.length === 0) return []
 
-    const halfWidth = width / 2
-    const halfHeight = height / 2
+    const half = cellSize / 2
 
     return unitPoints.map((point) => {
-      const x = point.x * width + halfWidth
-      const y = point.y * height + halfHeight
+      const x = point.x * cellSize + half
+      const y = point.y * cellSize + half
       return { x, y }
     })
-  }, [unitPoints, width, height])
+  }, [unitPoints, cellSize])
 
   const adjacentCells = useMemo(() => {
+    if (!cellSize) return []
     if (unitPoints.length === 0) return []
     const tail = unitPoints[unitPoints.length - 1]
-    return getAdjacentCells(tail, width, height)
-  }, [unitPoints, width, height])
+    return getAdjacentCells(tail, cellSize)
+  }, [unitPoints, cellSize])
 
   const handleMouseDown = (event: React.MouseEvent) => {
-    if (!rect) return
+    if (!cellSize) return
 
-    const displayX = event.clientX - rect.x
-    const displayY = event.clientY - rect.y
-    const x = Math.floor(displayX / width)
-    const y = Math.floor(displayY / height)
+    const t = (event.target as HTMLElement).getBoundingClientRect()
+    const displayX = event.clientX - t.left
+    const displayY = event.clientY - t.top
+    const x = Math.floor(displayX / cellSize)
+    const y = Math.floor(displayY / cellSize)
 
     setUnitPoints([{ x, y }])
     setCursor({ x: displayX, y: displayY })
@@ -77,20 +54,20 @@ export function GuideOverlay() {
   }
 
   const handleMouseMove = (event: React.MouseEvent) => {
-    if (!rect) return
+    if (!cellSize) return
     const tail = unitPoints[unitPoints.length - 1]
     if (!isDrawing || !tail) return
 
-    const cursor = { x: event.clientX - rect.x, y: event.clientY - rect.y }
-    // todo: compare distance to each adjacent cells
-    // if distance is less than half of width or height, add that cell to unitPoints
+    const t = (event.target as HTMLElement).getBoundingClientRect()
+    const cursor = { x: event.clientX - t.left, y: event.clientY - t.top }
+
     adjacentCells.forEach((cell) => {
       const distance = Math.sqrt(
         (cell.x - cursor.x) ** 2 + (cell.y - cursor.y) ** 2
       )
-      if (distance < width / 6) {
-        const x = Math.floor(cell.x / width)
-        const y = Math.floor(cell.y / height)
+      if (distance < cellSize / 4) {
+        const x = Math.floor(cell.x / cellSize)
+        const y = Math.floor(cell.y / cellSize)
         const newPoint = { x, y }
         if (unitPoints.every((point) => point.x !== x || point.y !== y)) {
           setUnitPoints([...unitPoints, newPoint])
@@ -102,6 +79,7 @@ export function GuideOverlay() {
   }
 
   const handleMouseUp = () => {
+    onDraw?.(unitPoints)
     setIsDrawing(false)
     setUnitPoints([])
     setCursor(null)
@@ -137,23 +115,20 @@ export function GuideOverlay() {
   )
 }
 
-function getAdjacentCells(
-  point: Point,
-  width: number,
-  height: number
-): Point[] {
+function getAdjacentCells(point: Point, cellSize: number): Point[] {
   const { x: unitX, y: unitY } = point
-  const x = unitX * width + width / 2
-  const y = unitY * height + height / 2
-
+  const half = cellSize / 2
+  const x = unitX * cellSize + half
+  const y = unitY * cellSize + half
+  cellSize
   return [
-    { x: x - width, y },
-    { x: x + width, y },
-    { x, y: y - height },
-    { x, y: y + height },
-    { x: x - width, y: y - height },
-    { x: x + width, y: y - height },
-    { x: x - width, y: y + height },
-    { x: x + width, y: y + height },
+    { x: x - cellSize, y },
+    { x: x + cellSize, y },
+    { x, y: y - cellSize },
+    { x, y: y + cellSize },
+    { x: x - cellSize, y: y - cellSize },
+    { x: x + cellSize, y: y - cellSize },
+    { x: x - cellSize, y: y + cellSize },
+    { x: x + cellSize, y: y + cellSize },
   ]
 }

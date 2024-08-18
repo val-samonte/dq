@@ -21,10 +21,12 @@ export function Board() {
 
   return (
     <div className='w-full h-screen flex items-center justify-center'>
-      <div className='grid grid-cols-3 grid-rows-4 aspect-[3/4] max-h-[60vh] mx-auto relative'>
-        {boardData.map((element, i) => (
-          <ElementSymbol key={i} elem={element} />
-        ))}
+      <div className='aspect-[3/4] max-h-[60vh] mx-auto relative'>
+        <div className='grid grid-cols-3 grid-rows-4'>
+          {boardData.map((element, i) => (
+            <ElementSymbol key={i} elem={element} />
+          ))}
+        </div>
         <GuideOverlay />
       </div>
     </div>
