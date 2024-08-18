@@ -3,7 +3,6 @@ import { Command } from '../types/Command'
 import { commands } from '../constants/commands'
 import { inputUnitPointsAtom } from './inputUnitPointsAtom'
 import { cellsAtom } from './cellsAtom'
-import { Point } from '../types/Point'
 
 export const commandsBaseAtom = atom<Command[]>(commands)
 
@@ -14,19 +13,23 @@ interface CommandGroups {
   transmutations: Command[]
 }
 
-export const commandsAtom = atom<CommandGroups>((get) => {
+export const commandsAtom = atom<Command[]>((get) => {
   const commands = get(commandsBaseAtom)
   const input = get(inputUnitPointsAtom)
   const board = get(cellsAtom)
 
-  const linkSelection = input.map((point) => board[pointToIndex(point)])
-  let filteredCommands = commands
+  const linkSelection = input.map((point) => board[point.y * 3 + point.x])
+  return commands
     .map((command) => {
       return {
         ...command,
         links: command.links.filter((link) => {
           return linkSelection.every((elem, i) => {
-            return link.elements[i] === elem
+            if (link.strictLevel) {
+              return link.elements[i] === elem
+            }
+            // neutralize element level
+            return (link.elements[i] & 0b0011_0011) === (elem & 0b0011_0011)
           })
         }),
       }
@@ -34,7 +37,10 @@ export const commandsAtom = atom<CommandGroups>((get) => {
     .filter((command) => {
       return command.links.length > 0
     })
+})
 
+export const commandGroupAtom = atom<CommandGroups>((get) => {
+  const filteredCommands = get(commandsAtom)
   let skills = filteredCommands.filter((command) => command.type === 'skill')
   let enhancements = filteredCommands.filter(
     (command) => command.type === 'enhance'
@@ -53,7 +59,3 @@ export const commandsAtom = atom<CommandGroups>((get) => {
     transmutations,
   }
 })
-
-function pointToIndex(point: Point) {
-  return point.y * 3 + point.x
-}

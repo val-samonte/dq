@@ -85,12 +85,19 @@ export function GuideOverlay({
     setCursor(null)
   }
 
+  const handleMouseOut = () => {
+    setIsDrawing(false)
+    setUnitPoints([])
+    setCursor(null)
+  }
+
   return (
     <div
       ref={containerRef}
       onMouseDown={handleMouseDown}
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
+      onMouseOut={handleMouseOut}
       className={cn('absolute inset-0 text-white', 'cursor-pointer')}
     >
       <svg className='absolute inset-0 w-full h-full pointer-events-none select-none'>

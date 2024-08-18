@@ -100,10 +100,12 @@ export const commands: Command[] = [
     name: 'Enhance Life',
     links: [
       {
+        strictLevel: true,
         elements: [Element.LifeI, Element.LifeI, Element.LifeI],
         output: Element.LifeII,
       },
       {
+        strictLevel: true,
         elements: [Element.LifeII, Element.LifeII, Element.LifeII],
         output: Element.LifeIII,
       },
@@ -115,10 +117,12 @@ export const commands: Command[] = [
     name: 'Enhance Arcane',
     links: [
       {
+        strictLevel: true,
         elements: [Element.ArcaneI, Element.ArcaneI, Element.ArcaneI],
         output: Element.ArcaneII,
       },
       {
+        strictLevel: true,
         elements: [Element.ArcaneII, Element.ArcaneII, Element.ArcaneII],
         output: Element.ArcaneIII,
       },
