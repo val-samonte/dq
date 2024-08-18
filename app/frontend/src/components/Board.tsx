@@ -3,21 +3,24 @@ import { sha256 } from '../utils/sha256'
 import { Element } from '../enums/Element'
 import { GuideOverlay } from './GuideOverlay'
 import { useAtom } from 'jotai'
-import { boardRawAtom } from '../atoms/gameBoardAtom'
+import { RenderActionType, renderBoardAtom } from '../atoms/gameBoardAtom'
 import { Cell } from './Cell'
 import { CommandList } from './CommandList'
 
 export function Board() {
   const [random] = useState(Math.random())
-  const [boardData, setBoardData] = useAtom(boardRawAtom)
+  const [board, render] = useAtom(renderBoardAtom)
 
   useEffect(() => {
     const generate = async () => {
       const element = [Element.ChaosI, Element.LifeI, Element.ArcaneI]
-      const boardData = Array.from(await sha256(random.toString()))
+      const elements = Array.from(await sha256(random.toString()))
         .slice(0, 12)
         .map((byte) => element[byte % 3])
-      setBoardData(boardData)
+      render({
+        type: RenderActionType.SET,
+        elements,
+      })
     }
     generate()
   }, [random])
@@ -29,13 +32,17 @@ export function Board() {
       </div>
       <div className='aspect-[3/4] max-h-[60vh] mx-auto relative'>
         <div className='grid grid-cols-3 grid-rows-4'>
-          {boardData.map((_, i) => (
+          {board.map((_, i) => (
             <Cell key={i} index={i} />
           ))}
         </div>
         <GuideOverlay
           onDraw={(points, command) => {
-            console.log('execute', points, command)
+            render({
+              type: RenderActionType.COMMAND,
+              points,
+              command,
+            })
           }}
         />
       </div>

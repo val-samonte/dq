@@ -2,7 +2,7 @@ import { useMemo } from 'react'
 import { byteToName } from '../enums/Element'
 import cn from 'classnames'
 import { useAtomValue } from 'jotai'
-import { boardRawAtom } from '../atoms/gameBoardAtom'
+import { boardRawAtom, renderBoardAtom } from '../atoms/gameBoardAtom'
 import { availableNextLinkAtom } from '../atoms/availableNextLinkAtom'
 import { inputUnitPointsAtom } from '../atoms/inputUnitPointsAtom'
 
@@ -10,6 +10,7 @@ export function Cell({ index }: { index: number }) {
   const cell = useAtomValue(boardRawAtom)
   const next = useAtomValue(availableNextLinkAtom)
   const points = useAtomValue(inputUnitPointsAtom)
+  const renderBoard = useAtomValue(renderBoardAtom)
   const name = useMemo(() => {
     return byteToName(cell[index])
   }, [cell, index])
@@ -25,9 +26,12 @@ export function Cell({ index }: { index: number }) {
     return next.some((p) => p.x === point.x && p.y === point.y)
   }, [next, points, index])
 
+  const renderCell = renderBoard[index]
+
   return (
     <div
       className={cn(
+        'flex-col',
         'aspect-square flex items-center justify-center select-none',
         'transition-opacity duration-300',
         isAvailable ? 'opacity-100' : 'opacity-30'
@@ -38,6 +42,7 @@ export function Cell({ index }: { index: number }) {
         alt={name}
         className='w-1/2 aspect-square object-contain select-none pointer-events-none'
       />
+      <span>{renderCell.type}</span>
     </div>
   )
 }

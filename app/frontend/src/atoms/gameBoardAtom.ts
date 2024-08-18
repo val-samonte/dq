@@ -113,7 +113,9 @@ export const renderBoardAtom = atom(
             }
           }
         })
-        const destroyAndReplaceAnimatedCells = [...renderBoard]
+        const destroyAndReplaceAnimatedCells = renderBoard.map((cell) => ({
+          ...cell,
+        }))
 
         // step 2: process gravity
         now += 200
@@ -141,30 +143,29 @@ export const renderBoardAtom = atom(
           }
 
           // move floating cells down and apply the filler elements to the empty spaces on top
-          // for (let row = 3; row >= 0; row--) {
-          //   const index = row * 3 + column
-          //   if (processedBoard[index] === Element.Empty) {
-          //     processedBoard[index] = fillers.pop() as Element
-          //     renderBoard[index] = {
-          //       type: AnimatedCellType.GRAVITY,
-          //       renderElem: processedBoard[index],
-          //       from: index - fallCountTable[index] * 3,
-          //       new: true,
-          //       key: now + '_' + index,
-          //     }
-          //   } else if (fallCountTable[index] > 0) {
-          //     processedBoard[index] =
-          //       processedBoard[index - fallCountTable[index] * 3]
-          //     renderBoard[index] = {
-          //       type: AnimatedCellType.GRAVITY,
-          //       renderElem: processedBoard[index],
-          //       from: index - fallCountTable[index] * 3,
-          //       key: now + '_' + index,
-          //     }
-          //   }
-          // }
+          for (let row = 3; row >= 0; row--) {
+            const index = row * 3 + column
+            if (fallCountTable[index] > 0) {
+              const targetIndex = (row + fallCountTable[index]) * 3 + column
+              processedBoard[targetIndex] = processedBoard[index]
+              processedBoard[index] = Element.Empty
+            }
+            if (processedBoard[index] === Element.Empty) {
+              processedBoard[index] = fillers.shift() as Element
+            }
+            // create gravity animations
+
+            if (fallCountTable[index] > 0) {
+              renderBoard[index] = {
+                type: AnimatedCellType.GRAVITY,
+                renderElem: processedBoard[index],
+                from: fallCountTable[index],
+                key: now + '_' + index,
+              }
+            }
+          }
         })
-        const gravityAnimatedCells = [...renderBoard]
+        const gravityAnimatedCells = renderBoard.map((cell) => ({ ...cell }))
 
         set(boardRawAtom, processedBoard)
 
