@@ -1,4 +1,6 @@
 export enum Element {
+  Empty = 0b0000_0000,
+
   ChaosI = 0b0000_0001,
   LifeI = 0b0000_0010,
   ArcaneI = 0b0000_0011,
