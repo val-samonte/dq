@@ -33,7 +33,11 @@ export function Board() {
             <Cell key={i} index={i} />
           ))}
         </div>
-        <GuideOverlay />
+        <GuideOverlay
+          onDraw={(points, command) => {
+            console.log('execute', points, command)
+          }}
+        />
       </div>
     </div>
   )

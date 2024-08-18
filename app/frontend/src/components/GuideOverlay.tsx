@@ -6,11 +6,12 @@ import { inputUnitPointsAtom } from '../atoms/inputUnitPointsAtom'
 import { useMeasure } from '@uidotdev/usehooks'
 import { availableNextLinkAtom } from '../atoms/availableNextLinkAtom'
 import { commandsAtom } from '../atoms/commandsAtom'
+import { Command } from '../types/Command'
 
 export function GuideOverlay({
   onDraw,
 }: {
-  onDraw?: (points: Point[]) => void
+  onDraw?: (points: Point[], command: Command) => void
 }) {
   const [isDrawing, setIsDrawing] = useState(false)
   const [unitPoints, setUnitPoints] = useAtom(inputUnitPointsAtom)
@@ -86,7 +87,9 @@ export function GuideOverlay({
   }
 
   const handleMouseUp = () => {
-    onDraw?.(unitPoints)
+    if (command.length === 1 && next?.length === 0) {
+      onDraw?.(unitPoints, command[0])
+    }
     setIsDrawing(false)
     setUnitPoints([])
     setCursor(null)
@@ -109,12 +112,7 @@ export function GuideOverlay({
     >
       <svg className='absolute inset-0 w-full h-full pointer-events-none select-none'>
         {displayPoints.map((point, i) => {
-          if (
-            next?.length === 0 &&
-            command.length < 2 &&
-            i === displayPoints.length - 1
-          )
-            return null
+          if (next?.length === 0 && i === displayPoints.length - 1) return null
           const nextPoint = displayPoints[i + 1] ?? cursor
           if (!nextPoint) return null
           return (
@@ -143,7 +141,7 @@ export function GuideOverlay({
           />
         </svg>
       )}
-      {next?.length === 0 && command.length === 0 && tail && cellSize && (
+      {next?.length === 0 && command.length !== 1 && tail && cellSize && (
         <svg className='absolute inset-0 w-full h-full pointer-events-none select-none'>
           <line
             x1={tail.x * cellSize + cellSize / 4}
