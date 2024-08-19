@@ -84,6 +84,7 @@ export const renderBoardAtom = atom(
         const processedBoard = [...prevBoard]
         const renderBoard = prevBoard.map(mapSet) as AnimatedCell[]
         const indices = action.points.map((point) => point.y * 3 + point.x)
+        set(renderBoardRawAtom, prevBoard.map(mapSet) as AnimatedCell[])
 
         // process command and store various states for cell animations
 

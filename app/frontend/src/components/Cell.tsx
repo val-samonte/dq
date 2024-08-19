@@ -43,10 +43,11 @@ export function Cell({ index }: { index: number }) {
           className={cn(
             renderCell.type === AnimatedCellType.DESTROY && 'animate-fade-out',
             renderCell.type === AnimatedCellType.REPLACE && 'animate-fade-in',
-            renderCell.type === AnimatedCellType.GRAVITY &&
+            renderCell.type === AnimatedCellType.GRAVITY && [
               ['animate-fall-1', 'animate-fall-2', 'animate-fall-3'][
                 renderCell.from
               ],
+            ],
             'w-1/2 aspect-square object-contain select-none pointer-events-none'
           )}
         />
