@@ -70,7 +70,7 @@ export function GuideOverlay({
       const distance = Math.sqrt(
         (cell.x - cursor.x) ** 2 + (cell.y - cursor.y) ** 2
       )
-      if (distance < cellSize / 4) {
+      if (distance < cellSize / 3) {
         const x = Math.floor(cell.x / cellSize)
         const y = Math.floor(cell.y / cellSize)
         const newPoint = { x, y }
@@ -87,8 +87,12 @@ export function GuideOverlay({
   }
 
   const handleMouseUp = () => {
-    if (command.length === 1 && next?.length === 0) {
-      onDraw?.(unitPoints, command[0])
+    if (
+      command.length === 1 &&
+      next?.length === 0 &&
+      unitPoints.length === command[0].links[0].elements.length
+    ) {
+      onDraw?.(unitPoints, { ...command[0], links: [command[0].links[0]] })
     }
     setIsDrawing(false)
     setUnitPoints([])
@@ -129,40 +133,50 @@ export function GuideOverlay({
           )
         })}
       </svg>
-      {next?.length === 0 && command.length === 1 && tail && cellSize && (
-        <svg className='absolute inset-0 w-full h-full pointer-events-none select-none'>
-          <circle
-            cx={tail.x * cellSize + cellSize / 2}
-            cy={tail.y * cellSize + cellSize / 2}
-            r={cellSize / 4}
-            stroke='white'
-            strokeWidth='8'
-            fill='transparent'
-          />
-        </svg>
-      )}
-      {next?.length === 0 && command.length !== 1 && tail && cellSize && (
-        <svg className='absolute inset-0 w-full h-full pointer-events-none select-none'>
-          <line
-            x1={tail.x * cellSize + cellSize / 4}
-            y1={tail.y * cellSize + cellSize / 4}
-            x2={tail.x * cellSize + (cellSize * 3) / 4}
-            y2={tail.y * cellSize + (cellSize * 3) / 4}
-            stroke='white'
-            strokeWidth='8'
-            strokeLinecap='round'
-          />
-          <line
-            x1={tail.x * cellSize + (cellSize * 3) / 4}
-            y1={tail.y * cellSize + cellSize / 4}
-            x2={tail.x * cellSize + cellSize / 4}
-            y2={tail.y * cellSize + (cellSize * 3) / 4}
-            stroke='white'
-            strokeWidth='8'
-            strokeLinecap='round'
-          />
-        </svg>
-      )}
+      {next?.length === 0 &&
+        command.length === 1 &&
+        command[0].links[0].elements.length === unitPoints.length &&
+        tail &&
+        cellSize && (
+          <svg className='absolute inset-0 w-full h-full pointer-events-none select-none'>
+            <circle
+              cx={tail.x * cellSize + cellSize / 2}
+              cy={tail.y * cellSize + cellSize / 2}
+              r={cellSize / 4}
+              stroke='white'
+              strokeWidth='8'
+              fill='transparent'
+            />
+          </svg>
+        )}
+      {next?.length === 0 &&
+        !(
+          command.length === 1 &&
+          command[0].links[0].elements.length === unitPoints.length
+        ) &&
+        tail &&
+        cellSize && (
+          <svg className='absolute inset-0 w-full h-full pointer-events-none select-none'>
+            <line
+              x1={tail.x * cellSize + cellSize / 4}
+              y1={tail.y * cellSize + cellSize / 4}
+              x2={tail.x * cellSize + (cellSize * 3) / 4}
+              y2={tail.y * cellSize + (cellSize * 3) / 4}
+              stroke='white'
+              strokeWidth='8'
+              strokeLinecap='round'
+            />
+            <line
+              x1={tail.x * cellSize + (cellSize * 3) / 4}
+              y1={tail.y * cellSize + cellSize / 4}
+              x2={tail.x * cellSize + cellSize / 4}
+              y2={tail.y * cellSize + (cellSize * 3) / 4}
+              stroke='white'
+              strokeWidth='8'
+              strokeLinecap='round'
+            />
+          </svg>
+        )}
     </div>
   )
 }

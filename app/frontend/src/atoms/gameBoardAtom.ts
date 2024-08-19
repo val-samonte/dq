@@ -35,25 +35,21 @@ export type AnimatedCell =
   | {
       type: AnimatedCellType.DESTROY
       renderElem: Element
-      key: string
     }
   | {
       type: AnimatedCellType.GRAVITY
       renderElem: Element
       from: number
       new?: boolean
-      key: string
     }
   | {
       type: AnimatedCellType.REPLACE
       prevElem: Element
       renderElem: Element
-      key: string
     }
   | {
       type: AnimatedCellType.SET
       renderElem: Element
-      key: string
     }
 
 export const boardRawAtom = atom<Element[]>([])
@@ -99,7 +95,6 @@ export const renderBoardAtom = atom(
           renderBoard[index] = {
             type: AnimatedCellType.DESTROY,
             renderElem: renderBoard[index].renderElem,
-            key: now + '_' + index,
           }
 
           // todo: possible bug here with output
@@ -109,7 +104,6 @@ export const renderBoardAtom = atom(
               type: AnimatedCellType.REPLACE,
               prevElem: renderBoard[index].renderElem,
               renderElem: action.command.links[0].output,
-              key: now + '_' + index,
             }
           }
         })

@@ -35,21 +35,23 @@ export function Cell({ index }: { index: number }) {
         'transition-opacity duration-300',
         isAvailable ? 'opacity-100' : 'opacity-30'
       )}
-      key={renderCell.key}
+      key={renderCell.type}
     >
-      <img
-        src={`/${name}.svg`}
-        alt={name}
-        className={cn(
-          renderCell.type === AnimatedCellType.DESTROY && 'animate-fade-out',
-          renderCell.type === AnimatedCellType.REPLACE && 'animate-fade-in',
-          renderCell.type === AnimatedCellType.GRAVITY &&
-            ['animate-fall-1', 'animate-fall-2', 'animate-fall-3'][
-              renderCell.from
-            ],
-          'w-1/2 aspect-square object-contain select-none pointer-events-none'
-        )}
-      />
+      {name !== 'Empty' && (
+        <img
+          src={`/${name}.svg`}
+          alt={name}
+          className={cn(
+            renderCell.type === AnimatedCellType.DESTROY && 'animate-fade-out',
+            renderCell.type === AnimatedCellType.REPLACE && 'animate-fade-in',
+            renderCell.type === AnimatedCellType.GRAVITY &&
+              ['animate-fall-1', 'animate-fall-2', 'animate-fall-3'][
+                renderCell.from
+              ],
+            'w-1/2 aspect-square object-contain select-none pointer-events-none'
+          )}
+        />
+      )}
     </div>
   )
 }
