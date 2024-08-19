@@ -38,7 +38,6 @@ export function Cell({ index }: { index: number }) {
     >
       {name !== 'Empty' && (
         <img
-          key={renderCell.type}
           src={`/${name}.svg`}
           alt={name}
           className={cn(

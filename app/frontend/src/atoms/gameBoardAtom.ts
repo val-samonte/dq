@@ -147,27 +147,25 @@ export const renderBoardAtom = atom(
                 if (targetIndex > 0) {
                   processedBoard[index] = processedBoard[targetIndex]
                   processedBoard[targetIndex] = Element.Empty
-                  renderBoard[index] = {
-                    type: AnimatedCellType.GRAVITY,
-                    renderElem: processedBoard[index],
-                    from: fallCountTable[index],
-                  }
                 } else {
                   processedBoard[index] = Element.Empty
                 }
               }
             }
-            for (let row = 3; row >= 0; row--) {
-              const index = row * 3 + column
-              if (processedBoard[index] === Element.Empty) {
-                processedBoard[index] = fillers.shift() as Element
-                renderBoard[index] = {
-                  type: AnimatedCellType.GRAVITY,
-                  renderElem: processedBoard[index],
-                  from: fallCountTable[index],
-                  new: true,
-                }
-              }
+          }
+        }
+        for (let i = 0; i < 12; i++) {
+          let isNew = false
+          if (processedBoard[i] === Element.Empty) {
+            processedBoard[i] = fillers.shift() as Element
+            isNew = true
+          }
+          if (fallCountTable[i] > 0) {
+            renderBoard[i] = {
+              type: AnimatedCellType.GRAVITY,
+              renderElem: processedBoard[i],
+              from: fallCountTable[i],
+              new: isNew,
             }
           }
         }
