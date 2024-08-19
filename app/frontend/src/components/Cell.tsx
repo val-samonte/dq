@@ -35,10 +35,10 @@ export function Cell({ index }: { index: number }) {
         'transition-opacity duration-300',
         isAvailable ? 'opacity-100' : 'opacity-30'
       )}
-      key={renderCell.type}
     >
       {name !== 'Empty' && (
         <img
+          key={renderCell.type}
           src={`/${name}.svg`}
           alt={name}
           className={cn(

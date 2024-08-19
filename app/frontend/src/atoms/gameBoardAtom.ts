@@ -1,5 +1,5 @@
 import { atom } from 'jotai'
-import { Element } from '../enums/Element'
+import { byteToName, Element } from '../enums/Element'
 import { Point } from '../types/Point'
 import { Command } from '../types/Command'
 import { sha256 } from '../utils/sha256'
@@ -120,7 +120,7 @@ export const renderBoardAtom = atom(
             (byte) => [Element.ChaosI, Element.LifeI, Element.ArcaneI][byte % 3]
           )
         // create a fall count table
-        const fallCountTable = Array(12).fill(0)
+        const fallCountTable = Array(12).fill(-1)
         ;[0, 1, 2].forEach((column) => {
           let fallCount = 0
           let fallCountRow = 3
@@ -129,12 +129,28 @@ export const renderBoardAtom = atom(
               fallCount++
               fallCountTable[fallCountRow * 3 + column] = fallCount
             } else {
+              fallCountTable[fallCountRow * 3 + column] = fallCount
               fallCountRow--
             }
           }
-          for (let row = fallCountRow; row >= 0; row--) {
-            fallCountTable[row * 3 + column] = fallCount
+          for (let row = 3; row >= 0; row--) {
+            if (fallCountTable[row * 3 + column] === -1) {
+              fallCountTable[row * 3 + column] = fallCount
+            }
           }
+
+          console.log(fallCountTable)
+
+          // if you are not empty, use fallbackCount to transfer yourself
+          // for (let row = 0; row < 4; row++) {
+          //   const index = row * 3 + column
+          //   if (fallCountTable[index] > 0) {
+          //     const targetIndex = (row + fallCountTable[index]) * 3 + column
+
+          //     processedBoard[targetIndex] = processedBoard[index]
+          //     processedBoard[index] = Element.Empty
+          //   }
+          // }
 
           // move floating cells down and apply the filler elements to the empty spaces on top
           // for (let row = 3; row >= 0; row--) {
@@ -154,7 +170,6 @@ export const renderBoardAtom = atom(
           //       type: AnimatedCellType.GRAVITY,
           //       renderElem: processedBoard[index],
           //       from: fallCountTable[index],
-          //       key: now + '_' + index,
           //     }
           //   }
           // }
