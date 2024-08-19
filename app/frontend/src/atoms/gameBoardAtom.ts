@@ -101,7 +101,7 @@ export const renderBoardAtom = atom(
             renderBoard[index] = {
               type: AnimatedCellType.REPLACE,
               prevElem: renderBoard[index].renderElem,
-              renderElem: action.command.links[0].output,
+              renderElem: processedBoard[index],
             }
           }
         })
@@ -110,50 +110,45 @@ export const renderBoardAtom = atom(
         }))
 
         // step 2: process gravity
-        // create fillers which will fill the empty cells with incoming elements from the top
         const fillers = Array.from(await sha256(JSON.stringify(action.points)))
           .slice(0, 12)
           .map(
             (byte) => [Element.ChaosI, Element.LifeI, Element.ArcaneI][byte % 3]
           )
-        // create a fall count table
+
         const fallCountTable = Array(12).fill(-1)
         for (let column = 0; column < 3; column++) {
-          {
-            let fallCount = 0
-            let fallCountRow = 3
-            for (let row = 3; row >= 0; row--) {
-              if (processedBoard[row * 3 + column] === Element.Empty) {
-                fallCount++
-                fallCountTable[fallCountRow * 3 + column] = fallCount
-              } else {
-                fallCountTable[fallCountRow * 3 + column] = fallCount
-                fallCountRow--
-              }
+          let fallCount = 0
+          let fallCountRow = 3
+          for (let row = 3; row >= 0; row--) {
+            if (processedBoard[row * 3 + column] === Element.Empty) {
+              fallCount++
+              fallCountTable[fallCountRow * 3 + column] = fallCount
+            } else {
+              fallCountTable[fallCountRow * 3 + column] = fallCount
+              fallCountRow--
             }
-            for (let row = fallCountRow; row >= 0; row--) {
-              if (fallCountTable[row * 3 + column] === -1) {
-                fallCountTable[row * 3 + column] = fallCount
-              }
+          }
+          for (let row = fallCountRow; row >= 0; row--) {
+            if (fallCountTable[row * 3 + column] === -1) {
+              fallCountTable[row * 3 + column] = fallCount
             }
           }
 
-          // todo: bug with spawning on index 0
-          {
-            for (let row = 3; row >= 0; row--) {
-              const index = row * 3 + column
-              if (fallCountTable[index] > 0) {
-                const targetIndex = (row - fallCountTable[index]) * 3 + column
-                if (targetIndex > 0) {
-                  processedBoard[index] = processedBoard[targetIndex]
-                  processedBoard[targetIndex] = Element.Empty
-                } else {
-                  processedBoard[index] = Element.Empty
-                }
+          for (let row = 3; row >= 0; row--) {
+            const index = row * 3 + column
+            if (fallCountTable[index] > 0) {
+              const targetIndex = (row - fallCountTable[index]) * 3 + column
+              if (targetIndex >= 0) {
+                processedBoard[index] = processedBoard[targetIndex]
+                processedBoard[targetIndex] = Element.Empty
+              } else {
+                processedBoard[index] = Element.Empty
               }
             }
           }
         }
+
         for (let i = 0; i < 12; i++) {
           let isNew = false
           if (processedBoard[i] === Element.Empty) {
