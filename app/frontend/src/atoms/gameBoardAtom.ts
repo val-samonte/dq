@@ -138,6 +138,7 @@ export const renderBoardAtom = atom(
             }
           }
 
+          // todo: bug with spawning on index 0
           {
             for (let row = 3; row >= 0; row--) {
               const index = row * 3 + column
@@ -153,21 +154,18 @@ export const renderBoardAtom = atom(
                   }
                 } else {
                   processedBoard[index] = Element.Empty
-                  renderBoard[index] = {
-                    type: AnimatedCellType.GRAVITY,
-                    renderElem: Element.Empty,
-                    from: fallCountTable[index],
-                    new: true,
-                  }
                 }
               }
-
+            }
+            for (let row = 3; row >= 0; row--) {
+              const index = row * 3 + column
               if (processedBoard[index] === Element.Empty) {
                 processedBoard[index] = fillers.shift() as Element
                 renderBoard[index] = {
                   type: AnimatedCellType.GRAVITY,
                   renderElem: processedBoard[index],
                   from: fallCountTable[index],
+                  new: true,
                 }
               }
             }
@@ -179,11 +177,11 @@ export const renderBoardAtom = atom(
 
         // step 1: animate destroy (200ms) and replace (300ms)
         set(renderBoardRawAtom, destroyAndReplaceAnimatedCells)
-        await sleep(200)
+        await sleep(300)
 
         // step 2: animate gravity
         set(renderBoardRawAtom, gravityAnimatedCells)
-        await sleep(300)
+        await sleep(400)
 
         set(isAnimating, false)
         return
