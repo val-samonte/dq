@@ -28,6 +28,8 @@ export enum Element {
 
 export function byteToName(elem: Element) {
   switch (elem) {
+    case Element.Empty:
+      return 'Empty'
     case Element.ChaosI:
       return 'Chaos_I'
     case Element.LifeI:

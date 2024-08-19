@@ -2,18 +2,19 @@ import { useMemo } from 'react'
 import { byteToName } from '../enums/Element'
 import cn from 'classnames'
 import { useAtomValue } from 'jotai'
-import { boardRawAtom, renderBoardAtom } from '../atoms/gameBoardAtom'
+import { AnimatedCellType, renderBoardAtom } from '../atoms/gameBoardAtom'
 import { availableNextLinkAtom } from '../atoms/availableNextLinkAtom'
 import { inputUnitPointsAtom } from '../atoms/inputUnitPointsAtom'
 
 export function Cell({ index }: { index: number }) {
-  const cell = useAtomValue(boardRawAtom)
   const next = useAtomValue(availableNextLinkAtom)
   const points = useAtomValue(inputUnitPointsAtom)
   const renderBoard = useAtomValue(renderBoardAtom)
+  const renderCell = renderBoard[index]
+
   const name = useMemo(() => {
-    return byteToName(cell[index])
-  }, [cell, index])
+    return byteToName(renderCell.renderElem)
+  }, [renderCell])
 
   const isAvailable = useMemo(() => {
     if (!next) return true
@@ -26,8 +27,6 @@ export function Cell({ index }: { index: number }) {
     return next.some((p) => p.x === point.x && p.y === point.y)
   }, [next, points, index])
 
-  const renderCell = renderBoard[index]
-
   return (
     <div
       className={cn(
@@ -36,13 +35,21 @@ export function Cell({ index }: { index: number }) {
         'transition-opacity duration-300',
         isAvailable ? 'opacity-100' : 'opacity-30'
       )}
+      key={renderCell.key}
     >
       <img
         src={`/${name}.svg`}
         alt={name}
-        className='w-1/2 aspect-square object-contain select-none pointer-events-none'
+        className={cn(
+          renderCell.type === AnimatedCellType.DESTROY && 'animate-fade-out',
+          renderCell.type === AnimatedCellType.REPLACE && 'animate-fade-in',
+          renderCell.type === AnimatedCellType.GRAVITY &&
+            ['animate-fall-1', 'animate-fall-2', 'animate-fall-3'][
+              renderCell.from
+            ],
+          'w-1/2 aspect-square object-contain select-none pointer-events-none'
+        )}
       />
-      <span>{renderCell.type}</span>
     </div>
   )
 }
