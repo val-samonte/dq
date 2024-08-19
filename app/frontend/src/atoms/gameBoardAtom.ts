@@ -62,10 +62,9 @@ export const renderBoardAtom = atom(
   },
   async (get, set, action: RenderAction) => {
     let now = Date.now()
-    const mapSet = (elem: Element, i: number) => ({
+    const mapSet = (elem: Element) => ({
       type: AnimatedCellType.SET,
       renderElem: elem,
-      key: now + '_' + i,
     })
     switch (action.type) {
       case 'set': {
@@ -121,25 +120,54 @@ export const renderBoardAtom = atom(
           )
         // create a fall count table
         const fallCountTable = Array(12).fill(-1)
-        ;[0, 1, 2].forEach((column) => {
-          let fallCount = 0
-          let fallCountRow = 3
-          for (let row = 3; row >= 0; row--) {
-            if (processedBoard[row * 3 + column] === Element.Empty) {
-              fallCount++
-              fallCountTable[fallCountRow * 3 + column] = fallCount
-            } else {
-              fallCountTable[fallCountRow * 3 + column] = fallCount
-              fallCountRow--
+        for (let column = 0; column < 3; column++) {
+          {
+            let fallCount = 0
+            let fallCountRow = 3
+            for (let row = 3; row >= 0; row--) {
+              if (processedBoard[row * 3 + column] === Element.Empty) {
+                fallCount++
+                fallCountTable[fallCountRow * 3 + column] = fallCount
+              } else {
+                fallCountTable[fallCountRow * 3 + column] = fallCount
+                fallCountRow--
+              }
             }
-          }
-          for (let row = 3; row >= 0; row--) {
-            if (fallCountTable[row * 3 + column] === -1) {
-              fallCountTable[row * 3 + column] = fallCount
+            for (let row = fallCountRow; row >= 0; row--) {
+              if (fallCountTable[row * 3 + column] === -1) {
+                fallCountTable[row * 3 + column] = fallCount
+              }
             }
           }
 
-          console.log(fallCountTable)
+          {
+            for (let row = 3; row >= 0; row--) {
+              const index = row * 3 + column
+              if (fallCountTable[index] > 0) {
+                const targetIndex = (row - fallCountTable[index]) * 3 + column
+                processedBoard[index] = processedBoard[targetIndex]
+                processedBoard[targetIndex] = Element.Empty
+                renderBoard[index] = {
+                  type: AnimatedCellType.GRAVITY,
+                  renderElem: processedBoard[index],
+                  from: fallCountTable[index],
+                }
+                renderBoard[targetIndex] = {
+                  type: AnimatedCellType.GRAVITY,
+                  renderElem: Element.Empty,
+                  from: processedBoard[targetIndex],
+                  new: true,
+                }
+              }
+
+              // renderBoard[targetIndex] = {
+              //   type: AnimatedCellType.GRAVITY,
+              //   renderElem: processedBoard[targetIndex],
+              //   from: fallCountTable[targetIndex],
+              //   new: true,
+              // }
+            }
+          }
 
           // if you are not empty, use fallbackCount to transfer yourself
           // for (let row = 0; row < 4; row++) {
@@ -173,7 +201,7 @@ export const renderBoardAtom = atom(
           //     }
           //   }
           // }
-        })
+        }
         const gravityAnimatedCells = renderBoard.map((cell) => ({ ...cell }))
 
         set(boardRawAtom, processedBoard)
