@@ -113,7 +113,10 @@ export const renderBoardAtom = atom(
 
         // step 2: process gravity
         const fillers = Array.from(
-          await sha256(bs58.encode(new Uint8Array(prevBoard)))
+          await sha256(
+            bs58.encode(new Uint8Array(prevBoard)) +
+              JSON.stringify(action.points)
+          )
         )
           .slice(0, 12)
           .map(
