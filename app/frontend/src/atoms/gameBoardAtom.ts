@@ -1,8 +1,9 @@
 import { atom } from 'jotai'
-import { byteToName, Element } from '../enums/Element'
+import { Element } from '../enums/Element'
 import { Point } from '../types/Point'
 import { Command } from '../types/Command'
 import { sha256 } from '../utils/sha256'
+import bs58 from 'bs58'
 
 export enum RenderActionType {
   COMMAND = 'command',
@@ -111,7 +112,9 @@ export const renderBoardAtom = atom(
         }))
 
         // step 2: process gravity
-        const fillers = Array.from(await sha256(JSON.stringify(action.points)))
+        const fillers = Array.from(
+          await sha256(bs58.encode(new Uint8Array(prevBoard)))
+        )
           .slice(0, 12)
           .map(
             (byte) => [Element.ChaosI, Element.LifeI, Element.ArcaneI][byte % 3]

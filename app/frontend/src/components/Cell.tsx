@@ -30,7 +30,7 @@ export function Cell({ index }: { index: number }) {
   return (
     <div
       className={cn(
-        'flex-col',
+        'flex-col text-white',
         'aspect-square flex items-center justify-center select-none',
         'transition-opacity duration-300',
         isAvailable ? 'opacity-100' : 'opacity-30'
@@ -44,9 +44,13 @@ export function Cell({ index }: { index: number }) {
             renderCell.type === AnimatedCellType.DESTROY && 'animate-fade-out',
             renderCell.type === AnimatedCellType.REPLACE && 'animate-fade-in',
             renderCell.type === AnimatedCellType.GRAVITY && [
-              ['animate-fall-1', 'animate-fall-2', 'animate-fall-3'][
-                renderCell.from
-              ],
+              [
+                'animate-fall-1',
+                'animate-fall-2',
+                'animate-fall-3',
+                'animate-fall-4',
+                'animate-fall-5',
+              ][renderCell.from],
             ],
             'w-1/2 aspect-square object-contain select-none pointer-events-none'
           )}
