@@ -143,27 +143,27 @@ export const renderBoardAtom = atom(
           }
 
           // move floating cells down and apply the filler elements to the empty spaces on top
-          for (let row = 3; row >= 0; row--) {
-            const index = row * 3 + column
-            if (fallCountTable[index] > 0) {
-              const targetIndex = (row + fallCountTable[index]) * 3 + column
-              processedBoard[targetIndex] = processedBoard[index]
-              processedBoard[index] = Element.Empty
-            }
-            if (processedBoard[index] === Element.Empty) {
-              processedBoard[index] = fillers.shift() as Element
-            }
-            // create gravity animations
+          // for (let row = 3; row >= 0; row--) {
+          //   const index = row * 3 + column
+          //   if (fallCountTable[index] > 0) {
+          //     const targetIndex = (row + fallCountTable[index]) * 3 + column
+          //     processedBoard[targetIndex] = processedBoard[index]
+          //     processedBoard[index] = Element.Empty
+          //   }
+          //   if (processedBoard[index] === Element.Empty) {
+          //     processedBoard[index] = fillers.shift() as Element
+          //   }
+          //   // create gravity animations
 
-            if (fallCountTable[index] > 0) {
-              renderBoard[index] = {
-                type: AnimatedCellType.GRAVITY,
-                renderElem: processedBoard[index],
-                from: fallCountTable[index],
-                key: now + '_' + index,
-              }
-            }
-          }
+          //   if (fallCountTable[index] > 0) {
+          //     renderBoard[index] = {
+          //       type: AnimatedCellType.GRAVITY,
+          //       renderElem: processedBoard[index],
+          //       from: fallCountTable[index],
+          //       key: now + '_' + index,
+          //     }
+          //   }
+          // }
         })
         const gravityAnimatedCells = renderBoard.map((cell) => ({ ...cell }))
 

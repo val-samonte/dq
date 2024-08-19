@@ -1,3 +1,5 @@
+import { transform } from 'typescript'
+
 /** @type {import('tailwindcss').Config} */
 export default {
   content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
@@ -5,12 +7,12 @@ export default {
     extend: {
       keyframes: {
         'fade-in': {
-          '0%': { opacity: '0' },
-          '100%': { opacity: '1' },
+          '0%': { opacity: '0', transform: 'scale(1.2)' },
+          '100%': { opacity: '1', transform: 'scale(1)' },
         },
         'fade-out': {
-          '0%': { opacity: '1' },
-          '100%': { opacity: '0' },
+          '0%': { opacity: '1', transform: 'scale(1)' },
+          '100%': { opacity: '0', transform: 'scale(1.2)' },
         },
         'fall-1': {
           '0%': { transform: 'translateY(-100%)' },
