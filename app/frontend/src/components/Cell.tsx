@@ -13,11 +13,7 @@ export function Cell({ index }: { index: number }) {
   const renderCell = renderBoard[index]
 
   const name = useMemo(() => {
-    const result = byteToName(renderCell.renderElem)
-    if (!result) {
-      console.log(renderCell)
-    }
-    return result
+    return byteToName(renderCell.renderElem)
   }, [renderCell])
 
   const isAvailable = useMemo(() => {
