@@ -45,12 +45,24 @@ export function GuideOverlay({
     return getAdjacentCells(tail, cellSize)
   }, [unitPoints, cellSize])
 
-  const handleMouseDown = (event: React.MouseEvent) => {
-    if (!cellSize) return
+  const getEventPosition = (event: MouseEvent | TouchEvent) => {
+    const touch = (event as TouchEvent).touches
+      ? (event as TouchEvent).touches[0]
+      : null
+    const clientX = touch ? touch.clientX : (event as MouseEvent).clientX
+    const clientY = touch ? touch.clientY : (event as MouseEvent).clientY
 
     const t = (event.target as HTMLElement).getBoundingClientRect()
-    const displayX = event.clientX - t.left
-    const displayY = event.clientY - t.top
+    const displayX = clientX - t.left
+    const displayY = clientY - t.top
+
+    return { displayX, displayY }
+  }
+
+  const handleStart = (event: React.MouseEvent | React.TouchEvent) => {
+    if (!cellSize) return
+
+    const { displayX, displayY } = getEventPosition(event.nativeEvent)
     const x = Math.floor(displayX / cellSize)
     const y = Math.floor(displayY / cellSize)
 
@@ -59,12 +71,12 @@ export function GuideOverlay({
     setIsDrawing(true)
   }
 
-  const handleMouseMove = (event: React.MouseEvent) => {
+  const handleMove = (event: React.MouseEvent | React.TouchEvent) => {
     if (!cellSize) return
     if (!isDrawing || !tail) return
 
-    const t = (event.target as HTMLElement).getBoundingClientRect()
-    const cursor = { x: event.clientX - t.left, y: event.clientY - t.top }
+    const { displayX, displayY } = getEventPosition(event.nativeEvent)
+    const cursor = { x: displayX, y: displayY }
 
     adjacentCells.forEach((cell) => {
       const distance = Math.sqrt(
@@ -86,7 +98,7 @@ export function GuideOverlay({
     setCursor(cursor)
   }
 
-  const handleMouseUp = () => {
+  const handleEnd = () => {
     if (
       command.length === 1 &&
       next?.length === 0 &&
@@ -99,19 +111,16 @@ export function GuideOverlay({
     setCursor(null)
   }
 
-  const handleMouseOut = () => {
-    setIsDrawing(false)
-    setUnitPoints([])
-    setCursor(null)
-  }
-
   return (
     <div
       ref={containerRef}
-      onMouseDown={handleMouseDown}
-      onMouseMove={handleMouseMove}
-      onMouseUp={handleMouseUp}
-      onMouseOut={handleMouseOut}
+      onMouseDown={handleStart}
+      onMouseMove={handleMove}
+      onMouseUp={handleEnd}
+      onMouseOut={handleEnd}
+      onTouchStart={handleStart}
+      onTouchMove={handleMove}
+      onTouchEnd={handleEnd}
       className={cn('absolute inset-0 text-white', 'cursor-pointer')}
     >
       <svg className='absolute inset-0 w-full h-full pointer-events-none select-none'>
@@ -186,7 +195,7 @@ function getAdjacentCells(point: Point, cellSize: number): Point[] {
   const half = cellSize / 2
   const x = unitX * cellSize + half
   const y = unitY * cellSize + half
-  cellSize
+
   return [
     { x: x - cellSize, y },
     { x: x + cellSize, y },

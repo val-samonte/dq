@@ -12,7 +12,7 @@ export function SkillShoutTitle() {
           key={skillTitle?.key}
           className={cn(
             'animate-fade-in-out',
-            'text-xl px-32 py-2 bg-gradient-to-r ',
+            'text-xl px-3 py-2 bg-gradient-to-r max-w-sm w-full',
             'border-t border-b',
             skillTitle.type === 'offensive' && [
               skillTitle.level === 3
