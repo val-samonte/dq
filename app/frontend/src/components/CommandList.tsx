@@ -48,12 +48,12 @@ function CommandSection({
             <ul className='flex flex-col gap-1'>
               {command.links.map((link, j) => (
                 <li key={`link_${j}`}>
-                  <div className='flex items-center'>
+                  <div className='flex items-center gap-1'>
                     {link.elements.map((elem, k) => (
                       <div
                         key={`elem_${k}`}
                         className={cn(
-                          'flex items-center',
+                          'flex items-center gap-1',
                           select.length !== 0 &&
                             k >= select.length &&
                             'opacity-30'
