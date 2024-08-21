@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { sha256 } from '../utils/sha256'
 import { Element } from '../enums/Element'
-import { GuideOverlay } from './GuideOverlay'
+import { TouchInputOverlay } from './TouchInputOverlay'
 import { useAtom, useSetAtom } from 'jotai'
 import { RenderActionType, renderBoardAtom } from '../atoms/gameBoardAtom'
 import { Cell } from './Cell'
@@ -40,7 +40,7 @@ export function Board() {
             <Cell key={i} index={i} />
           ))}
         </div>
-        <GuideOverlay
+        <TouchInputOverlay
           onDraw={({ command, unitPoints }) => {
             setSkillTitle({ command, unitPoints })
             render({

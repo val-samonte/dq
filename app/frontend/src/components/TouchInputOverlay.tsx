@@ -7,7 +7,7 @@ import { useMeasure } from '@uidotdev/usehooks'
 import { availableNextLinkAtom } from '../atoms/availableNextLinkAtom'
 import { CommandMatched, commandMatchedAtom } from '../atoms/commandsAtom'
 
-export function GuideOverlay({
+export function TouchInputOverlay({
   onDraw,
 }: {
   onDraw: (match: CommandMatched) => void
@@ -183,7 +183,7 @@ export function GuideOverlay({
           <img
             src='/FoundPath.svg'
             alt=''
-            className='absolute inset-0 w-full h-full aspect-square pointer-events-none'
+            className='absolute inset-0 w-full h-full aspect-square pointer-events-none animate-spin'
           />
         </div>
       )}
