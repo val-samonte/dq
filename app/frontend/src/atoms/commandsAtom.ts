@@ -3,6 +3,8 @@ import { Command } from '../types/Command'
 import { commands } from '../constants/commands'
 import { inputUnitPointsAtom } from './inputUnitPointsAtom'
 import { boardRawAtom } from './gameBoardAtom'
+import { Point } from '../types/Point'
+import { Element } from '../enums/Element'
 
 export const commandsBaseAtom = atom<Command[]>(commands)
 
@@ -57,5 +59,52 @@ export const commandGroupAtom = atom<CommandGroups>((get) => {
     enhancements,
     conjurations,
     transmutations,
+  }
+})
+
+export interface CommandMatched {
+  command: Command
+  unitPoints: Point[]
+  linkSelection: Element[]
+}
+
+export const commandMatchedAtom = atom<CommandMatched | null>((get) => {
+  const input = get(inputUnitPointsAtom)
+  const board = get(boardRawAtom)
+  const commands = get(commandsAtom)
+
+  const linkSelection = input.map((point) => board[point.y * 3 + point.x])
+  let command = commands.find((command) => {
+    const link = command.links.find((link) => {
+      if (link.elements.length !== linkSelection.length) {
+        return false
+      }
+
+      return link.elements.every((elem, i) => {
+        if (link.strictLevel) {
+          return elem === linkSelection[i]
+        }
+        return (elem & 0b0011_0011) === (linkSelection[i] & 0b0011_0011)
+      })
+    })
+
+    if (!link) {
+      return false
+    }
+
+    return {
+      ...command,
+      links: [link],
+    }
+  })
+
+  if (!command) {
+    return null
+  }
+
+  return {
+    command,
+    unitPoints: input,
+    linkSelection,
   }
 })

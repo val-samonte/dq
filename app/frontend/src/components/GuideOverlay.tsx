@@ -5,18 +5,17 @@ import { useAtom, useAtomValue } from 'jotai'
 import { inputUnitPointsAtom } from '../atoms/inputUnitPointsAtom'
 import { useMeasure } from '@uidotdev/usehooks'
 import { availableNextLinkAtom } from '../atoms/availableNextLinkAtom'
-import { commandsAtom } from '../atoms/commandsAtom'
-import { Command } from '../types/Command'
+import { CommandMatched, commandMatchedAtom } from '../atoms/commandsAtom'
 
 export function GuideOverlay({
   onDraw,
 }: {
-  onDraw?: (points: Point[], command: Command) => void
+  onDraw: (match: CommandMatched) => void
 }) {
   const [isDrawing, setIsDrawing] = useState(false)
   const [unitPoints, setUnitPoints] = useAtom(inputUnitPointsAtom)
   const next = useAtomValue(availableNextLinkAtom)
-  const command = useAtomValue(commandsAtom)
+  const matched = useAtomValue(commandMatchedAtom)
   const [cursor, setCursor] = useState<Point | null>(null)
   const [containerRef, { width, height }] = useMeasure()
   const cellSize = useMemo(() => {
@@ -99,17 +98,23 @@ export function GuideOverlay({
   }
 
   const handleEnd = () => {
-    if (
-      command.length === 1 &&
-      next?.length === 0 &&
-      unitPoints.length === command[0].links[0].elements.length
-    ) {
-      onDraw?.(unitPoints, { ...command[0], links: [command[0].links[0]] })
+    if (matched) {
+      onDraw(matched)
     }
     setIsDrawing(false)
     setUnitPoints([])
     setCursor(null)
   }
+
+  const resultDimensions =
+    tail && cellSize
+      ? {
+          width: cellSize,
+          height: cellSize,
+          top: tail.y * cellSize,
+          left: tail.x * cellSize,
+        }
+      : undefined
 
   return (
     <div
@@ -142,50 +147,22 @@ export function GuideOverlay({
           )
         })}
       </svg>
-      {next?.length === 0 &&
-        command.length === 1 &&
-        command[0].links[0].elements.length === unitPoints.length &&
-        tail &&
-        cellSize && (
-          <svg className='absolute inset-0 w-full h-full pointer-events-none select-none'>
-            <circle
-              cx={tail.x * cellSize + cellSize / 2}
-              cy={tail.y * cellSize + cellSize / 2}
-              r={cellSize / 4}
-              stroke='white'
-              strokeWidth='8'
-              fill='transparent'
-            />
-          </svg>
-        )}
-      {next?.length === 0 &&
-        !(
-          command.length === 1 &&
-          command[0].links[0].elements.length === unitPoints.length
-        ) &&
-        tail &&
-        cellSize && (
-          <svg className='absolute inset-0 w-full h-full pointer-events-none select-none'>
-            <line
-              x1={tail.x * cellSize + cellSize / 4}
-              y1={tail.y * cellSize + cellSize / 4}
-              x2={tail.x * cellSize + (cellSize * 3) / 4}
-              y2={tail.y * cellSize + (cellSize * 3) / 4}
-              stroke='white'
-              strokeWidth='8'
-              strokeLinecap='round'
-            />
-            <line
-              x1={tail.x * cellSize + (cellSize * 3) / 4}
-              y1={tail.y * cellSize + cellSize / 4}
-              x2={tail.x * cellSize + cellSize / 4}
-              y2={tail.y * cellSize + (cellSize * 3) / 4}
-              stroke='white'
-              strokeWidth='8'
-              strokeLinecap='round'
-            />
-          </svg>
-        )}
+      {resultDimensions && matched && (
+        <img
+          src='/FoundPath.svg'
+          style={resultDimensions}
+          alt=''
+          className='absolute pointer-events-none'
+        />
+      )}
+      {resultDimensions && next?.length === 0 && !matched && (
+        <img
+          src='/EndPath.svg'
+          alt=''
+          style={resultDimensions}
+          className='absolute pointer-events-none'
+        />
+      )}
     </div>
   )
 }

@@ -41,11 +41,11 @@ export function Board() {
           ))}
         </div>
         <GuideOverlay
-          onDraw={(points, command) => {
-            setSkillTitle({ command, unitPoints: points })
+          onDraw={({ command, unitPoints }) => {
+            setSkillTitle({ command, unitPoints })
             render({
               type: RenderActionType.COMMAND,
-              points,
+              points: unitPoints,
               command,
             })
           }}
