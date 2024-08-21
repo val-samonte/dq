@@ -152,10 +152,12 @@ export function GuideOverlay({
           className='absolute text-center flex items-center justify-center flex-col pointer-events-none'
           style={resultDimensions}
         >
-          <div className='absolute font-bold -top-8 text-black bg-white rounded px-3 py-1 text-center text-xs pointer-events-none'>
-            {`${matched.command.type === 'skill' ? 'Cast ' : ''}${
-              matched.name
-            }`}
+          <div className='absolute -top-4 pointer-events-none flex items-center justify-center text-center'>
+            <div className='absolute font-bold bottom-0 text-black bg-white rounded px-3 py-1 text-xs pointer-events-none break-normal whitespace-nowrap'>
+              {`${matched.command.type === 'skill' ? 'Cast ' : ''}${
+                matched.name
+              }`}
+            </div>
           </div>
           <img
             src='/FoundPath.svg'
