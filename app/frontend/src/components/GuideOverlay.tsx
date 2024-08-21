@@ -90,6 +90,11 @@ export function GuideOverlay({
           (next?.some((p) => p.x === x && p.y === y) ?? true)
         ) {
           setUnitPoints([...unitPoints, newPoint])
+        } else if (unitPoints.length > 1) {
+          const prev = unitPoints[unitPoints.length - 2]
+          if (prev.x === x && prev.y === y) {
+            setUnitPoints(unitPoints.slice(0, -1))
+          }
         }
       }
     })
