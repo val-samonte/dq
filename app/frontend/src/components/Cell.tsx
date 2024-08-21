@@ -74,7 +74,7 @@ export function Cell({ index }: { index: number }) {
               src={`/${name}.png`}
               alt={name}
               className={cn(
-                'mix-blend-color-dodge animate-pulse',
+                'mix-blend-hard-light animate-pulse',
                 'object-contain absolute select-none pointer-events-none blur-lg'
               )}
             />

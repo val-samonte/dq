@@ -66,6 +66,8 @@ export interface CommandMatched {
   command: Command
   unitPoints: Point[]
   linkSelection: Element[]
+  name: string
+  level?: number
 }
 
 export const commandMatchedAtom = atom<CommandMatched | null>((get) => {
@@ -102,9 +104,29 @@ export const commandMatchedAtom = atom<CommandMatched | null>((get) => {
     return null
   }
 
+  let level = 0
+  if (command.type === 'skill') {
+    const isLevel3 = linkSelection.every(
+      (element) =>
+        (element & 0b1100_0000) === 0b1100_0000 ||
+        (element & 0b0000_1100) === 0b0000_1100
+    )
+    const isLevel2 = linkSelection.every(
+      (element) =>
+        (element & 0b0100_0000) === 0b0100_0000 ||
+        (element & 0b0000_0100) === 0b0000_0100
+    )
+
+    level = isLevel3 ? 3 : isLevel2 ? 2 : 1
+  }
+
   return {
+    name: `${level === 3 ? 'Giga ' : level === 2 ? 'Mega ' : ''}${
+      command.name
+    }`,
     command,
     unitPoints: input,
     linkSelection,
+    level,
   }
 })
