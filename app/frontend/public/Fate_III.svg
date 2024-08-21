@@ -1,10 +1,11 @@
 <svg width="101" height="100" viewBox="0 0 101 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-<rect x="50.1655" y="-0.00697327" width="70.7107" height="70.7107" transform="rotate(45 50.1655 -0.00697327)" fill="#EAB308"/>
-<mask id="mask0_31_58" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="0" y="-1" width="101" height="101">
-<rect x="50.1655" y="-0.00697327" width="70.7107" height="70.7107" transform="rotate(45 50.1655 -0.00697327)" fill="#EAB308"/>
-</mask>
-<g mask="url(#mask0_31_58)">
-<path d="M30.4816 -0.354141V99.6459" stroke="black" stroke-opacity="0.8" stroke-width="10"/>
-<path d="M70.4816 -0.354141V99.6459" stroke="black" stroke-opacity="0.8" stroke-width="10"/>
-</g>
+<rect x="50.1655" y="-0.00653076" width="70.7107" height="70.7107" transform="rotate(45 50.1655 -0.00653076)" fill="url(#paint0_linear_51_3)"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M93.0944 49.9935L50.1655 7.06454L7.23657 49.9935L50.1655 92.9224L93.0944 49.9935ZM50.1655 -0.00653076L0.165498 49.9935L50.1655 99.9935L100.165 49.9935L50.1655 -0.00653076Z" fill="white" style="mix-blend-mode:overlay"/>
+<rect x="50.1655" y="32.4936" width="24.7485" height="24.7485" transform="rotate(45 50.1655 32.4936)" fill="white" style="mix-blend-mode:overlay"/>
+<defs>
+<linearGradient id="paint0_linear_51_3" x1="50.1655" y1="-0.00653076" x2="120.876" y2="70.7041" gradientUnits="userSpaceOnUse">
+<stop stop-color="#CA8A04"/>
+<stop offset="1" stop-color="#644402"/>
+</linearGradient>
+</defs>
 </svg>

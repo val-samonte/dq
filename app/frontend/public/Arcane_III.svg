@@ -1,10 +1,11 @@
 <svg width="101" height="100" viewBox="0 0 101 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-<circle cx="50.1655" cy="49.993" r="50" fill="#3B82F6"/>
-<mask id="mask0_31_35" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="0" y="-1" width="101" height="101">
-<circle cx="50.1655" cy="49.993" r="50" fill="#3B82F6"/>
-</mask>
-<g mask="url(#mask0_31_35)">
-<path d="M30.1655 0.0396118V100.04" stroke="black" stroke-opacity="0.8" stroke-width="10"/>
-<path d="M70.1655 0.0396118V100.04" stroke="black" stroke-opacity="0.8" stroke-width="10"/>
-</g>
+<circle cx="50.1655" cy="49.9935" r="50" fill="url(#paint0_linear_51_20)"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M50.1655 94.9935C75.0183 94.9935 95.1655 74.8463 95.1655 49.9935C95.1655 25.1407 75.0183 4.99347 50.1655 4.99347C25.3127 4.99347 5.1655 25.1407 5.1655 49.9935C5.1655 74.8463 25.3127 94.9935 50.1655 94.9935ZM50.1655 99.9935C77.7797 99.9935 100.165 77.6077 100.165 49.9935C100.165 22.3792 77.7797 -0.00653076 50.1655 -0.00653076C22.5513 -0.00653076 0.165497 22.3792 0.165497 49.9935C0.165497 77.6077 22.5513 99.9935 50.1655 99.9935Z" fill="white" style="mix-blend-mode:overlay"/>
+<circle cx="50.1655" cy="49.9935" r="25" fill="white" style="mix-blend-mode:overlay"/>
+<defs>
+<linearGradient id="paint0_linear_51_20" x1="50.1655" y1="-0.00653076" x2="50.1655" y2="99.9935" gradientUnits="userSpaceOnUse">
+<stop stop-color="#2563EB"/>
+<stop offset="1" stop-color="#153885"/>
+</linearGradient>
+</defs>
 </svg>

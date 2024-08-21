@@ -1,9 +1,10 @@
 <svg width="101" height="101" viewBox="0 0 101 101" fill="none" xmlns="http://www.w3.org/2000/svg">
-<circle cx="50.1655" cy="50.9025" r="50" fill="#3B82F6"/>
-<mask id="mask0_31_27" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="0" y="0" width="101" height="101">
-<circle cx="50.1655" cy="50.9025" r="50" fill="#3B82F6"/>
-</mask>
-<g mask="url(#mask0_31_27)">
-<path d="M50.1655 1.34276V101.343" stroke="black" stroke-opacity="0.8" stroke-width="10"/>
-</g>
+<circle cx="50.1655" cy="50.9025" r="50" fill="url(#paint0_linear_31_27)"/>
+<circle cx="50.1655" cy="50.9025" r="25" fill="white" style="mix-blend-mode:overlay"/>
+<defs>
+<linearGradient id="paint0_linear_31_27" x1="50.1655" y1="0.902466" x2="50.1655" y2="100.902" gradientUnits="userSpaceOnUse">
+<stop stop-color="#3B82F6"/>
+<stop offset="1" stop-color="#234C90"/>
+</linearGradient>
+</defs>
 </svg>

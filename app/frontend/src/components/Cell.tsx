@@ -38,7 +38,7 @@ export function Cell({ index }: { index: number }) {
     >
       {name !== 'Empty' && (
         <img
-          src={`/${name}.svg`}
+          src={`/${name}.png`}
           alt={name}
           className={cn(
             renderCell.type === AnimatedCellType.DESTROY && 'animate-fade-out',

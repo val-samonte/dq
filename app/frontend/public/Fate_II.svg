@@ -1,9 +1,10 @@
 <svg width="101" height="101" viewBox="0 0 101 101" fill="none" xmlns="http://www.w3.org/2000/svg">
-<rect x="50.1655" y="0.902466" width="70.7107" height="70.7107" transform="rotate(45 50.1655 0.902466)" fill="#EAB308"/>
-<mask id="mask0_31_48" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="0" y="0" width="101" height="101">
-<rect x="50.1655" y="0.902466" width="70.7107" height="70.7107" transform="rotate(45 50.1655 0.902466)" fill="#EAB308"/>
-</mask>
-<g mask="url(#mask0_31_48)">
-<path d="M50.4816 1.34274V101.343" stroke="black" stroke-opacity="0.8" stroke-width="10"/>
-</g>
+<rect x="50.1655" y="0.902466" width="70.7107" height="70.7107" transform="rotate(45 50.1655 0.902466)" fill="url(#paint0_linear_31_48)"/>
+<rect x="50.1655" y="33.4026" width="24.7485" height="24.7485" transform="rotate(45 50.1655 33.4026)" fill="white" style="mix-blend-mode:overlay"/>
+<defs>
+<linearGradient id="paint0_linear_31_48" x1="50.1655" y1="0.902466" x2="120.876" y2="71.6131" gradientUnits="userSpaceOnUse">
+<stop stop-color="#EAB308"/>
+<stop offset="1" stop-color="#846505"/>
+</linearGradient>
+</defs>
 </svg>
