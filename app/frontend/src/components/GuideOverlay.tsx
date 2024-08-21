@@ -111,7 +111,17 @@ export function GuideOverlay({
     setCursor(null)
   }
 
-  const resultDimensions =
+  const initPointStyle =
+    unitPoints.length > 0 && cellSize
+      ? {
+          width: cellSize / 8,
+          height: cellSize / 8,
+          top: unitPoints[0].y * cellSize + cellSize / 2 - cellSize / 16,
+          left: unitPoints[0].x * cellSize + cellSize / 2 - cellSize / 16,
+        }
+      : undefined
+
+  const resultStyles =
     tail && cellSize
       ? {
           width: cellSize,
@@ -133,6 +143,12 @@ export function GuideOverlay({
       onTouchEnd={handleEnd}
       className={cn('absolute inset-0 text-white', 'cursor-pointer')}
     >
+      {initPointStyle && (
+        <div
+          className='absolute bg-white rounded-full pointer-events-none'
+          style={initPointStyle}
+        />
+      )}
       <svg className='absolute inset-0 w-full h-full pointer-events-none select-none'>
         {displayPoints.map((point, i) => {
           if (next?.length === 0 && i === displayPoints.length - 1) return null
@@ -152,10 +168,10 @@ export function GuideOverlay({
           )
         })}
       </svg>
-      {resultDimensions && matched && (
+      {resultStyles && matched && (
         <div
           className='absolute text-center flex items-center justify-center flex-col pointer-events-none'
-          style={resultDimensions}
+          style={resultStyles}
         >
           <div className='absolute -top-4 pointer-events-none flex items-center justify-center text-center'>
             <div className='absolute font-bold bottom-0 text-black bg-white rounded px-3 py-1 text-xs pointer-events-none break-normal whitespace-nowrap'>
@@ -171,11 +187,11 @@ export function GuideOverlay({
           />
         </div>
       )}
-      {resultDimensions && next?.length === 0 && !matched && (
+      {resultStyles && next?.length === 0 && !matched && (
         <img
           src='/EndPath.svg'
           alt=''
-          style={resultDimensions}
+          style={resultStyles}
           className='absolute pointer-events-none'
         />
       )}
