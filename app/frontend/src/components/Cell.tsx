@@ -16,6 +16,13 @@ export function Cell({ index }: { index: number }) {
     return byteToName(renderCell.renderElem)
   }, [renderCell])
 
+  const showAura = useMemo(() => {
+    return (
+      (renderCell.renderElem & 0b1100_0000) === 0b1100_0000 ||
+      (renderCell.renderElem & 0b0000_1100) === 0b0000_1100
+    )
+  }, [renderCell])
+
   const isAvailable = useMemo(() => {
     if (!next) return true
     const point = { x: index % 3, y: Math.floor(index / 3) }
@@ -30,17 +37,18 @@ export function Cell({ index }: { index: number }) {
   return (
     <div
       className={cn(
-        'flex-col text-white',
-        'aspect-square flex items-center justify-center select-none',
+        'relative flex items-center justify-center',
+        'select-none pointer-events-none',
         'transition-opacity duration-300',
         isAvailable ? 'opacity-100' : 'opacity-30'
       )}
     >
       {name !== 'Empty' && (
-        <img
-          src={`/${name}.png`}
-          alt={name}
+        <div
           className={cn(
+            'relative flex items-center justify-center',
+            'w-1/2 aspect-square',
+            'select-none pointer-events-none',
             renderCell.type === AnimatedCellType.DESTROY && 'animate-fade-out',
             renderCell.type === AnimatedCellType.REPLACE && 'animate-fade-in',
             renderCell.type === AnimatedCellType.GRAVITY && [
@@ -51,10 +59,27 @@ export function Cell({ index }: { index: number }) {
                 'animate-fall-4',
                 'animate-fall-5',
               ][renderCell.from],
-            ],
-            'w-1/2 aspect-square object-contain select-none pointer-events-none'
+            ]
           )}
-        />
+        >
+          <img
+            src={`/${name}.png`}
+            alt={name}
+            className={cn(
+              'object-contain absolute select-none pointer-events-none'
+            )}
+          />
+          {showAura && (
+            <img
+              src={`/${name}.png`}
+              alt={name}
+              className={cn(
+                'mix-blend-color-dodge animate-pulse',
+                'object-contain absolute select-none pointer-events-none blur-lg'
+              )}
+            />
+          )}
+        </div>
       )}
     </div>
   )
