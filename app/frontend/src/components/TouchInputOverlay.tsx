@@ -181,9 +181,16 @@ export function TouchInputOverlay({
             </div>
           </div>
           <img
-            src='/FoundPath.svg'
+            src={
+              matched.command.type === 'skill'
+                ? '/CastPath.svg'
+                : '/FoundPath.svg'
+            }
             alt=''
-            className='absolute inset-0 w-full h-full aspect-square pointer-events-none animate-spin'
+            className={cn(
+              matched.command.type === 'skill' && 'animate-spin',
+              'absolute inset-0 w-full h-full aspect-square pointer-events-none'
+            )}
           />
         </div>
       )}
