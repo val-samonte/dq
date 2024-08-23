@@ -11,6 +11,15 @@ export function Cell({ index }: { index: number }) {
   const points = useAtomValue(inputUnitPointsAtom)
   const renderBoard = useAtomValue(renderBoardAtom)
   const renderCell = renderBoard[index]
+  const point = useMemo(() => {
+    return { x: index % 3, y: Math.floor(index / 3) }
+  }, [index])
+
+  const isTail = useMemo(() => {
+    const tail = points[points.length - 1]
+    if (!tail) return false
+    return tail && tail.x === point.x && tail.y === point.y
+  }, [point, points])
 
   const name = useMemo(() => {
     return byteToName(renderCell.renderElem)
@@ -25,22 +34,18 @@ export function Cell({ index }: { index: number }) {
 
   const isAvailable = useMemo(() => {
     if (!next) return true
-    const point = { x: index % 3, y: Math.floor(index / 3) }
-
-    const tail = points[points.length - 1]
-    if (!tail) return true
-    if (point.x === tail.x && point.y === tail.y) return true
+    if (isTail) return true
 
     return next.some((p) => p.x === point.x && p.y === point.y)
-  }, [next, points, index])
+  }, [next, point, isTail, index])
 
   return (
     <div
       className={cn(
         'relative flex items-center justify-center',
         'select-none pointer-events-none',
-        'transition-opacity duration-300',
-        isAvailable ? 'opacity-100' : 'opacity-30'
+        'transition-all duration-200',
+        isAvailable ? 'brightness-100' : 'brightness-[0.35]'
       )}
     >
       {name !== 'Empty' && (
@@ -79,6 +84,20 @@ export function Cell({ index }: { index: number }) {
               )}
             />
           )}
+
+          <div
+            className={cn(
+              'opacity-0',
+              isAvailable
+                ? next && !isTail
+                  ? 'animate-fade-in'
+                  : 'animate-fade-out'
+                : 'animate-fade-out',
+              'absolute -inset-3 pointer-events-none'
+            )}
+          >
+            <div className='absolute inset-0 opacity-10 rounded-xl border-white border pointer-events-none ' />
+          </div>
         </div>
       )}
     </div>

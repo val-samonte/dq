@@ -170,7 +170,7 @@ export function TouchInputOverlay({
       </svg>
       {resultStyles && matched && (
         <div
-          className='absolute text-center flex items-center justify-center flex-col pointer-events-none'
+          className='animate-fade-in absolute text-center flex items-center justify-center flex-col pointer-events-none'
           style={resultStyles}
         >
           <div className='absolute -top-4 pointer-events-none flex items-center justify-center text-center'>
@@ -189,7 +189,7 @@ export function TouchInputOverlay({
             alt=''
             className={cn(
               matched.command.type === 'skill' && 'animate-spin',
-              'absolute inset-0 w-full h-full aspect-square pointer-events-none'
+              'absolute inset-0 w-full h-full aspect-square pointer-events-none '
             )}
           />
         </div>
@@ -199,7 +199,7 @@ export function TouchInputOverlay({
           src='/EndPath.svg'
           alt=''
           style={resultStyles}
-          className='absolute pointer-events-none'
+          className='absolute pointer-events-none animate-fade-in'
         />
       )}
     </div>
