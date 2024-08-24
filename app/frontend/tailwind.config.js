@@ -5,6 +5,10 @@ export default {
   content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   theme: {
     extend: {
+      fontFamily: {
+        sans: ['Roboto Condensed', 'sans-serif'], // Overrides the default sans-serif font
+        serif: ['Inknut Antiqua', 'serif'], // Overrides the default serif font
+      },
       keyframes: {
         'fade-in': {
           '0%': { opacity: '0', transform: 'scale(1.2)' },
