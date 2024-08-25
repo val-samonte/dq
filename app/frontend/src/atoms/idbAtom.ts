@@ -5,7 +5,8 @@ import { atomFamily } from 'jotai/utils'
 export interface IDBSchema extends DBSchema {
   keypairs: {
     key: string
-    value: CryptoKey
+    // value: CryptoKey
+    value: Uint8Array
   }
 }
 

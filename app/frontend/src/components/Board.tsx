@@ -8,7 +8,6 @@ import { Cell } from './Cell'
 import { CommandList } from './CommandList'
 import { commandCallTitleAtom } from '../atoms/commandCallTitleAtom'
 import { SkillShoutTitle } from './SkillShoutTitle'
-import { SoundFX } from './SoundFX'
 
 export function Board() {
   const [random] = useState(Math.random())
