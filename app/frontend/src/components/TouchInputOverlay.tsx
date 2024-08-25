@@ -178,15 +178,17 @@ export function TouchInputOverlay({
           className='animate-fade-in absolute text-center flex items-center justify-center flex-col pointer-events-none'
           style={resultStyles}
         >
-          {/* 
           <div className='absolute -top-4 pointer-events-none flex items-center justify-center text-center'>
-            <div className='absolute font-bold bottom-0 text-black bg-white rounded px-3 py-1 text-xs pointer-events-none break-normal whitespace-nowrap'>
+            <div
+              className='absolute font-bold bottom-0 text-black bg-white rounded p-1 text-xs pointer-events-none break-before-avoid'
+              style={{ width: cellSize ?? undefined }}
+            >
               {`${matched.command.type === 'skill' ? 'Cast ' : ''}${
                 matched.name
               }`}
             </div>
           </div>
-           */}
+
           <img
             src={
               matched.command.type === 'skill'

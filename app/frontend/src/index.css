@@ -26,3 +26,7 @@ body {
   touch-action: none;
   -webkit-overflow-scrolling: auto;
 }
+
+.stroked {
+  -webkit-text-stroke: 0.085em rgba(0, 0, 0, 0.25);
+}
