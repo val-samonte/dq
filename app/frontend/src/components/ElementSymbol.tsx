@@ -10,7 +10,7 @@ export function ElementSymbol({ elem }: { elem: Element }) {
     <img
       src={`/${name}.svg`}
       alt={name}
-      className='w-4 h-4 aspect-square object-contain select-none pointer-events-none'
+      className='flex-none w-4 h-4 aspect-square object-contain select-none pointer-events-none'
     />
   )
 }

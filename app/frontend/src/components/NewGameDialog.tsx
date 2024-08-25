@@ -16,7 +16,7 @@ function Inner() {
   useEffect(() => {
     const generate = async () => {
       if (currentAccount.current) return
-      // Annoyingly, Ed25519 is inconsistent in Chrome
+      // Annoyingly, Ed25519 is not yet supported in Chrome (behind the flag)
       // resorting to tweetnacl for now
       const newKeypair = nacl.sign.keyPair()
       const pubkey = bs58.encode(newKeypair.publicKey)

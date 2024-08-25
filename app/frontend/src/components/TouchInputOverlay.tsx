@@ -59,6 +59,7 @@ export function TouchInputOverlay({
   }
 
   const handleStart = (event: React.MouseEvent | React.TouchEvent) => {
+    event.preventDefault()
     if (!cellSize) return
 
     const { displayX, displayY } = getEventPosition(event.nativeEvent)
@@ -71,6 +72,7 @@ export function TouchInputOverlay({
   }
 
   const handleMove = (event: React.MouseEvent | React.TouchEvent) => {
+    event.preventDefault()
     if (!cellSize) return
     if (!isDrawing || !tail) return
 
@@ -141,6 +143,9 @@ export function TouchInputOverlay({
       onTouchStart={handleStart}
       onTouchMove={handleMove}
       onTouchEnd={handleEnd}
+      onContextMenu={(e) => {
+        e.preventDefault()
+      }}
       className={cn('absolute inset-0 text-white', 'cursor-pointer')}
     >
       {initPointStyle && (
@@ -173,6 +178,7 @@ export function TouchInputOverlay({
           className='animate-fade-in absolute text-center flex items-center justify-center flex-col pointer-events-none'
           style={resultStyles}
         >
+          {/* 
           <div className='absolute -top-4 pointer-events-none flex items-center justify-center text-center'>
             <div className='absolute font-bold bottom-0 text-black bg-white rounded px-3 py-1 text-xs pointer-events-none break-normal whitespace-nowrap'>
               {`${matched.command.type === 'skill' ? 'Cast ' : ''}${
@@ -180,6 +186,7 @@ export function TouchInputOverlay({
               }`}
             </div>
           </div>
+           */}
           <img
             src={
               matched.command.type === 'skill'

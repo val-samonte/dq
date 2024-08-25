@@ -11,12 +11,8 @@ export function MainContainer({ children }: { children: ReactNode }) {
 
   return (
     <div className='fixed inset-0 overflow-hidden flex flex-col'>
-      <nav className='flex flex-none px-3 py-2 justify-between'>
-        <img
-          src='/logo.png'
-          alt='DeezQuest'
-          className='w-8 h-8 object-contain'
-        />
+      <nav className='flex flex-none px-3 py-2 justify-between items-center'>
+        <div className='font-serif'>Practice</div>
         <button>
           <List size={32} />
         </button>
