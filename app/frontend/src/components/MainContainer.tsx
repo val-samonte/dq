@@ -17,7 +17,9 @@ export function MainContainer({ children }: { children: ReactNode }) {
           <List size={32} />
         </button>
       </nav>
-      <main className='flex-auto flex flex-col'>{children}</main>
+      <main className='flex-auto flex flex-col overflow-hidden'>
+        {children}
+      </main>
       {!currentAccount && (
         <div className='animate-fade-in fixed inset-0 bg-black flex flex-col p-10 items-center justify-center'>
           <div className='flex flex-col h-full gap-10'>

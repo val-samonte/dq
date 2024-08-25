@@ -27,7 +27,7 @@ export function Board() {
   }, [random])
 
   return (
-    <div className='aspect-[3/4] max-h-[60vh] h-full mx-auto relative'>
+    <div className='aspect-[3/4] h-full mx-auto relative'>
       <div className='grid grid-cols-3 grid-rows-4 w-full h-full'>
         {board.map((_, i) => (
           <Cell key={i} index={i} />
