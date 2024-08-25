@@ -1,11 +1,12 @@
 import { Board } from './Board'
 import { CommandList } from './CommandList'
+import { HUD } from './HUD'
 
 export function BattleStage() {
   return (
     <div className='flex-auto h-full w-full flex flex-col'>
-      <div className='flex-auto'></div>
-      <div className='flex-none grid grid-cols-12 max-h-[50%]'>
+      <HUD />
+      <div className='relative flex-none grid grid-cols-12 max-h-[50%]'>
         <div className='col-span-7 bg-stone-950/80 h-full overflow-hidden'>
           <Board />
         </div>

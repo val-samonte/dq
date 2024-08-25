@@ -59,7 +59,7 @@ export function TouchInputOverlay({
   }
 
   const handleStart = (event: React.MouseEvent | React.TouchEvent) => {
-    event.preventDefault()
+    // event.preventDefault()
     if (!cellSize) return
 
     const { displayX, displayY } = getEventPosition(event.nativeEvent)
@@ -72,7 +72,7 @@ export function TouchInputOverlay({
   }
 
   const handleMove = (event: React.MouseEvent | React.TouchEvent) => {
-    event.preventDefault()
+    // event.preventDefault()
     if (!cellSize) return
     if (!isDrawing || !tail) return
 
