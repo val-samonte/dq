@@ -17,14 +17,14 @@ export function CommandList() {
       {commands.enhancements.length > 0 && (
         <CommandSection title='Enhancements' commands={commands.enhancements} />
       )}
+      {commands.conjurations.length > 0 && (
+        <CommandSection title='Conjurations' commands={commands.conjurations} />
+      )}
       {commands.transmutations.length > 0 && (
         <CommandSection
           title='Transmutations'
           commands={commands.transmutations}
         />
-      )}
-      {commands.conjurations.length > 0 && (
-        <CommandSection title='Conjurations' commands={commands.conjurations} />
       )}
     </div>
   )

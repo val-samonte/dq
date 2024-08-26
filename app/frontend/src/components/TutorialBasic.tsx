@@ -5,7 +5,6 @@ import cn from 'classnames'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import {
   commandChecklistAtom,
-  commandMatchedAtom,
   commandsBaseAtom,
   lastCommandCalledAtom,
 } from '../atoms/commandsAtom'
@@ -17,9 +16,31 @@ import {
 } from '../atoms/gameBoardAtom'
 import { Element } from '../enums/Element'
 import { Command } from '../types/Command'
-import { commands, transmuteCommands } from '../constants/commands'
+import {
+  conjureCommands,
+  enchanceCommands,
+  enchanceCommandsT1,
+  samplerSkills,
+  transmuteCommands,
+} from '../constants/commands'
+import { ArrowsClockwise } from '@phosphor-icons/react'
+import { Link } from 'react-router-dom'
 
 const defaultBoard: Element[] = [3, 2, 1, 1, 2, 2, 3, 1, 3, 1, 2, 3]
+const defaultBoard2: Element[] = [
+  Element.ArcaneII,
+  2,
+  1,
+  1,
+  Element.LifeII,
+  2,
+  3,
+  1,
+  3,
+  Element.ChaosII,
+  2,
+  3,
+]
 
 const fireBall = {
   type: 'skill',
@@ -161,9 +182,121 @@ const script = [
   {
     text: 'Great job! Transmutation is a valuable tool for unblocking yourself in certain situations, but it should be used sparingly.',
     disableBoard: true,
-    disableCommand: true,
     boardOpacity: 0.5,
     showNext: true,
+  },
+  {
+    text: 'Next, we are going to cover Enhancements.',
+    disableBoard: true,
+    disableCommand: true,
+    boardOpacity: 0.5,
+    commandOpacity: 0.5,
+    showNext: true,
+  },
+  {
+    text: 'Enhancement allows you to increase an Element’s level, unlocking more powerful skills and Conjurations.',
+    disableBoard: true,
+    boardOpacity: 0.5,
+    showNext: true,
+    commands: enchanceCommandsT1,
+    checklist: [],
+  },
+  {
+    text: 'Let’s try doing some Enhancements.',
+    commands: [...enchanceCommandsT1, ...transmuteCommands],
+    checklist: [
+      {
+        name: 'Enhance Chaos',
+        checked: false,
+      },
+      {
+        name: 'Enhance Life',
+        checked: false,
+      },
+      {
+        name: 'Enhance Arcane',
+        checked: false,
+      },
+    ],
+  },
+  {
+    text: 'Awesome, you’re a fast learner! You can enhance an Element up to Level 3, but be aware that it comes with some risks, such as losing the ability to Transmute the Element.',
+    disableBoard: true,
+    boardOpacity: 0.5,
+    showNext: true,
+  },
+  {
+    text: 'Finally, we are going to cover Conjurations and Tier 2 Elements.',
+    disableBoard: true,
+    disableCommand: true,
+    boardOpacity: 0.5,
+    commandOpacity: 0.5,
+    showNext: true,
+  },
+  {
+    text: 'Conjuration unlocks Tier 2 Elements, such as Oblivion Stone, Fate Crystal, and Essence Orb.',
+    disableBoard: true,
+    boardOpacity: 0.5,
+    showNext: true,
+    commands: conjureCommands,
+    checklist: [],
+  },
+  {
+    text: 'Let’s conjure all Tier 2 Elements. Click the button on the right to reset the board.',
+    commands: [...conjureCommands, ...transmuteCommands],
+    checklist: [
+      {
+        name: 'Conjure Oblivion',
+        checked: false,
+      },
+      {
+        name: 'Conjure Fate',
+        checked: false,
+      },
+      {
+        name: 'Conjure Essence',
+        checked: false,
+      },
+    ],
+    showReset: true,
+  },
+  {
+    text: 'Fantastic! You now have the basic knowledge of the game.',
+    disableBoard: true,
+    boardOpacity: 0.5,
+    showNext: true,
+  },
+  {
+    text: 'Now let’s practice everything we’ve learned so far.',
+    disableBoard: true,
+    disableCommand: true,
+    boardOpacity: 0.5,
+    commandOpacity: 0.5,
+    showNext: true,
+    checklist: [],
+  },
+  {
+    text: 'Execute all skills to complete the basics tutorial.',
+    commands: [
+      ...samplerSkills,
+      ...enchanceCommands,
+      ...conjureCommands,
+      ...transmuteCommands,
+    ],
+    checklist: [
+      { name: 'Fireball', checked: false },
+      { name: 'Harden', checked: false },
+      { name: 'Shuffle', checked: false },
+      { name: 'Lightning Bolt', checked: false },
+      { name: 'Heal', checked: false },
+      { name: 'Tornado', checked: false },
+    ],
+    showReset: true,
+  },
+  {
+    text: 'Congratulations! You’ve completed the basics. Feel free to explore and play around more.',
+    checklist: [],
+    showEnd: true,
   },
 ]
 
@@ -250,6 +383,31 @@ export function TutorialBasic() {
           <p className='font-serif text-amber-100'>Monique</p>
           <p className='text-sm max-w-[80%]'>{script[step].text}</p>
         </div>
+        {script[step].showEnd && (
+          <Link
+            to={'/tutorial'}
+            className={cn(
+              'absolute bottom-0 right-0 m-8 px-3 py-1',
+              'bg-amber-100 border-2 border-amber-300 text-stone-800'
+            )}
+          >
+            End
+          </Link>
+        )}
+        {script[step].showReset && (
+          <button
+            className={cn(
+              'absolute bottom-0 right-0 m-8 px-3 py-1',
+              'bg-amber-100 border-2 border-amber-300 text-stone-800'
+            )}
+            onClick={() => {
+              setBoard(defaultBoard2)
+              setRender({ type: RenderActionType.LOAD })
+            }}
+          >
+            <ArrowsClockwise size={24} />
+          </button>
+        )}
         {script[step].showNext && (
           <button
             className={cn(

@@ -134,7 +134,7 @@ export const transmuteCommands: Command[] = [
   },
 ]
 
-export const enchanceCommands: Command[] = [
+export const enchanceCommandsT1: Command[] = [
   {
     type: 'enhance',
     name: 'Enhance Chaos',
@@ -186,7 +186,9 @@ export const enchanceCommands: Command[] = [
     ],
     cost: 1,
   },
+]
 
+export const enchanceCommandsT2: Command[] = [
   // tier 2
   {
     type: 'enhance',
@@ -239,6 +241,11 @@ export const enchanceCommands: Command[] = [
     ],
     cost: 1,
   },
+]
+
+export const enchanceCommands: Command[] = [
+  ...enchanceCommandsT1,
+  ...enchanceCommandsT2,
 ]
 
 export const conjureCommands: Command[] = [
