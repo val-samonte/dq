@@ -1,3 +1,4 @@
+import { Shapes, Sword } from '@phosphor-icons/react'
 import { Link } from 'react-router-dom'
 
 export function Tutorial() {
@@ -15,9 +16,9 @@ export function Tutorial() {
         <img
           src='/npc_monique.png'
           alt='Monique'
-          className='w-[80%] aspect-square absolute -right-5 bottom-0'
+          className='h-[90%] aspect-square absolute -right-5 bottom-0'
         />
-        <div className='flex flex-col gap-2 absolute border-l border-amber-300 px-3 py-2 m-2 bottom-0 inset-x-0 bg-gradient-to-r from-black/80 via-black/80 to-black/10'>
+        <div className='flex flex-col gap-2 absolute border-l border-amber-300 px-5 py-3 m-5 bottom-0 inset-x-0 bg-gradient-to-r from-black/80 via-black/80 to-black/10'>
           <p className='font-serif text-amber-100'>Monique</p>
           <p className='text-sm'>
             Hello Adventurer! My name is Monique. <br />
@@ -29,13 +30,16 @@ export function Tutorial() {
         <div className='col-span-7 h-full pointer-events-none opacity-0'>
           <div className='aspect-[3/4] h-full pointer-events-none' />
         </div>
-        <div className='absolute inset-0 flex flex-col p-5 gap-5 items-stretch'>
+        <div className='absolute inset-0 flex flex-col p-5 gap-5 justify-center'>
           <Link
             to={'/tutorial/basics'}
             className='bg-stone-900 p-5 gap-2 rounded-xl relative overflow-hidden flex flex-col justify-center border border-stone-800 transition-all duration-300 hover:scale-105'
           >
             <div className='flex flex-col gap-2'>
-              <h3 className='font-serif text-amber-100'>Basics</h3>
+              <h3 className='font-serif text-amber-100 flex items-center gap-2'>
+                <Shapes size={20} />
+                <span>Basics</span>
+              </h3>
               <p className='text-sm'>
                 Learn the fundamentals to control the Elements, allowing you to
                 execute commands.
@@ -47,10 +51,13 @@ export function Tutorial() {
             className='bg-stone-900 p-5 gap-2 rounded-xl relative overflow-hidden flex flex-col justify-center border border-stone-800 transition-all duration-300 hover:scale-105'
           >
             <div className='flex flex-col gap-2'>
-              <h3 className='font-serif text-amber-100'>Battle</h3>
+              <h3 className='font-serif text-amber-100 flex items-center gap-2'>
+                <Sword size={20} />
+                <span>Battle</span>
+              </h3>
               <p className='text-sm'>
-                Use the Elements to your advantage to defeat your enemies and
-                win the fight.
+                Learn how to use the Elements to your advantage to defeat your
+                enemies and win the fight.
               </p>
             </div>
           </Link>

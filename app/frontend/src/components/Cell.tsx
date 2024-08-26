@@ -2,7 +2,11 @@ import { useMemo } from 'react'
 import { byteToName } from '../enums/Element'
 import cn from 'classnames'
 import { useAtomValue } from 'jotai'
-import { AnimatedCellType, renderBoardAtom } from '../atoms/gameBoardAtom'
+import {
+  AnimatedCellType,
+  renderBoardAtom,
+  showAuraAtom,
+} from '../atoms/gameBoardAtom'
 import { availableNextLinkAtom } from '../atoms/availableNextLinkAtom'
 import { inputUnitPointsAtom } from '../atoms/inputUnitPointsAtom'
 
@@ -10,6 +14,7 @@ export function Cell({ index }: { index: number }) {
   const next = useAtomValue(availableNextLinkAtom)
   const points = useAtomValue(inputUnitPointsAtom)
   const renderBoard = useAtomValue(renderBoardAtom)
+  const aura = useAtomValue(showAuraAtom)
   const renderCell = renderBoard[index]
   const point = useMemo(() => {
     return { x: index % 3, y: Math.floor(index / 3) }
@@ -26,11 +31,14 @@ export function Cell({ index }: { index: number }) {
   }, [renderCell])
 
   const showAura = useMemo(() => {
+    if (aura) {
+      return renderCell.renderElem === aura
+    }
     return (
       (renderCell.renderElem & 0b1100_0000) === 0b1100_0000 ||
       (renderCell.renderElem & 0b0000_1100) === 0b0000_1100
     )
-  }, [renderCell])
+  }, [renderCell, aura])
 
   const isAvailable = useMemo(() => {
     if (!next) return true

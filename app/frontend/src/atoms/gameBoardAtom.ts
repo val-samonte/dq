@@ -55,6 +55,7 @@ export type AnimatedCell =
 
 export const boardRawAtom = atom<Element[]>([])
 export const renderBoardRawAtom = atom<AnimatedCell[]>([])
+export const showAuraAtom = atom<Element | null>(null)
 const isAnimating = atom(false)
 
 export const renderBoardAtom = atom(

@@ -1,15 +1,201 @@
+import { useEffect, useState } from 'react'
 import { Board } from './Board'
 import { CommandList } from './CommandList'
+import cn from 'classnames'
+import { useSetAtom } from 'jotai'
+import { commandsBaseAtom } from '../atoms/commandsAtom'
+import {
+  boardRawAtom,
+  RenderActionType,
+  renderBoardAtom,
+  showAuraAtom,
+} from '../atoms/gameBoardAtom'
+import { Element } from '../enums/Element'
+import { Command } from '../types/Command'
+
+const defaultBoard: Element[] = [3, 2, 1, 1, 2, 2, 3, 1, 3, 1, 2, 3]
+
+const fireBall = {
+  type: 'skill',
+  skillType: 'offensive',
+  name: 'Fireball',
+  links: [
+    {
+      elements: [Element.ChaosI, Element.ChaosI, Element.ArcaneI],
+    },
+  ],
+  cost: 3,
+}
+
+const script = [
+  {
+    text: 'In this tutorial, we will cover the basic mechanics of the game.',
+    disableBoard: true,
+    disableCommand: true,
+    boardOpacity: 0,
+    commandOpacity: 0,
+    reset: true,
+    showNext: true,
+  },
+  {
+    text: 'The Board is a 3x4 grid that consists of Elements.',
+    disableBoard: true,
+    disableCommand: true,
+    commandOpacity: 0,
+    reset: true,
+    showNext: true,
+  },
+  {
+    text: 'Tier 1 Elements are symbols represented by Red Triangles, Green Squares, and Blue Circles.',
+    disableBoard: true,
+    disableCommand: true,
+    commandOpacity: 0,
+    reset: true,
+    showNext: true,
+  },
+  {
+    text: 'Red Triangles are called Chaos Stones, which are often used for offensive skills.',
+    disableBoard: true,
+    disableCommand: true,
+    commandOpacity: 0,
+    reset: true,
+    showNext: true,
+    aura: Element.ChaosI,
+  },
+  {
+    text: 'Green Squares are called Life Crystals, which are often used for supportive skills.',
+    disableBoard: true,
+    disableCommand: true,
+    commandOpacity: 0,
+    reset: true,
+    showNext: true,
+    aura: Element.LifeI,
+  },
+  {
+    text: 'Blue Circles are called Arcane Orbs, which are often used for special and disruptive skills.',
+    disableBoard: true,
+    disableCommand: true,
+    commandOpacity: 0,
+    reset: true,
+    showNext: true,
+    aura: Element.ArcaneI,
+  },
+  {
+    text: 'To the right, you will find a list of available Commands.',
+    disableBoard: true,
+    disableCommand: true,
+    boardOpacity: 0.5,
+    reset: true,
+    showNext: true,
+    commands: [fireBall],
+  },
+  {
+    text: 'To execute a specific Command, you must link the correct Elements in the right order.',
+    disableBoard: true,
+    disableCommand: true,
+    boardOpacity: 0.5,
+    reset: true,
+    showNext: true,
+    commands: [fireBall],
+  },
+  {
+    text: 'Let’s try casting Fireball by linking the correct Elements in order.',
+    reset: true,
+    commands: [fireBall],
+  },
+]
 
 export function TutorialBasic() {
+  const [step, setStep] = useState(0)
+  const setCommands = useSetAtom(commandsBaseAtom)
+  const setBoard = useSetAtom(boardRawAtom)
+  const setRender = useSetAtom(renderBoardAtom)
+  const setAura = useSetAtom(showAuraAtom)
+
+  useEffect(() => {
+    if (script[step].reset) {
+      setCommands([])
+      setBoard(defaultBoard)
+      setRender({ type: RenderActionType.LOAD })
+    }
+    if (script[step].commands) {
+      setCommands(script[step].commands as Command[])
+    }
+    if (script[step].aura) {
+      setAura(script[step].aura)
+    } else {
+      setAura(null)
+    }
+  }, [step, script, setCommands, setBoard, setRender, setAura])
+
   return (
     <div className='flex-auto h-full w-full flex flex-col'>
-      <div className='flex-auto flex flex-col relative'></div>
-      <div className='relative flex-none grid grid-cols-12 max-h-[50%]'>
-        <div className='col-span-7 bg-stone-950/80 h-full overflow-hidden'>
+      <div
+        className='flex-auto flex flex-col relative'
+        style={{
+          backgroundImage: 'url("/bg_library.png")',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+        }}
+      >
+        <img
+          src='/npc_monique.png'
+          alt='Monique'
+          className='h-[90%] aspect-square absolute -right-5 bottom-0'
+        />
+        <div className='flex flex-col gap-2 absolute border-l border-amber-300 px-5 py-3 m-5 bottom-0 inset-x-0 bg-gradient-to-r from-black/80 via-black/80 to-black/10'>
+          <p className='font-serif text-amber-100'>Monique</p>
+          <p className='text-sm max-w-[80%]'>{script[step].text}</p>
+        </div>
+        {script[step].showNext && (
+          <button
+            className={cn(
+              'absolute bottom-0 right-0 m-8 px-3 py-1',
+              'bg-amber-100 border-2 border-amber-300 text-stone-800'
+            )}
+            onClick={() =>
+              setStep((s) => {
+                if (s < script.length - 1) {
+                  return s + 1
+                }
+                return s
+              })
+            }
+          >
+            Next
+          </button>
+        )}
+      </div>
+      <div
+        className={cn(
+          'relative flex-none grid grid-cols-12 max-h-[50%] transition-all'
+        )}
+      >
+        <div
+          className={cn(
+            'col-span-7 bg-stone-950/80 h-full overflow-hidden transition-all',
+            script[step].disableBoard && 'pointer-events-none',
+            script[step].boardOpacity === 0 && 'opacity-0',
+            script[step].boardOpacity === 0.5 && 'opacity-30',
+            (typeof script[step].boardOpacity === 'undefined' ||
+              script[step].boardOpacity === 1) &&
+              'opacity-100'
+          )}
+        >
           <Board />
         </div>
-        <div className='col-span-5 relative'>
+        <div
+          className={cn(
+            'col-span-5 relative transition-all',
+            script[step].disableCommand && 'pointer-events-none',
+            script[step].commandOpacity === 0 && 'opacity-0',
+            script[step].commandOpacity === 0.5 && 'opacity-30',
+            (typeof script[step].commandOpacity === 'undefined' ||
+              script[step].commandOpacity === 1) &&
+              'opacity-100'
+          )}
+        >
           <div className='absolute inset-0 overflow-x-hidden overflow-y-auto bg-stone-950'>
             <CommandList />
           </div>
