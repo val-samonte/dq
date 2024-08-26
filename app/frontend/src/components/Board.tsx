@@ -6,11 +6,13 @@ import { useAtom, useSetAtom } from 'jotai'
 import { RenderActionType, renderBoardAtom } from '../atoms/gameBoardAtom'
 import { Cell } from './Cell'
 import { commandCallTitleAtom } from '../atoms/commandCallTitleAtom'
+import { lastCommandCalledAtom } from '../atoms/commandsAtom'
 
 export function Board() {
   const [random] = useState(Math.random())
   const [board, render] = useAtom(renderBoardAtom)
   const setSkillTitle = useSetAtom(commandCallTitleAtom)
+  const setCommandCalled = useSetAtom(lastCommandCalledAtom)
 
   useEffect(() => {
     const generate = async () => {
@@ -34,12 +36,13 @@ export function Board() {
         ))}
       </div>
       <TouchInputOverlay
-        onDraw={({ command, unitPoints }) => {
-          setSkillTitle({ command, unitPoints })
+        onDraw={(match) => {
+          setCommandCalled(match)
+          setSkillTitle(match)
           render({
             type: RenderActionType.COMMAND,
-            points: unitPoints,
-            command,
+            points: match.unitPoints,
+            command: match.command,
           })
         }}
       />

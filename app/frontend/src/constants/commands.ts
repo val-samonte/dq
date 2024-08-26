@@ -1,7 +1,7 @@
 import { Element } from '../enums/Element'
 import { Command } from '../types/Command'
 
-export const commands: Command[] = [
+export const samplerSkills: Command[] = [
   {
     type: 'skill',
     skillType: 'offensive',
@@ -78,57 +78,9 @@ export const commands: Command[] = [
     ],
     cost: 4,
   },
-  {
-    type: 'enhance',
-    name: 'Enhance Chaos',
-    links: [
-      {
-        strictLevel: true,
-        elements: [Element.ChaosI, Element.ChaosI, Element.ChaosI],
-        output: Element.ChaosII,
-      },
-      {
-        strictLevel: true,
-        elements: [Element.ChaosII, Element.ChaosII, Element.ChaosII],
-        output: Element.ChaosIII,
-      },
-    ],
-    cost: 1,
-  },
-  {
-    type: 'enhance',
-    name: 'Enhance Life',
-    links: [
-      {
-        strictLevel: true,
-        elements: [Element.LifeI, Element.LifeI, Element.LifeI],
-        output: Element.LifeII,
-      },
-      {
-        strictLevel: true,
-        elements: [Element.LifeII, Element.LifeII, Element.LifeII],
-        output: Element.LifeIII,
-      },
-    ],
-    cost: 1,
-  },
-  {
-    type: 'enhance',
-    name: 'Enhance Arcane',
-    links: [
-      {
-        strictLevel: true,
-        elements: [Element.ArcaneI, Element.ArcaneI, Element.ArcaneI],
-        output: Element.ArcaneII,
-      },
-      {
-        strictLevel: true,
-        elements: [Element.ArcaneII, Element.ArcaneII, Element.ArcaneII],
-        output: Element.ArcaneIII,
-      },
-    ],
-    cost: 1,
-  },
+]
+
+export const transmuteCommands: Command[] = [
   {
     type: 'transmute',
     name: 'Transmute Chaos',
@@ -180,7 +132,116 @@ export const commands: Command[] = [
     ],
     cost: 2,
   },
+]
+
+export const enchanceCommands: Command[] = [
+  {
+    type: 'enhance',
+    name: 'Enhance Chaos',
+    links: [
+      {
+        strictLevel: true,
+        elements: [Element.ChaosI, Element.ChaosI, Element.ChaosI],
+        output: Element.ChaosII,
+      },
+      {
+        strictLevel: true,
+        elements: [Element.ChaosII, Element.ChaosII, Element.ChaosII],
+        output: Element.ChaosIII,
+      },
+    ],
+    cost: 1,
+  },
+  {
+    type: 'enhance',
+    name: 'Enhance Life',
+    links: [
+      {
+        strictLevel: true,
+        elements: [Element.LifeI, Element.LifeI, Element.LifeI],
+        output: Element.LifeII,
+      },
+      {
+        strictLevel: true,
+        elements: [Element.LifeII, Element.LifeII, Element.LifeII],
+        output: Element.LifeIII,
+      },
+    ],
+    cost: 1,
+  },
+  {
+    type: 'enhance',
+    name: 'Enhance Arcane',
+    links: [
+      {
+        strictLevel: true,
+        elements: [Element.ArcaneI, Element.ArcaneI, Element.ArcaneI],
+        output: Element.ArcaneII,
+      },
+      {
+        strictLevel: true,
+        elements: [Element.ArcaneII, Element.ArcaneII, Element.ArcaneII],
+        output: Element.ArcaneIII,
+      },
+    ],
+    cost: 1,
+  },
+
   // tier 2
+  {
+    type: 'enhance',
+    name: 'Enhance Oblivion',
+    links: [
+      {
+        strictLevel: true,
+        elements: [Element.OblivionI, Element.OblivionI, Element.OblivionI],
+        output: Element.OblivionII,
+      },
+      {
+        strictLevel: true,
+        elements: [Element.OblivionII, Element.OblivionII, Element.OblivionII],
+        output: Element.OblivionIII,
+      },
+    ],
+    cost: 1,
+  },
+  {
+    type: 'enhance',
+    name: 'Enhance Fate',
+    links: [
+      {
+        strictLevel: true,
+        elements: [Element.FateI, Element.FateI, Element.FateI],
+        output: Element.FateII,
+      },
+      {
+        strictLevel: true,
+        elements: [Element.FateII, Element.FateII, Element.FateII],
+        output: Element.FateIII,
+      },
+    ],
+    cost: 1,
+  },
+  {
+    type: 'enhance',
+    name: 'Enhance Essence',
+    links: [
+      {
+        strictLevel: true,
+        elements: [Element.EssenceI, Element.EssenceI, Element.EssenceI],
+        output: Element.EssenceII,
+      },
+      {
+        strictLevel: true,
+        elements: [Element.EssenceII, Element.EssenceII, Element.EssenceII],
+        output: Element.EssenceIII,
+      },
+    ],
+    cost: 1,
+  },
+]
+
+export const conjureCommands: Command[] = [
   {
     type: 'conjure',
     name: 'Conjure Oblivion',
@@ -262,55 +323,11 @@ export const commands: Command[] = [
     ],
     cost: 1,
   },
-  {
-    type: 'enhance',
-    name: 'Enhance Oblivion',
-    links: [
-      {
-        strictLevel: true,
-        elements: [Element.OblivionI, Element.OblivionI, Element.OblivionI],
-        output: Element.OblivionII,
-      },
-      {
-        strictLevel: true,
-        elements: [Element.OblivionII, Element.OblivionII, Element.OblivionII],
-        output: Element.OblivionIII,
-      },
-    ],
-    cost: 1,
-  },
-  {
-    type: 'enhance',
-    name: 'Enhance Fate',
-    links: [
-      {
-        strictLevel: true,
-        elements: [Element.FateI, Element.FateI, Element.FateI],
-        output: Element.FateII,
-      },
-      {
-        strictLevel: true,
-        elements: [Element.FateII, Element.FateII, Element.FateII],
-        output: Element.FateIII,
-      },
-    ],
-    cost: 1,
-  },
-  {
-    type: 'enhance',
-    name: 'Enhance Essence',
-    links: [
-      {
-        strictLevel: true,
-        elements: [Element.EssenceI, Element.EssenceI, Element.EssenceI],
-        output: Element.EssenceII,
-      },
-      {
-        strictLevel: true,
-        elements: [Element.EssenceII, Element.EssenceII, Element.EssenceII],
-        output: Element.EssenceIII,
-      },
-    ],
-    cost: 1,
-  },
+]
+
+export const commands: Command[] = [
+  ...samplerSkills,
+  ...transmuteCommands,
+  ...enchanceCommands,
+  ...conjureCommands,
 ]

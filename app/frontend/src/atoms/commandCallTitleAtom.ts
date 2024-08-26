@@ -4,6 +4,8 @@ import { Element } from '../enums/Element'
 import { Point } from '../types/Point'
 import { boardRawAtom } from './gameBoardAtom'
 
+// todo: remove this in favor of lastCommandCalledAtom inside commandsAtom.ts
+
 export const lastCommandCallAtom = atom<{
   command: Command
   elements: Element[]

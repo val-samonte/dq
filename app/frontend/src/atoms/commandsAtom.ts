@@ -70,6 +70,8 @@ export interface CommandMatched {
   level?: number
 }
 
+export const lastCommandCalledAtom = atom<CommandMatched | null>(null)
+
 export const commandMatchedAtom = atom<CommandMatched | null>((get) => {
   const input = get(inputUnitPointsAtom)
   const board = get(boardRawAtom)
@@ -130,3 +132,7 @@ export const commandMatchedAtom = atom<CommandMatched | null>((get) => {
     level,
   }
 })
+
+export const commandChecklistAtom = atom<
+  { name: string; checked: boolean; level?: number }[]
+>([])

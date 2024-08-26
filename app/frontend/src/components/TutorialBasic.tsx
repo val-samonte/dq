@@ -1,9 +1,14 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Board } from './Board'
 import { CommandList } from './CommandList'
 import cn from 'classnames'
-import { useSetAtom } from 'jotai'
-import { commandsBaseAtom } from '../atoms/commandsAtom'
+import { useAtom, useAtomValue, useSetAtom } from 'jotai'
+import {
+  commandChecklistAtom,
+  commandMatchedAtom,
+  commandsBaseAtom,
+  lastCommandCalledAtom,
+} from '../atoms/commandsAtom'
 import {
   boardRawAtom,
   RenderActionType,
@@ -12,6 +17,7 @@ import {
 } from '../atoms/gameBoardAtom'
 import { Element } from '../enums/Element'
 import { Command } from '../types/Command'
+import { commands, transmuteCommands } from '../constants/commands'
 
 const defaultBoard: Element[] = [3, 2, 1, 1, 2, 2, 3, 1, 3, 1, 2, 3]
 
@@ -88,6 +94,7 @@ const script = [
     reset: true,
     showNext: true,
     commands: [fireBall],
+    checklist: [],
   },
   {
     text: 'To execute a specific Command, you must link the correct Elements in the right order.',
@@ -97,11 +104,66 @@ const script = [
     reset: true,
     showNext: true,
     commands: [fireBall],
+    checklist: [],
   },
   {
     text: 'Let’s try casting Fireball by linking the correct Elements in order.',
     reset: true,
     commands: [fireBall],
+    checklist: [
+      {
+        name: fireBall.name,
+        checked: false,
+      },
+    ],
+  },
+  {
+    text: 'Well done! Pretty easy, right? As you may have noticed, the Elements you linked together are spent, and new ones drop from above.',
+    disableBoard: true,
+    disableCommand: true,
+    boardOpacity: 0.5,
+    showNext: true,
+  },
+  {
+    text: 'Now that you’ve cast your first skill, let’s make things more complicated.',
+    disableBoard: true,
+    disableCommand: true,
+    boardOpacity: 0.5,
+    commandOpacity: 0.5,
+    showNext: true,
+  },
+  {
+    text: 'Transmutation allows you to convert two different Elements into another different Element.',
+    disableBoard: true,
+    boardOpacity: 0.5,
+    showNext: true,
+    commands: transmuteCommands,
+    checklist: [],
+  },
+  {
+    text: 'Let’s try all possible transmutations',
+    commands: transmuteCommands,
+    checklist: [
+      {
+        name: 'Transmute Chaos',
+        checked: false,
+      },
+      {
+        name: 'Transmute Life',
+        checked: false,
+      },
+      {
+        name: 'Transmute Arcane',
+        checked: false,
+      },
+    ],
+  },
+  {
+    text: 'Great job! Transmutation is a valuable tool for unblocking yourself in certain situations, but it should be used sparingly.',
+    disableBoard: true,
+    disableCommand: true,
+    boardOpacity: 0.5,
+    showNext: true,
   },
 ]
 
@@ -111,6 +173,9 @@ export function TutorialBasic() {
   const setBoard = useSetAtom(boardRawAtom)
   const setRender = useSetAtom(renderBoardAtom)
   const setAura = useSetAtom(showAuraAtom)
+  const checklistStep = useRef(0)
+  const [checklist, setChecklist] = useAtom(commandChecklistAtom)
+  const lastCommand = useAtomValue(lastCommandCalledAtom)
 
   useEffect(() => {
     if (script[step].reset) {
@@ -119,14 +184,51 @@ export function TutorialBasic() {
       setRender({ type: RenderActionType.LOAD })
     }
     if (script[step].commands) {
-      setCommands(script[step].commands as Command[])
+      setCommands(script[step].commands.map((c) => ({ ...c })) as Command[])
     }
     if (script[step].aura) {
       setAura(script[step].aura)
     } else {
       setAura(null)
     }
-  }, [step, script, setCommands, setBoard, setRender, setAura])
+    if (script[step].checklist) {
+      checklistStep.current = step
+      setChecklist(script[step].checklist.map((c) => ({ ...c })))
+    }
+  }, [step, setCommands, setBoard, setRender, setAura, setChecklist])
+
+  useEffect(() => {
+    setChecklist((list) => {
+      return list.map((item) => {
+        if (item.name === lastCommand?.name) {
+          item.checked = true
+        }
+        return item
+      })
+    })
+  }, [lastCommand, setChecklist])
+
+  const goNext = () =>
+    setStep((s) => {
+      if (s < script.length - 1) {
+        return s + 1
+      }
+      return s
+    })
+
+  useEffect(() => {
+    if (script[step].showNext) return
+    if (
+      !script[step].checklist ||
+      script[step].checklist.length === 0 ||
+      checklist.length === 0
+    )
+      return
+    if (checklistStep.current !== step) return
+    if (checklist.every((c) => c.checked)) {
+      goNext()
+    }
+  }, [step, checklist, setStep])
 
   return (
     <div className='flex-auto h-full w-full flex flex-col'>
@@ -154,14 +256,7 @@ export function TutorialBasic() {
               'absolute bottom-0 right-0 m-8 px-3 py-1',
               'bg-amber-100 border-2 border-amber-300 text-stone-800'
             )}
-            onClick={() =>
-              setStep((s) => {
-                if (s < script.length - 1) {
-                  return s + 1
-                }
-                return s
-              })
-            }
+            onClick={goNext}
           >
             Next
           </button>
