@@ -14,11 +14,11 @@ export function CommandList() {
       {commands.skills.length > 0 && (
         <CommandSection title='Skills' commands={commands.skills} />
       )}
-      {commands.enhancements.length > 0 && (
-        <CommandSection title='Enhancements' commands={commands.enhancements} />
-      )}
       {commands.conjurations.length > 0 && (
         <CommandSection title='Conjurations' commands={commands.conjurations} />
+      )}
+      {commands.enhancements.length > 0 && (
+        <CommandSection title='Enhancements' commands={commands.enhancements} />
       )}
       {commands.transmutations.length > 0 && (
         <CommandSection

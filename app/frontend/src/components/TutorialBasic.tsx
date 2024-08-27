@@ -243,7 +243,7 @@ const script = [
   },
   {
     text: 'Let’s conjure all Tier 2 Elements. Click the button on the right to reset the board.',
-    commands: [...conjureCommands, ...transmuteCommands],
+    commands: [...conjureCommands, ...enchanceCommands, ...transmuteCommands],
     checklist: [
       {
         name: 'Conjure Oblivion',
