@@ -23,7 +23,7 @@ export function HomeScreen() {
         style={{
           backgroundImage: 'url("/target_dummy.png")',
           backgroundSize: 'cover',
-          backgroundPosition: 'center',
+          backgroundPosition: 'center 35%',
           backgroundRepeat: 'no-repeat',
         }}
       >

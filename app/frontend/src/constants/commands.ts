@@ -16,7 +16,7 @@ export const samplerSkills: Command[] = [
   {
     type: 'skill',
     skillType: 'supportive',
-    name: 'Harden',
+    name: 'Focus',
     links: [
       {
         elements: [Element.LifeI, Element.LifeI, Element.ArcaneI],

@@ -6,6 +6,7 @@ import { HomeScreen } from './components/HomeScreen'
 import './index.css'
 import { Tutorial } from './components/Tutorial'
 import { TutorialBasic } from './components/TutorialBasic'
+import { Practice } from './components/Practice'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -15,8 +16,8 @@ createRoot(document.getElementById('root')!).render(
           <Route path={'/'} element={<HomeScreen />} />
           <Route path={'/tutorial'} element={<Tutorial />} />
           <Route path={'/tutorial/basics'} element={<TutorialBasic />} />
-          {/* <Route path={'/practice'} element={<Tutorial />} />
-          <Route path={'/challenge'} element={<Tutorial />} /> */}
+          <Route path={'/practice'} element={<Practice />} />
+          {/* <Route path={'/challenge'} element={<Tutorial />} /> */}
         </Routes>
       </MainContainer>
     </Router>

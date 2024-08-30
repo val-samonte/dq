@@ -28,5 +28,5 @@ body {
 }
 
 .stroked {
-  -webkit-text-stroke: 0.085em rgba(0, 0, 0, 0.25);
+  -webkit-text-stroke: 0.05em rgba(0, 0, 0, 0.8);
 }
