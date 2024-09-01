@@ -11,6 +11,7 @@ import {
 import { useEffect, useRef, useState } from 'react'
 import { commands } from '../constants/commands'
 import { CircleProgress } from './CircleProgress'
+import { NotEnoughMana } from './NotEnoughMana'
 
 export function Practice() {
   const setCommands = useSetAtom(commandsBaseAtom)
@@ -23,7 +24,7 @@ export function Practice() {
   const [mana, setMana] = useState(0)
   const [manaSpent, setManaSpent] = useState(0)
   const [totalDamage, setTotalDamage] = useState(0)
-  const [damageNumber, setDamageNumber] = useState(0)
+  const [damageNumber, setDamageNumber] = useState<number | null>(null)
   const [damageKey, setDamageKey] = useState(0)
 
   useEffect(() => {
@@ -128,7 +129,10 @@ export function Practice() {
         <div className='absolute inset-0 pointer-events-none flex items-center justify-center'>
           <div
             key={damageKey}
-            className='font-serif font-black text-5xl stroked ml-10 mb-10 animate-damage-number'
+            className={cn(
+              'font-serif font-black text-5xl stroked ml-10 mb-10',
+              damageNumber && 'animate-damage-number'
+            )}
           >
             {damageNumber}
           </div>
@@ -165,6 +169,7 @@ export function Practice() {
             <CommandList mana={mana} />
           </div>
         </div>
+        <NotEnoughMana mana={mana} />
       </div>
     </div>
   )
