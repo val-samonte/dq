@@ -2,12 +2,8 @@ import { useEffect, useRef, useState } from 'react'
 import { Board } from './Board'
 import { CommandList } from './CommandList'
 import cn from 'classnames'
-import { useAtom, useAtomValue, useSetAtom } from 'jotai'
-import {
-  commandChecklistAtom,
-  commandsBaseAtom,
-  lastCommandCalledAtom,
-} from '../atoms/commandsAtom'
+import { useAtomValue, useSetAtom } from 'jotai'
+import { commandsBaseAtom, lastCommandCalledAtom } from '../atoms/commandsAtom'
 import {
   boardRawAtom,
   RenderActionType,
@@ -285,7 +281,7 @@ const script = [
     ],
     checklist: [
       { name: 'Fireball', checked: false },
-      { name: 'Harden', checked: false },
+      { name: 'Focus', checked: false },
       { name: 'Shuffle', checked: false },
       { name: 'Lightning Bolt', checked: false },
       { name: 'Heal', checked: false },
@@ -307,7 +303,9 @@ export function TutorialBasic() {
   const setRender = useSetAtom(renderBoardAtom)
   const setAura = useSetAtom(showAuraAtom)
   const checklistStep = useRef(0)
-  const [checklist, setChecklist] = useAtom(commandChecklistAtom)
+  const [checklist, setChecklist] = useState<
+    { name: string; checked: boolean; level?: number }[]
+  >([])
   const lastCommand = useAtomValue(lastCommandCalledAtom)
 
   useEffect(() => {
@@ -450,7 +448,7 @@ export function TutorialBasic() {
           )}
         >
           <div className='absolute inset-0 overflow-x-hidden overflow-y-auto bg-stone-950'>
-            <CommandList />
+            <CommandList checklist={checklist} />
           </div>
         </div>
       </div>

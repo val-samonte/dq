@@ -1,29 +1,54 @@
 import { useAtomValue } from 'jotai'
-import { commandChecklistAtom, commandGroupAtom } from '../atoms/commandsAtom'
+import { commandGroupAtom } from '../atoms/commandsAtom'
 import { ElementSymbol } from './ElementSymbol'
 import { Command } from '../types/Command'
 import { inputUnitPointsAtom } from '../atoms/inputUnitPointsAtom'
 import cn from 'classnames'
 import { Check } from '@phosphor-icons/react'
 
-export function CommandList() {
+export type Checklist = { name: string; checked: boolean; level?: number }[]
+
+export function CommandList({
+  mana,
+  checklist,
+}: {
+  mana?: number
+  checklist?: Checklist
+}) {
   const commands = useAtomValue(commandGroupAtom)
 
   return (
     <div className='w-full flex flex-col gap-5 text-white pb-5'>
       {commands.skills.length > 0 && (
-        <CommandSection title='Skills' commands={commands.skills} />
+        <CommandSection
+          title='Skills'
+          commands={commands.skills}
+          mana={mana}
+          checklist={checklist}
+        />
       )}
       {commands.conjurations.length > 0 && (
-        <CommandSection title='Conjurations' commands={commands.conjurations} />
+        <CommandSection
+          title='Conjurations'
+          commands={commands.conjurations}
+          mana={mana}
+          checklist={checklist}
+        />
       )}
       {commands.enhancements.length > 0 && (
-        <CommandSection title='Enhancements' commands={commands.enhancements} />
+        <CommandSection
+          title='Enhancements'
+          commands={commands.enhancements}
+          mana={mana}
+          checklist={checklist}
+        />
       )}
       {commands.transmutations.length > 0 && (
         <CommandSection
           title='Transmutations'
           commands={commands.transmutations}
+          mana={mana}
+          checklist={checklist}
         />
       )}
     </div>
@@ -33,23 +58,41 @@ export function CommandList() {
 function CommandSection({
   title,
   commands,
+  mana,
+  checklist,
 }: {
   title: string
   commands: Command[]
+  mana?: number
+  checklist?: Checklist
 }) {
   const select = useAtomValue(inputUnitPointsAtom)
-  const checklist = useAtomValue(commandChecklistAtom)
 
   return (
     <section className='flex flex-col gap-3 select-none'>
-      <h3 className='bg-stone-900 px-3 py-2 sticky top-0'>{title}</h3>
+      <h3 className='bg-stone-900 px-3 py-2 sticky top-0 z-10 font-serif text-sm'>
+        {title}
+      </h3>
       <ul className='flex flex-col gap-3 text-sm px-3'>
         {commands.map((command, i) => {
-          const inList = checklist.find((c) => c.name === command.name)
+          const inList = (checklist ?? []).find((c) => c.name === command.name)
           return (
-            <li key={`command_${i}`} className='flex flex-col gap-1 flex-wrap'>
-              <h4 className='flex items-center justify-between'>
+            <li
+              key={`command_${i}`}
+              className={cn(
+                'flex flex-col gap-1 flex-wrap transition-all',
+                typeof mana === 'undefined' || (mana ?? 0) >= command.cost
+                  ? 'opacity-100'
+                  : 'opacity-50'
+              )}
+            >
+              <h4 className='flex items-center justify-between gap-1'>
                 <span>{command.name}</span>
+                {typeof mana !== 'undefined' && (
+                  <span className='text-pink-500 text-xs font-serif'>
+                    {command.cost}
+                  </span>
+                )}
                 {inList && (
                   <span className='w-5 h-5 flex items-center justify-center border border-stone-500/20 text-green-400'>
                     {inList.checked && <Check size={16} />}

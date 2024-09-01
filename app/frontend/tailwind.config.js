@@ -6,7 +6,7 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['Roboto Condensed', 'sans-serif'], // Overrides the default sans-serif font
+        sans: ['Dosis', 'sans-serif'], // Overrides the default sans-serif font
         serif: ['Inknut Antiqua', 'serif'], // Overrides the default serif font
       },
       keyframes: {
@@ -44,6 +44,15 @@ export default {
           '0%': { transform: 'translateY(-500%)' },
           '100%': { transform: 'translateY(0)' },
         },
+        // jumps from bottom to top then back to base level
+        // then fades out
+        'damage-number': {
+          '0%': { transform: 'translateY(100%)', opacity: '0' },
+          '10%': { transform: 'translateY(-50%)', opacity: '1' },
+          '20%': { transform: 'translateY(0)', opacity: '1' },
+          '90%': { transform: 'translateY(0)', opacity: '1' },
+          '100%': { transform: 'translateY(0)', opacity: '0' },
+        },
       },
       animation: {
         'fade-in': 'fade-in 0.1s ease-out forwards',
@@ -54,6 +63,7 @@ export default {
         'fall-3': 'fall-3 0.2s ease-in forwards',
         'fall-4': 'fall-4 0.2s ease-in forwards',
         'fall-5': 'fall-5 0.2s ease-in forwards',
+        'damage-number': 'damage-number 2s ease-out forwards',
       },
     },
   },

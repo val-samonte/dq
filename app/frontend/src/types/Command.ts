@@ -13,6 +13,7 @@ export type Command =
       name: string
       cost: number
       links: CommandLinks[]
+      damage?: number[]
     }
   | {
       type: 'enhance' | 'transmute' | 'conjure'

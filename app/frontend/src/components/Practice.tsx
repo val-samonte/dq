@@ -1,20 +1,30 @@
 import cn from 'classnames'
 import { Board } from './Board'
 import { CommandList } from './CommandList'
-import { useSetAtom } from 'jotai'
+import { atom, useSetAtom } from 'jotai'
 import { commandsBaseAtom } from '../atoms/commandsAtom'
 import {
   boardRawAtom,
   RenderActionType,
   renderBoardAtom,
 } from '../atoms/gameBoardAtom'
-import { useEffect } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { commands } from '../constants/commands'
+import { CircleProgress } from './CircleProgress'
 
 export function Practice() {
   const setCommands = useSetAtom(commandsBaseAtom)
   const setBoard = useSetAtom(boardRawAtom)
   const setRender = useSetAtom(renderBoardAtom)
+  const [timestampAtom] = useState(atom(0))
+  const setTimestamp = useSetAtom(timestampAtom)
+  const [turns, setTurns] = useState(0)
+  const [duration] = useState(15000)
+  const [mana, setMana] = useState(0)
+  const [manaSpent, setManaSpent] = useState(0)
+  const [totalDamage, setTotalDamage] = useState(0)
+  const [damageNumber, setDamageNumber] = useState(0)
+  const [damageKey, setDamageKey] = useState(0)
 
   useEffect(() => {
     setCommands([...commands])
@@ -24,6 +34,32 @@ export function Practice() {
     )
     setBoard(newBoard)
     setRender({ type: RenderActionType.LOAD })
+    setMana(0)
+  }, [setTimestamp])
+
+  const requestRef = useRef(-1)
+  const startTimeRef = useRef<number | null>(null)
+
+  const animate = (time: number) => {
+    if (startTimeRef.current === null) {
+      startTimeRef.current = time
+    }
+    const currentTime = time - startTimeRef.current
+    setTimestamp(currentTime)
+
+    const turn = Math.floor(currentTime / duration)
+    setTurns(turn)
+
+    requestRef.current = requestAnimationFrame(animate)
+  }
+
+  useEffect(() => {
+    setMana((m) => Math.min(m + 5, 12))
+  }, [turns, setMana])
+
+  useEffect(() => {
+    requestRef.current = requestAnimationFrame(animate)
+    return () => cancelAnimationFrame(requestRef.current)
   }, [])
 
   return (
@@ -45,7 +81,7 @@ export function Practice() {
                   Total Damage
                 </span>
                 <span className='text-3xl stroked font-black font-serif tabular-nums'>
-                  0
+                  {totalDamage}
                 </span>
               </span>
               <span className='flex items-center gap-2'>
@@ -53,7 +89,7 @@ export function Practice() {
                   Mana Spent
                 </span>
                 <span className='stroked font-black font-serif text-2xl tabular-nums'>
-                  0
+                  {manaSpent}
                 </span>
               </span>
             </div>
@@ -72,17 +108,29 @@ export function Practice() {
               }}
             ></div>
             <div className='flex flex-col gap-1'>
-              <span className='flex items-end gap-2'>
+              <span className='flex items-center gap-2'>
                 <span className='text-3xl stroked font-black font-serif'>
-                  1279
+                  100
                 </span>
               </span>
-              <span className='flex items-end gap-2'>
+              <span className='flex items-center gap-2'>
                 <span className='stroked font-black font-serif text-2xl'>
-                  469
+                  {mana}
                 </span>
+                <CircleProgress
+                  duration={duration}
+                  timestampAtom={timestampAtom}
+                />
               </span>
             </div>
+          </div>
+        </div>
+        <div className='absolute inset-0 pointer-events-none flex items-center justify-center'>
+          <div
+            key={damageKey}
+            className='font-serif font-black text-5xl stroked ml-10 mb-10 animate-damage-number'
+          >
+            {damageNumber}
           </div>
         </div>
       </div>
@@ -96,11 +144,25 @@ export function Practice() {
             'col-span-7 bg-stone-950/80 h-full overflow-hidden transition-all'
           )}
         >
-          <Board />
+          <Board
+            mana={mana}
+            onDraw={(match) => {
+              if (mana - match.command.cost < 0) return
+              setMana(mana - match.command.cost)
+              setManaSpent(manaSpent + match.command.cost)
+              if (match.command.type === 'skill' && match.command.damage) {
+                const damageLevel = (match.level ?? 1) - 1
+                const damage = match.command.damage[damageLevel]
+                setTotalDamage(totalDamage + damage)
+                setDamageNumber(damage)
+                setDamageKey(Date.now())
+              }
+            }}
+          />
         </div>
         <div className={cn('col-span-5 relative transition-all')}>
           <div className='absolute inset-0 overflow-x-hidden overflow-y-auto bg-stone-950'>
-            <CommandList />
+            <CommandList mana={mana} />
           </div>
         </div>
       </div>

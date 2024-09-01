@@ -11,7 +11,8 @@ export const samplerSkills: Command[] = [
         elements: [Element.ChaosI, Element.ChaosI, Element.ArcaneI],
       },
     ],
-    cost: 3,
+    cost: 4,
+    damage: [12, 36, 88],
   },
   {
     type: 'skill',
@@ -22,7 +23,7 @@ export const samplerSkills: Command[] = [
         elements: [Element.LifeI, Element.LifeI, Element.ArcaneI],
       },
     ],
-    cost: 2,
+    cost: 3,
   },
   {
     type: 'skill',
@@ -38,7 +39,7 @@ export const samplerSkills: Command[] = [
         ],
       },
     ],
-    cost: 4,
+    cost: 6,
   },
   {
     type: 'skill',
@@ -49,7 +50,8 @@ export const samplerSkills: Command[] = [
         elements: [Element.OblivionI, Element.ChaosI, Element.ArcaneI],
       },
     ],
-    cost: 3,
+    cost: 4,
+    damage: [21, 54, 120],
   },
   {
     type: 'skill',
@@ -60,7 +62,7 @@ export const samplerSkills: Command[] = [
         elements: [Element.LifeI, Element.FateI, Element.ArcaneI],
       },
     ],
-    cost: 2,
+    cost: 3,
   },
   {
     type: 'skill',
@@ -76,7 +78,7 @@ export const samplerSkills: Command[] = [
         ],
       },
     ],
-    cost: 4,
+    cost: 6,
   },
 ]
 
@@ -96,7 +98,7 @@ export const transmuteCommands: Command[] = [
         output: Element.ChaosI,
       },
     ],
-    cost: 2,
+    cost: 3,
   },
   {
     type: 'transmute',
@@ -113,7 +115,7 @@ export const transmuteCommands: Command[] = [
         output: Element.LifeI,
       },
     ],
-    cost: 2,
+    cost: 3,
   },
   {
     type: 'transmute',
@@ -130,7 +132,7 @@ export const transmuteCommands: Command[] = [
         output: Element.ArcaneI,
       },
     ],
-    cost: 2,
+    cost: 3,
   },
 ]
 

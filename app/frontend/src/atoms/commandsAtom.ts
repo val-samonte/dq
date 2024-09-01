@@ -132,7 +132,3 @@ export const commandMatchedAtom = atom<CommandMatched | null>((get) => {
     level,
   }
 })
-
-export const commandChecklistAtom = atom<
-  { name: string; checked: boolean; level?: number }[]
->([])
