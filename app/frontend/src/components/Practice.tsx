@@ -137,6 +137,7 @@ export function Practice() {
             {damageNumber}
           </div>
         </div>
+        <NotEnoughMana mana={mana} />
       </div>
       <div
         className={cn(
@@ -169,7 +170,6 @@ export function Practice() {
             <CommandList mana={mana} />
           </div>
         </div>
-        <NotEnoughMana mana={mana} />
       </div>
     </div>
   )

@@ -5,19 +5,17 @@ import { useAtomValue } from 'jotai'
 export function NotEnoughMana({ mana }: { mana: number }) {
   const matched = useAtomValue(commandMatchedAtom)
 
-  if (!matched) return null
-  if (mana >= matched.command.cost) return null
-
   return (
     <div
       className={cn(
-        'overflow-hidden absolute inset-0 pointer-events-none flex justify-center w-full z-10 p-5',
-        'bg-[radial-gradient(circle_at_top,rgba(0,0,0,1),rgba(0,0,0,0))]'
+        matched && mana < matched.command.cost
+          ? 'animate-fade-in'
+          : 'animate-fade-out',
+        'overflow-hidden absolute inset-0 pointer-events-none flex justify-center items-end w-full z-10 px-5 py-3',
+        'bg-[radial-gradient(circle_at_bottom,rgba(0,0,0,1),rgba(0,0,0,0))]'
       )}
     >
-      <span
-        className={cn('animate-fade-in', 'font-serif text-center font-bold ')}
-      >
+      <span className={cn('font-serif text-center font-bold ')}>
         Not Enough Mana
       </span>
     </div>
