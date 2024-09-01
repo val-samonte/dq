@@ -20,7 +20,7 @@ export function Practice() {
   const [timestampAtom] = useState(atom(0))
   const setTimestamp = useSetAtom(timestampAtom)
   const [turns, setTurns] = useState(0)
-  const [duration] = useState(15000)
+  const [duration] = useState(12000)
   const [mana, setMana] = useState(0)
   const [manaSpent, setManaSpent] = useState(0)
   const [totalDamage, setTotalDamage] = useState(0)
