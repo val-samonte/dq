@@ -1,108 +1,17 @@
-import { ReactNode, useMemo } from 'react'
-import { CaretLeft, List } from '@phosphor-icons/react'
+import { ReactNode } from 'react'
 import { useAtomValue, useSetAtom } from 'jotai'
 import { currentAccountAtom } from '../atoms/currentAccountAtom'
 import { Dialogs, showDialogAtom } from '../atoms/showDialogAtom'
 import { NewGameDialog } from './NewGameDialog'
-import { Link, useLocation } from 'react-router-dom'
+import { HeaderMenu } from './HeaderMenu'
 
 export function MainContainer({ children }: { children: ReactNode }) {
   const currentAccount = useAtomValue(currentAccountAtom)
   const showDialog = useSetAtom(showDialogAtom)
-  const location = useLocation()
-
-  const navLinks = useMemo(() => {
-    const common = [
-      {
-        type: 'back',
-        value: '/',
-      },
-    ]
-    if (location.pathname.toLowerCase() === '/tutorial') {
-      return [
-        ...common,
-        {
-          type: 'title',
-          value: 'Tutorial',
-        },
-      ]
-    }
-    if (location.pathname.toLowerCase() === '/tutorial/basics') {
-      return [
-        {
-          type: 'back',
-          value: '/tutorial',
-        },
-        {
-          type: 'title',
-          value: 'Tutorial',
-        },
-        {
-          type: 'title',
-          value: '/ Basics',
-        },
-      ]
-    }
-    if (location.pathname.toLowerCase() === '/tutorial/battle') {
-      return [
-        {
-          type: 'back',
-          value: '/tutorial',
-        },
-        {
-          type: 'title',
-          value: 'Tutorial',
-        },
-        {
-          type: 'title',
-          value: '/ Battle',
-        },
-      ]
-    } else if (location.pathname.toLowerCase().includes('practice')) {
-      return [
-        ...common,
-        {
-          type: 'title',
-          value: 'Practice',
-        },
-      ]
-    } else if (location.pathname.toLowerCase().includes('challenge')) {
-      return [
-        ...common,
-        {
-          type: 'title',
-          value: 'Challenge',
-        },
-      ]
-    }
-    return [
-      {
-        type: 'title',
-        value: 'Home',
-      },
-    ]
-  }, [location])
-
   return (
     <div className='fixed inset-0 overflow-hidden'>
       <div className='flex flex-col max-w-lg mx-auto bg-stone-950 h-full'>
-        <nav className='flex flex-none px-3 py-2 justify-between items-center'>
-          <div className='font-serif flex gap-2 items-center'>
-            {navLinks.map((item, i) => {
-              if (item.type === 'back') {
-                return (
-                  <Link to={item.value} key={'nav_' + i}>
-                    <CaretLeft size={32} />
-                  </Link>
-                )
-              }
-              return <span key={'nav_' + i}>{item.value}</span>
-            })}
-          </div>
-          <button>
-            <List size={32} />
-          </button>
-        </nav>
+        <HeaderMenu />
         <main className='flex-auto flex flex-col overflow-hidden'>
           {children}
         </main>
