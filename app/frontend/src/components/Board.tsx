@@ -2,22 +2,20 @@ import { useEffect, useState } from 'react'
 import { sha256 } from '../utils/sha256'
 import { Element } from '../enums/Element'
 import { TouchInputOverlay } from './TouchInputOverlay'
-import { useAtom, useSetAtom } from 'jotai'
+import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { RenderActionType, renderBoardAtom } from '../atoms/gameBoardAtom'
 import { Cell } from './Cell'
-import { commandCallTitleAtom } from '../atoms/commandCallTitleAtom'
 import { CommandMatched, lastCommandCalledAtom } from '../atoms/commandsAtom'
+import { commandManaDiffAtom } from '../atoms/hud'
 
 export function Board({
-  mana,
   onDraw,
 }: {
-  mana?: number
   onDraw?: (match: CommandMatched) => void
 }) {
   const [random] = useState(Math.random())
   const [board, render] = useAtom(renderBoardAtom)
-  const setSkillTitle = useSetAtom(commandCallTitleAtom)
+  const manaDiff = useAtomValue(commandManaDiffAtom)
   const setCommandCalled = useSetAtom(lastCommandCalledAtom)
 
   useEffect(() => {
@@ -43,11 +41,9 @@ export function Board({
       </div>
       <TouchInputOverlay
         onDraw={(match) => {
-          if (typeof mana !== 'undefined' && mana - match.command.cost < 0)
-            return
+          if (manaDiff !== null && manaDiff < 0) return
           if (onDraw) onDraw(match)
           setCommandCalled(match)
-          setSkillTitle(match)
           render({
             type: RenderActionType.COMMAND,
             points: match.unitPoints,

@@ -1,7 +1,7 @@
 import cn from 'classnames'
 import { Board } from './Board'
 import { CommandList } from './CommandList'
-import { atom, useSetAtom } from 'jotai'
+import { atom, useAtom, useSetAtom } from 'jotai'
 import { commandsBaseAtom } from '../atoms/commandsAtom'
 import {
   boardRawAtom,
@@ -12,6 +12,8 @@ import { useEffect, useRef, useState } from 'react'
 import { commands } from '../constants/commands'
 import { CircleProgress } from './CircleProgress'
 import { NotEnoughMana } from './NotEnoughMana'
+import { manaAtom } from '../atoms/hud'
+import { SkillShoutTitle } from './SkillShoutTitle'
 
 export function Practice() {
   const setCommands = useSetAtom(commandsBaseAtom)
@@ -21,7 +23,7 @@ export function Practice() {
   const setTimestamp = useSetAtom(timestampAtom)
   const [turns, setTurns] = useState(0)
   const [duration] = useState(12000)
-  const [mana, setMana] = useState(0)
+  const [mana, setMana] = useAtom(manaAtom)
   const [manaSpent, setManaSpent] = useState(0)
   const [totalDamage, setTotalDamage] = useState(0)
   const [damageNumber, setDamageNumber] = useState<number | null>(null)
@@ -36,6 +38,8 @@ export function Practice() {
     setBoard(newBoard)
     setRender({ type: RenderActionType.LOAD })
     setMana(0)
+    setManaSpent(0)
+    setTotalDamage(0)
   }, [setTimestamp])
 
   const requestRef = useRef(-1)
@@ -97,8 +101,8 @@ export function Practice() {
           </div>
         </div>
         <div className='relative flex-auto'></div>
-        <div className='relative flex-none bg-gradient-to-tr from-black via-black/0 to-black/0'>
-          <div className='flex p-3 h-full gap-3'>
+        <div className='relative flex-none bg-gradient-to-tr from-black via-black/0 to-black/0 flex'>
+          <div className='flex p-3 h-full gap-3 w-full'>
             <div
               className='h-full aspect-square bg-stone-900'
               style={{
@@ -124,6 +128,7 @@ export function Practice() {
                 />
               </span>
             </div>
+            <SkillShoutTitle />
           </div>
         </div>
         <div className='absolute inset-0 pointer-events-none flex items-center justify-center'>
@@ -137,7 +142,7 @@ export function Practice() {
             {damageNumber}
           </div>
         </div>
-        <NotEnoughMana mana={mana} />
+        <NotEnoughMana />
       </div>
       <div
         className={cn(
@@ -150,7 +155,6 @@ export function Practice() {
           )}
         >
           <Board
-            mana={mana}
             onDraw={(match) => {
               if (mana - match.command.cost < 0) return
               setMana(mana - match.command.cost)

@@ -1,18 +1,16 @@
 import cn from 'classnames'
-import { commandMatchedAtom } from '../atoms/commandsAtom'
 import { useAtomValue } from 'jotai'
+import { commandManaDiffAtom } from '../atoms/hud'
 
-export function NotEnoughMana({ mana }: { mana: number }) {
-  const matched = useAtomValue(commandMatchedAtom)
+export function NotEnoughMana() {
+  const manaDiff = useAtomValue(commandManaDiffAtom)
 
   return (
     <div
       className={cn(
-        matched && mana < matched.command.cost
-          ? 'animate-fade-in'
-          : 'animate-fade-out',
-        'overflow-hidden absolute inset-0 pointer-events-none flex justify-center items-end w-full px-5 py-3',
-        'bg-[radial-gradient(circle_at_bottom,rgba(0,0,0,1),rgba(0,0,0,0))]'
+        manaDiff && manaDiff < 0 ? 'animate-fade-in' : 'animate-fade-out',
+        'overflow-hidden absolute inset-x-0 bottom-0 pointer-events-none flex justify-center items-end w-full h-[20%] px-5 py-3',
+        'bg-gradient-to-t from-black to-black/0'
       )}
     >
       <span className={cn('font-serif text-center font-bold ')}>

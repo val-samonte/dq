@@ -53,6 +53,15 @@ export default {
           '90%': { transform: 'translateY(0)', opacity: '1' },
           '100%': { transform: 'translateY(0)', opacity: '0' },
         },
+        'slide-gradient': {
+          '0%': {
+            transform: 'translateX(100%)',
+            width: '0%',
+            opacity: 1,
+          },
+          '90%': { opacity: 1 },
+          '100%': { transform: 'translateX(-100%)', width: '100%', opacity: 0 },
+        },
       },
       animation: {
         'fade-in': 'fade-in 0.1s ease-out forwards',
@@ -64,6 +73,7 @@ export default {
         'fall-4': 'fall-4 0.2s ease-in forwards',
         'fall-5': 'fall-5 0.2s ease-in forwards',
         'damage-number': 'damage-number 2s ease-out forwards',
+        'slide-gradient': 'slide-gradient 600ms ease-out forwards',
       },
     },
   },

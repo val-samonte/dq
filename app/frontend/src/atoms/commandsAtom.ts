@@ -67,10 +67,23 @@ export interface CommandMatched {
   unitPoints: Point[]
   linkSelection: Element[]
   name: string
+  timeExecuted?: number
   level?: number
 }
 
-export const lastCommandCalledAtom = atom<CommandMatched | null>(null)
+export const lastCommandCalledBaseAtom = atom<CommandMatched | null>(null)
+export const lastCommandCalledAtom = atom(
+  (get) => {
+    const matched = get(lastCommandCalledBaseAtom)
+    return {
+      ...matched,
+      timeExecuted: Date.now(),
+    }
+  },
+  (_, set, command: CommandMatched) => {
+    set(lastCommandCalledBaseAtom, command)
+  }
+)
 
 export const commandMatchedAtom = atom<CommandMatched | null>((get) => {
   const input = get(inputUnitPointsAtom)
