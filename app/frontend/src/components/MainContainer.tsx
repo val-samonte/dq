@@ -1,17 +1,53 @@
-import { ReactNode, useMemo } from 'react'
+import { ReactNode, useEffect, useMemo } from 'react'
 import { CaretLeft, List } from '@phosphor-icons/react'
 import { useAtomValue, useSetAtom } from 'jotai'
 import { Dialogs, showDialogAtom } from '../atoms/showDialogAtom'
 import { NewGameDialog } from './NewGameDialog'
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { keypairAtom } from '../atoms/keypairAtom'
 import { ContinueButton } from './ContinueButton'
 import { UnlockGameAccountDialog } from './UnlockGameAccountDialog'
+import { Title } from './Title'
+import { MainMenuDialog } from './MainMenuDialog'
+import { connectionAtom } from '../atoms/connectionAtom'
+import { solBalanceAtom } from '../atoms/solBalanceAtom'
+import { GameAccountDialog } from './GameAccountDialog'
+import { ExportPrivateKeyDialog } from './ExportPrivateKeyDialog'
 
 export function MainContainer({ children }: { children: ReactNode }) {
+  const connection = useAtomValue(connectionAtom)
   const showDialog = useSetAtom(showDialogAtom)
   const kp = useAtomValue(keypairAtom)
   const location = useLocation()
+  const navigate = useNavigate()
+  const setBalance = useSetAtom(solBalanceAtom)
+
+  useEffect(() => {
+    if (!kp) {
+      navigate('/')
+    }
+  }, [kp, navigate])
+
+  useEffect(() => {
+    if (!kp) return
+
+    connection.getBalance(kp.publicKey).then((balance) => {
+      const solBalance = balance
+      setBalance(solBalance)
+    })
+
+    const subscriptionId = connection.onAccountChange(
+      kp.publicKey,
+      (accountInfo) => {
+        const balance = accountInfo.lamports
+        setBalance(balance)
+      }
+    )
+
+    return () => {
+      connection.removeAccountChangeListener(subscriptionId)
+    }
+  }, [kp, connection])
 
   const navLinks = useMemo(() => {
     const common = [
@@ -101,7 +137,7 @@ export function MainContainer({ children }: { children: ReactNode }) {
               return <span key={'nav_' + i}>{item.value}</span>
             })}
           </div>
-          <button>
+          <button disabled={!kp} onClick={() => showDialog(Dialogs.MAIN_MENU)}>
             <List size={32} />
           </button>
         </nav>
@@ -112,10 +148,7 @@ export function MainContainer({ children }: { children: ReactNode }) {
           <div className='animate-fade-in fixed inset-0 bg-black flex flex-col p-10 items-center justify-center z-50'>
             <div className='flex flex-col h-full gap-10'>
               <div className='flex-auto flex flex-col items-center justify-center'>
-                <h1 className='flex flex-col gap-2'>
-                  <small className='text-sm opacity-90'>DeezQuest</small>
-                  <span className='text-4xl font-serif '>TriNexus</span>
-                </h1>
+                <Title />
               </div>
               <ul className='flex flex-col items-center text-center gap-2'>
                 <li>
@@ -136,8 +169,11 @@ export function MainContainer({ children }: { children: ReactNode }) {
             </div>
           </div>
         )}
+        <ExportPrivateKeyDialog />
         <NewGameDialog />
         <UnlockGameAccountDialog />
+        <GameAccountDialog />
+        <MainMenuDialog />
       </div>
     </div>
   )

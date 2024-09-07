@@ -71,7 +71,7 @@ function CommandSection({
               key={`command_${i}`}
               className={cn(
                 'flex flex-col gap-1 flex-wrap transition-all',
-                typeof mana === 'undefined' || (mana ?? 0) >= command.cost
+                mana === null || (mana ?? 0) >= command.cost
                   ? 'opacity-100'
                   : 'opacity-50'
               )}

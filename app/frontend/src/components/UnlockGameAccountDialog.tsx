@@ -23,6 +23,7 @@ function Inner() {
         <AuthForm
           username={unlockAccount ?? ''}
           onSubmit={async ({ password }) => {
+            setMessage('')
             try {
               if (!unlockAccount) return
               const record = await idb.get('game_accounts', unlockAccount)

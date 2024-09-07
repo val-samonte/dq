@@ -3,7 +3,7 @@ import { ReactNode, useState } from 'react'
 
 export interface AuthFormProps {
   username: string
-  submitLabel?: string
+  submitLabel?: string | ReactNode
   children?: ReactNode
   newAccount?: boolean
   onSubmit: ({
@@ -66,7 +66,7 @@ export function AuthForm({
         </button>
       </div>
       <button
-        className='mt-5 px-3 py-2 bg-amber-100 rounded text-stone-800'
+        className='mt-5 px-3 py-2 bg-amber-100 rounded text-stone-800 flex items-center justify-center gap-2'
         type='submit'
       >
         {submitLabel ?? 'Submit'}

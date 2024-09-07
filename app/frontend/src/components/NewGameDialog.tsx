@@ -85,8 +85,8 @@ function Inner() {
   }
 
   return (
-    <div className='p-5 w-full'>
-      <div className='p-5 rounded-xl bg-stone-800 max-w-sm w-full'>
+    <div className='p-5 w-full overflow-auto'>
+      <div className='p-5 rounded-xl bg-stone-800 max-w-sm mx-auto w-full'>
         {step === 0 && (
           <AuthForm
             newAccount
