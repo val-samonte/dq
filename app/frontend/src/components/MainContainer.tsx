@@ -1,14 +1,14 @@
 import { ReactNode, useMemo } from 'react'
 import { CaretLeft, List } from '@phosphor-icons/react'
 import { useAtomValue, useSetAtom } from 'jotai'
-import { currentAccountAtom } from '../atoms/currentAccountAtom'
 import { Dialogs, showDialogAtom } from '../atoms/showDialogAtom'
 import { NewGameDialog } from './NewGameDialog'
 import { Link, useLocation } from 'react-router-dom'
+import { keypairAtom } from '../atoms/keypairAtom'
 
 export function MainContainer({ children }: { children: ReactNode }) {
-  const currentAccount = useAtomValue(currentAccountAtom)
   const showDialog = useSetAtom(showDialogAtom)
+  const kp = useAtomValue(keypairAtom)
   const location = useLocation()
 
   const navLinks = useMemo(() => {
@@ -106,7 +106,7 @@ export function MainContainer({ children }: { children: ReactNode }) {
         <main className='flex-auto flex flex-col overflow-hidden'>
           {children}
         </main>
-        {!currentAccount && (
+        {!kp && (
           <div className='animate-fade-in fixed inset-0 bg-black flex flex-col p-10 items-center justify-center'>
             <div className='flex flex-col h-full gap-10'>
               <div className='flex-auto flex flex-col items-center justify-center'>
