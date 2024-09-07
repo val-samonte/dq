@@ -2,7 +2,7 @@ import cn from 'classnames'
 import { Board } from './Board'
 import { CommandList } from './CommandList'
 import { atom, useAtom, useSetAtom } from 'jotai'
-import { commandsBaseAtom } from '../atoms/commandsAtom'
+import { commandsBaseAtom, lastCommandCalledAtom } from '../atoms/commandsAtom'
 import {
   boardRawAtom,
   RenderActionType,
@@ -28,6 +28,7 @@ export function Practice() {
   const [totalDamage, setTotalDamage] = useState(0)
   const [damageNumber, setDamageNumber] = useState<number | null>(null)
   const [damageKey, setDamageKey] = useState(0)
+  const setCommandCalled = useSetAtom(lastCommandCalledAtom)
 
   useEffect(() => {
     setCommands([...commands])
@@ -40,6 +41,7 @@ export function Practice() {
     setMana(0)
     setManaSpent(0)
     setTotalDamage(0)
+    setCommandCalled(null)
   }, [setTimestamp])
 
   const requestRef = useRef(-1)
@@ -59,7 +61,7 @@ export function Practice() {
   }
 
   useEffect(() => {
-    setMana((m) => Math.min(m + 5, 12))
+    setMana((m) => Math.min((m ?? 0) + 5, 12))
   }, [turns, setMana])
 
   useEffect(() => {
@@ -102,17 +104,12 @@ export function Practice() {
         </div>
         <div className='relative flex-auto'></div>
         <div className='relative flex-none bg-gradient-to-tr from-black via-black/0 to-black/0 flex'>
-          <div className='flex p-3 h-full gap-3 w-full'>
-            <div
-              className='h-full aspect-square bg-stone-900'
-              style={{
-                backgroundImage: 'url("/character.png")',
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
-                backgroundRepeat: 'no-repeat',
-              }}
-            ></div>
-            <div className='flex flex-col gap-1'>
+          <div className='flex h-full w-full items-center'>
+            <img
+              src='/char_male.png'
+              className='aspect-square object-contain h-36'
+            />
+            <div className='flex flex-col h-16 -ml-8'>
               <span className='flex items-center gap-2'>
                 <span className='text-3xl stroked font-black font-serif'>
                   100
@@ -156,8 +153,8 @@ export function Practice() {
         >
           <Board
             onDraw={(match) => {
-              if (mana - match.command.cost < 0) return
-              setMana(mana - match.command.cost)
+              if ((mana ?? 0) - match.command.cost < 0) return
+              setMana((mana ?? 0) - match.command.cost)
               setManaSpent(manaSpent + match.command.cost)
               if (match.command.type === 'skill' && match.command.damage) {
                 const damageLevel = (match.level ?? 1) - 1
@@ -171,7 +168,7 @@ export function Practice() {
         </div>
         <div className={cn('col-span-5 relative transition-all')}>
           <div className='absolute inset-0 overflow-x-hidden overflow-y-auto bg-stone-950'>
-            <CommandList mana={mana} />
+            <CommandList />
           </div>
         </div>
       </div>

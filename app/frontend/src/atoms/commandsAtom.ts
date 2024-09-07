@@ -80,7 +80,7 @@ export const lastCommandCalledAtom = atom(
       timeExecuted: Date.now(),
     }
   },
-  (_, set, command: CommandMatched) => {
+  (_, set, command: CommandMatched | null) => {
     set(lastCommandCalledBaseAtom, command)
   }
 )

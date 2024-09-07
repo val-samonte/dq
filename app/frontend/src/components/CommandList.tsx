@@ -5,16 +5,11 @@ import { Command } from '../types/Command'
 import { inputUnitPointsAtom } from '../atoms/inputUnitPointsAtom'
 import cn from 'classnames'
 import { Check } from '@phosphor-icons/react'
+import { manaAtom } from '../atoms/hud'
 
 export type Checklist = { name: string; checked: boolean; level?: number }[]
 
-export function CommandList({
-  mana,
-  checklist,
-}: {
-  mana?: number
-  checklist?: Checklist
-}) {
+export function CommandList({ checklist }: { checklist?: Checklist }) {
   const commands = useAtomValue(commandGroupAtom)
 
   return (
@@ -23,7 +18,6 @@ export function CommandList({
         <CommandSection
           title='Skills'
           commands={commands.skills}
-          mana={mana}
           checklist={checklist}
         />
       )}
@@ -31,7 +25,6 @@ export function CommandList({
         <CommandSection
           title='Conjurations'
           commands={commands.conjurations}
-          mana={mana}
           checklist={checklist}
         />
       )}
@@ -39,7 +32,6 @@ export function CommandList({
         <CommandSection
           title='Enhancements'
           commands={commands.enhancements}
-          mana={mana}
           checklist={checklist}
         />
       )}
@@ -47,7 +39,6 @@ export function CommandList({
         <CommandSection
           title='Transmutations'
           commands={commands.transmutations}
-          mana={mana}
           checklist={checklist}
         />
       )}
@@ -58,15 +49,14 @@ export function CommandList({
 function CommandSection({
   title,
   commands,
-  mana,
   checklist,
 }: {
   title: string
   commands: Command[]
-  mana?: number
   checklist?: Checklist
 }) {
   const select = useAtomValue(inputUnitPointsAtom)
+  const mana = useAtomValue(manaAtom)
 
   return (
     <section className='flex flex-col gap-3 select-none'>
@@ -88,10 +78,8 @@ function CommandSection({
             >
               <h4 className='flex items-center justify-between gap-1'>
                 <span>{command.name}</span>
-                {typeof mana !== 'undefined' && (
-                  <span className='text-pink-500 text-xs font-serif'>
-                    {command.cost}
-                  </span>
+                {mana !== null && (
+                  <span className='text-xs'>{command.cost}</span>
                 )}
                 {inList && (
                   <span className='w-5 h-5 flex items-center justify-center border border-stone-500/20 text-green-400'>

@@ -6,7 +6,7 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['Dosis', 'sans-serif'], // Overrides the default sans-serif font
+        sans: ['Roboto', 'sans-serif'], // Overrides the default sans-serif font
         serif: ['Inknut Antiqua', 'serif'], // Overrides the default serif font
       },
       keyframes: {
@@ -19,10 +19,10 @@ export default {
           '100%': { opacity: '0', transform: 'scale(1.2)' },
         },
         'fade-in-out': {
-          '0%': { opacity: '0', transform: 'scale(1.2)' },
-          '3%': { opacity: '1', transform: 'scale(1)' },
-          '90%': { opacity: '1', transform: 'scale(1)' },
-          '100%': { opacity: '0', transform: 'scale(1)' },
+          '0%': { opacity: '0', transform: 'translateX(100%)' },
+          '5%': { opacity: '1', transform: 'translateX(0)' },
+          '90%': { opacity: '1', transform: 'translateX(0)' },
+          '100%': { opacity: '0', transform: 'translateX(0)' },
         },
         'fall-1': {
           '0%': { transform: 'translateY(-100%)' },
@@ -44,8 +44,6 @@ export default {
           '0%': { transform: 'translateY(-500%)' },
           '100%': { transform: 'translateY(0)' },
         },
-        // jumps from bottom to top then back to base level
-        // then fades out
         'damage-number': {
           '0%': { transform: 'translateY(100%)', opacity: '0' },
           '10%': { transform: 'translateY(-50%)', opacity: '1' },
@@ -59,7 +57,7 @@ export default {
             width: '0%',
             opacity: 1,
           },
-          '90%': { opacity: 1 },
+          '50%': { opacity: 1 },
           '100%': { transform: 'translateX(-100%)', width: '100%', opacity: 0 },
         },
       },
@@ -72,8 +70,8 @@ export default {
         'fall-3': 'fall-3 0.2s ease-in forwards',
         'fall-4': 'fall-4 0.2s ease-in forwards',
         'fall-5': 'fall-5 0.2s ease-in forwards',
-        'damage-number': 'damage-number 2s ease-out forwards',
-        'slide-gradient': 'slide-gradient 600ms ease-out forwards',
+        'damage-number': 'damage-number 1.5s ease-out forwards',
+        'slide-gradient': 'slide-gradient 500ms ease-out forwards',
       },
     },
   },

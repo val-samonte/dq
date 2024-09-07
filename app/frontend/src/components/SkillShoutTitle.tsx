@@ -13,28 +13,29 @@ export function SkillShoutTitle() {
       )}
     >
       {skillTitle?.command?.type === 'skill' && (
-        <>
+        <div className='w-full relative overflow-hidden'>
           <h2
             key={'skill_' + skillTitle.timeExecuted}
             className={cn(
               'relative',
               'whitespace-nowrap',
               'flex items-center justify-end',
+              'pointer-events-none select-none',
               'animate-fade-in-out',
               'text-lg px-3 py-2 bg-gradient-to-r max-w-sm w-full',
               'border-t border-b',
               skillTitle.command.skillType === 'offensive' && [
-                'border-red-500',
+                'border-red-500/30',
                 'from-red-900/0',
                 'to-red-900/90',
               ],
               skillTitle.command.skillType === 'supportive' && [
-                'border-green-500',
+                'border-green-500/30',
                 'from-green-900/0',
                 'to-green-900/90',
               ],
               skillTitle.command.skillType === 'special' && [
-                'border-blue-500',
+                'border-blue-500/30',
                 'from-blue-900/0',
                 'to-blue-900/90',
               ]
@@ -47,10 +48,12 @@ export function SkillShoutTitle() {
             className={cn(
               'animate-slide-gradient',
               'w-full',
-              'bg-gradient-to-r from-white/100 to-white/0 mix-blend-overlay absolute right-0 h-full w-full'
+              'mix-blend-overlay',
+              'pointer-events-none select-none',
+              'bg-gradient-to-r from-white/50 to-white/0 absolute right-0 inset-y-0 h-full w-full'
             )}
           />
-        </>
+        </div>
       )}
     </div>
   )

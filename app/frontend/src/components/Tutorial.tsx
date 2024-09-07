@@ -1,7 +1,19 @@
 import { Shapes, Sword } from '@phosphor-icons/react'
+import { useSetAtom } from 'jotai'
+import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
+import { lastCommandCalledAtom } from '../atoms/commandsAtom'
+import { manaAtom } from '../atoms/hud'
 
 export function Tutorial() {
+  const setMana = useSetAtom(manaAtom)
+  const setCommandCalled = useSetAtom(lastCommandCalledAtom)
+
+  useEffect(() => {
+    setMana(null)
+    setCommandCalled(null)
+  }, [])
+
   return (
     <div className='flex-auto h-full w-full flex flex-col'>
       <div

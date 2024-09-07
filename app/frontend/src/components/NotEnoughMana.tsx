@@ -13,9 +13,7 @@ export function NotEnoughMana() {
         'bg-gradient-to-t from-black to-black/0'
       )}
     >
-      <span className={cn('font-serif text-center font-bold ')}>
-        Not Enough Mana
-      </span>
+      <span className={cn('text-center')}>Not Enough Mana</span>
     </div>
   )
 }
