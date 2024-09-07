@@ -5,6 +5,8 @@ import { Dialogs, showDialogAtom } from '../atoms/showDialogAtom'
 import { NewGameDialog } from './NewGameDialog'
 import { Link, useLocation } from 'react-router-dom'
 import { keypairAtom } from '../atoms/keypairAtom'
+import { ContinueButton } from './ContinueButton'
+import { UnlockGameAccountDialog } from './UnlockGameAccountDialog'
 
 export function MainContainer({ children }: { children: ReactNode }) {
   const showDialog = useSetAtom(showDialogAtom)
@@ -107,7 +109,7 @@ export function MainContainer({ children }: { children: ReactNode }) {
           {children}
         </main>
         {!kp && (
-          <div className='animate-fade-in fixed inset-0 bg-black flex flex-col p-10 items-center justify-center'>
+          <div className='animate-fade-in fixed inset-0 bg-black flex flex-col p-10 items-center justify-center z-50'>
             <div className='flex flex-col h-full gap-10'>
               <div className='flex-auto flex flex-col items-center justify-center'>
                 <h1 className='flex flex-col gap-2'>
@@ -125,9 +127,7 @@ export function MainContainer({ children }: { children: ReactNode }) {
                   </button>
                 </li>
                 <li>
-                  <button className='px-3 py-2 pointer-events-none opacity-30'>
-                    Continue
-                  </button>
+                  <ContinueButton />
                 </li>
                 <li>
                   <button className='px-3 py-2'>Load Game</button>
@@ -137,6 +137,7 @@ export function MainContainer({ children }: { children: ReactNode }) {
           </div>
         )}
         <NewGameDialog />
+        <UnlockGameAccountDialog />
       </div>
     </div>
   )

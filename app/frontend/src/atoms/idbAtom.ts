@@ -10,6 +10,7 @@ export interface IDBSchema extends DBSchema {
       pubkey: string
       keypair: string
       last_used: number
+      time_created: number
     }
   }
 }
@@ -18,7 +19,9 @@ export const idbAtom = atomFamily((id: string) =>
   atom<Promise<IDBPDatabase<IDBSchema>>>(async (get) => {
     const rpc = get(rpcEndpointAtom)
     return openDB<IDBSchema>(
-      `deezquest_${rpc.includes('devnet') ? 'devnet' : 'mainnet'}_${id}`,
+      `deezquest_${
+        rpc.toLowerCase().includes('devnet') ? 'devnet' : 'mainnet'
+      }_${id}`,
       1,
       {
         upgrade(db, oldVersion) {

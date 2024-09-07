@@ -69,13 +69,15 @@ function Inner() {
 
   const onComplete = async () => {
     const encryptedKeypair = await encrypt(keypair.secretKey, password)
+    const now = Date.now()
     await idb.put('game_accounts', {
       pubkey,
       keypair: encryptedKeypair,
-      last_used: Date.now(),
+      last_used: now,
+      time_created: now,
     })
-    setCurrentAccount(pubkey)
     setCurrentKeypair(keypair)
+    setCurrentAccount(pubkey)
     showDialog(Dialogs.NONE)
     setTimeout(() => {
       reset()
