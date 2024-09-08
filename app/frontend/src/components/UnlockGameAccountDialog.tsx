@@ -9,17 +9,19 @@ import { decrypt } from '../utils/decrypt'
 import { idbAtom } from '../atoms/idbAtom'
 import { Keypair } from '@solana/web3.js'
 import { keypairAtom } from '../atoms/keypairAtom'
+import { currentAccountAtom } from '../atoms/currentAccountAtom'
 
 function Inner() {
   const idb = useAtomValue(idbAtom('root'))
   const [unlockAccount, setUnlockAccount] = useAtom(unlockGameAccountAtom)
+  const setCurrentAccount = useSetAtom(currentAccountAtom)
   const setKeypair = useSetAtom(keypairAtom)
   const account = useRef(unlockAccount)
   const [message, setMessage] = useState('')
 
   return (
-    <div className='p-5 w-full'>
-      <div className='p-5 rounded-xl bg-stone-800 max-w-sm w-full flex flex-col gap-5 items-center'>
+    <div className='p-5 w-full overflow-y-auto overflow-x-hidden'>
+      <div className='p-5 rounded-xl bg-stone-800 max-w-sm mx-auto w-full flex flex-col gap-5 items-center'>
         <AuthForm
           username={unlockAccount ?? ''}
           onSubmit={async ({ password }) => {
@@ -40,6 +42,7 @@ function Inner() {
                 last_used: Date.now(),
               })
 
+              setCurrentAccount(unlockAccount)
               setKeypair(kp)
               setUnlockAccount(null)
             } catch (e) {

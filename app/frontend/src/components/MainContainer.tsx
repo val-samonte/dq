@@ -13,6 +13,7 @@ import { connectionAtom } from '../atoms/connectionAtom'
 import { solBalanceAtom } from '../atoms/solBalanceAtom'
 import { GameAccountDialog } from './GameAccountDialog'
 import { ExportPrivateKeyDialog } from './ExportPrivateKeyDialog'
+import { LoadGameAccountDialog } from './LoadGameAccountDialog'
 
 export function MainContainer({ children }: { children: ReactNode }) {
   const connection = useAtomValue(connectionAtom)
@@ -163,7 +164,12 @@ export function MainContainer({ children }: { children: ReactNode }) {
                   <ContinueButton />
                 </li>
                 <li>
-                  <button className='px-3 py-2'>Load Game</button>
+                  <button
+                    className='px-3 py-2'
+                    onClick={() => showDialog(Dialogs.LOAD_GAME)}
+                  >
+                    Load Game
+                  </button>
                 </li>
               </ul>
             </div>
@@ -171,6 +177,7 @@ export function MainContainer({ children }: { children: ReactNode }) {
         )}
         <ExportPrivateKeyDialog />
         <NewGameDialog />
+        <LoadGameAccountDialog />
         <UnlockGameAccountDialog />
         <GameAccountDialog />
         <MainMenuDialog />

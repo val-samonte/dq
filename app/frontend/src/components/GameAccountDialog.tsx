@@ -21,7 +21,7 @@ function Inner() {
   }, [kp])
 
   return (
-    <div className='p-5 w-full overflow-auto'>
+    <div className='p-5 w-full overflow-y-auto overflow-x-hidden'>
       <div className='p-5 rounded-xl bg-stone-800 max-w-sm mx-auto w-full'>
         <div className='flex flex-col text-center gap-5 items-center'>
           <QRCode data={pubkey ?? undefined} />

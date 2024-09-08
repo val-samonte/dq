@@ -19,8 +19,8 @@ function Inner() {
   const [copiedText, setCopiedText] = useState(false)
 
   return (
-    <div className='p-5 w-full'>
-      <div className='p-5 rounded-xl bg-stone-800 max-w-sm w-full flex flex-col gap-5 items-center'>
+    <div className='p-5 w-full overflow-y-auto overflow-x-hidden'>
+      <div className='p-5 rounded-xl bg-stone-800 max-w-sm mx-auto w-full flex flex-col gap-5 items-center'>
         <AuthForm
           username={currentAccount ?? ''}
           onSubmit={async ({ password }) => {

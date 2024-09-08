@@ -17,6 +17,7 @@
     "@uidotdev/usehooks": "^2.4.1",
     "bs58": "^6.0.0",
     "classnames": "^2.5.1",
+    "dayjs": "^1.11.13",
     "idb": "^8.0.0",
     "jotai": "^2.9.3",
     "qr-code-styling": "^1.6.0-rc.1",

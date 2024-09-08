@@ -17,7 +17,7 @@ function Inner() {
   }, [kp])
 
   return (
-    <div className='flex flex-col w-full gap-5 p-5 overflow-auto max-w-lg mx-auto'>
+    <div className='flex flex-col w-full gap-5 p-5 overflow-y-auto overflow-x-hidden max-w-lg mx-auto'>
       <div className='flex flex-col w-full gap-10'>
         <Title />
         <ul className='flex flex-col gap-2 px-2'>
