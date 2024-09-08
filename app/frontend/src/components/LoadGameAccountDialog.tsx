@@ -48,11 +48,12 @@ function Card({
 function Inner() {
   const gameAccounts = useAtomValue(gameAccountsAtom)
   const setUnlock = useSetAtom(unlockGameAccountAtom)
+  const showDialog = useSetAtom(showDialogAtom)
 
   return (
     <div className='flex flex-col w-full gap-5 p-5 overflow-y-auto overflow-x-hidden max-w-lg mx-auto'>
       <div className='flex flex-col w-full gap-5'>
-        <h1 className='font-serif'>Load Game</h1>
+        <h1 className='font-serif text-center'>Load Game</h1>
 
         {gameAccounts.map((data) => (
           <Suspense key={data.pubkey} fallback={null}>
@@ -64,6 +65,24 @@ function Inner() {
             />
           </Suspense>
         ))}
+
+        <button
+          type='button'
+          className={cn(
+            'bg-stone-900 p-5 gap-2 rounded-xl relative overflow-hidden',
+            'flex flex-col justify-center border border-stone-800',
+            'transition-all duration-300 hover:scale-105'
+          )}
+          onClick={() => {}}
+        >
+          <div className='text-center text-sm w-full'>
+            Import Private Key Coming Soon
+          </div>
+        </button>
+
+        <button className='py-2' onClick={() => showDialog(Dialogs.NONE)}>
+          Cancel
+        </button>
       </div>
     </div>
   )
