@@ -10,10 +10,15 @@ import { idbAtom } from '../atoms/idbAtom'
 import { Keypair } from '@solana/web3.js'
 import { keypairAtom } from '../atoms/keypairAtom'
 import { currentAccountAtom } from '../atoms/currentAccountAtom'
+import {
+  GameAccountActionType,
+  gameAccountsAtom,
+} from '../atoms/gameAccountsAtom'
 
 function Inner() {
   const idb = useAtomValue(idbAtom('root'))
   const [unlockAccount, setUnlockAccount] = useAtom(unlockGameAccountAtom)
+  const setGameAccount = useSetAtom(gameAccountsAtom)
   const setCurrentAccount = useSetAtom(currentAccountAtom)
   const setKeypair = useSetAtom(keypairAtom)
   const account = useRef(unlockAccount)
@@ -37,9 +42,12 @@ function Inner() {
               if (kp.publicKey.toBase58() !== unlockAccount)
                 throw new Error('Account did not matched!')
 
-              await idb.put('game_accounts', {
-                ...record,
-                last_used: Date.now(),
+              await setGameAccount({
+                type: GameAccountActionType.UPDATE,
+                payload: {
+                  pubkey: record.pubkey,
+                  last_used: Date.now(),
+                },
               })
 
               setCurrentAccount(unlockAccount)

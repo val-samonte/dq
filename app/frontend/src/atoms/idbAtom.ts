@@ -3,15 +3,17 @@ import { atom } from 'jotai'
 import { atomFamily } from 'jotai/utils'
 import { rpcEndpointAtom } from './rpcEndpointAtom'
 
+export type GameAccount = {
+  pubkey: string
+  keypair: string
+  last_used: number
+  time_created: number
+}
+
 export interface IDBSchema extends DBSchema {
   game_accounts: {
     key: string
-    value: {
-      pubkey: string
-      keypair: string
-      last_used: number
-      time_created: number
-    }
+    value: GameAccount
   }
 }
 

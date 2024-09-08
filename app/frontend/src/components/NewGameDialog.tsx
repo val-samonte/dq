@@ -1,7 +1,6 @@
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { Dialogs, showDialogAtom } from '../atoms/showDialogAtom'
 import Dialog from './Dialog'
-import { idbAtom } from '../atoms/idbAtom'
 import { useEffect, useMemo, useState } from 'react'
 import { currentAccountAtom } from '../atoms/currentAccountAtom'
 import bs58 from 'bs58'
@@ -14,13 +13,17 @@ import { connectionAtom } from '../atoms/connectionAtom'
 import { Keypair } from '@solana/web3.js'
 import { encrypt } from '../utils/encrypt'
 import { keypairAtom } from '../atoms/keypairAtom'
+import {
+  GameAccountActionType,
+  gameAccountsAtom,
+} from '../atoms/gameAccountsAtom'
 
 function Inner() {
   const connection = useAtomValue(connectionAtom)
-  const idb = useAtomValue(idbAtom('root'))
   const setCurrentKeypair = useSetAtom(keypairAtom)
   const setCurrentAccount = useSetAtom(currentAccountAtom)
-  const showDialog = useSetAtom(showDialogAtom)
+  const setGameAccount = useSetAtom(gameAccountsAtom)
+  const [dialog, showDialog] = useAtom(showDialogAtom)
 
   const [step, setStep] = useState(0)
   const [keypair, setKeypair] = useState<Keypair>(Keypair.generate())
@@ -70,12 +73,17 @@ function Inner() {
   const onComplete = async () => {
     const encryptedKeypair = await encrypt(keypair.secretKey, password)
     const now = Date.now()
-    await idb.put('game_accounts', {
-      pubkey,
-      keypair: encryptedKeypair,
-      last_used: now,
-      time_created: now,
+
+    await setGameAccount({
+      type: GameAccountActionType.NEW,
+      payload: {
+        pubkey,
+        keypair: encryptedKeypair,
+        last_used: now,
+        time_created: now,
+      },
     })
+
     setCurrentKeypair(keypair)
     setCurrentAccount(pubkey)
     showDialog(Dialogs.NONE)
@@ -87,7 +95,7 @@ function Inner() {
   return (
     <div className='p-5 w-full overflow-y-auto overflow-x-hidden'>
       <div className='p-5 rounded-xl bg-stone-800 max-w-sm mx-auto w-full'>
-        {step === 0 && (
+        {dialog === Dialogs.NEW_GAME && step === 0 && (
           <AuthForm
             newAccount
             username={pubkey}
