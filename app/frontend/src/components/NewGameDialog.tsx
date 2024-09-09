@@ -26,7 +26,7 @@ function Inner() {
   const [dialog, showDialog] = useAtom(showDialogAtom)
 
   const [step, setStep] = useState(0)
-  const [keypair, setKeypair] = useState<Keypair>(Keypair.generate())
+  const [keypair, setKeypair] = useState<Keypair>()
   const [password, setPassword] = useState('')
   const [copiedText, setCopiedText] = useState(false)
   const [copied, setCopied] = useState(false)
@@ -42,6 +42,8 @@ function Inner() {
   }
 
   const pubkey = useMemo(() => {
+    if (!keypair) return
+
     return keypair.publicKey.toBase58()
   }, [keypair])
 
