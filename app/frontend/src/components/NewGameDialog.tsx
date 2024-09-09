@@ -73,6 +73,9 @@ function Inner() {
   }, [keypair, connection])
 
   const onComplete = async () => {
+    if (!keypair) return
+    if (!pubkey) return
+
     const encryptedKeypair = await encrypt(keypair.secretKey, password)
     const now = Date.now()
 
@@ -97,7 +100,7 @@ function Inner() {
   return (
     <div className='p-5 w-full overflow-y-auto overflow-x-hidden'>
       <div className='p-5 rounded-xl bg-stone-800 max-w-sm mx-auto w-full'>
-        {dialog === Dialogs.NEW_GAME && step === 0 && (
+        {pubkey && dialog === Dialogs.NEW_GAME && step === 0 && (
           <AuthForm
             newAccount
             username={pubkey}
@@ -139,6 +142,7 @@ function Inner() {
               )}
               onClick={async () => {
                 try {
+                  if (!keypair) return
                   const key = bs58.encode(keypair.secretKey)
                   await navigator.clipboard.writeText(key)
                   setCopiedText(true)
@@ -195,6 +199,7 @@ function Inner() {
               )}
               onClick={async () => {
                 try {
+                  if (!pubkey) return
                   await navigator.clipboard.writeText(pubkey)
                   setCopiedText(true)
                   setTimeout(() => {
@@ -209,7 +214,7 @@ function Inner() {
                 </>
               ) : (
                 <>
-                  {trimAddress(pubkey)} <Clipboard size={20} />
+                  {trimAddress(pubkey ?? '')} <Clipboard size={20} />
                 </>
               )}
             </button>
