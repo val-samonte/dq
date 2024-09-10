@@ -23,7 +23,7 @@ function Inner() {
   const setCurrentKeypair = useSetAtom(keypairAtom)
   const setCurrentAccount = useSetAtom(currentAccountAtom)
   const setGameAccount = useSetAtom(gameAccountsAtom)
-  const [dialog, showDialog] = useAtom(showDialogAtom)
+  const showDialog = useSetAtom(showDialogAtom)
 
   const [step, setStep] = useState(0)
   const [keypair, setKeypair] = useState<Keypair>()
@@ -98,9 +98,9 @@ function Inner() {
   }
 
   return (
-    <div className='p-5 w-full overflow-y-auto overflow-x-hidden'>
+    <div className='px-5 pt-5 w-full overflow-y-auto overflow-x-hidden'>
       <div className='p-5 rounded-xl bg-stone-800 max-w-sm mx-auto w-full'>
-        {pubkey && dialog === Dialogs.NEW_GAME && step === 0 && (
+        {step === 0 && (
           <AuthForm
             newAccount
             username={pubkey}
@@ -227,6 +227,12 @@ function Inner() {
           </div>
         )}
       </div>
+      <button
+        className='text-center py-5 w-full'
+        onClick={() => showDialog(Dialogs.NONE)}
+      >
+        Cancel
+      </button>
     </div>
   )
 }

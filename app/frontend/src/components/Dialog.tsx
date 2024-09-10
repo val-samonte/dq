@@ -5,6 +5,7 @@ import {
   TransitionChild,
 } from '@headlessui/react'
 import { Spinner } from './Spinner'
+import cn from 'classnames'
 
 export interface DialogProps {
   show: boolean
@@ -29,10 +30,12 @@ export default function Dialog({ show, children, onClose }: DialogProps) {
             className={'fixed h-dvh inset-x-0 top-0 overflow-hidden'}
             aria-hidden='true'
           >
-            <div
-              className={
+            <button
+              onClick={onClose}
+              className={cn(
+                'cursor-default',
                 'backdrop-grayscale backdrop-opacity-80 bg-black/90 w-full h-full'
-              }
+              )}
             />
           </div>
         </TransitionChild>
@@ -45,7 +48,7 @@ export default function Dialog({ show, children, onClose }: DialogProps) {
           leaveFrom='opacity-100 scale-100'
           leaveTo='opacity-0 scale-95'
         >
-          <div className='fixed inset-0'>
+          <div className='fixed inset-0 pointer-events-none'>
             <div className='h-full flex flex-col flex-auto items-center justify-center overflow-hidden'>
               <div className='w-full mx-auto overflow-hidden'>
                 <div
@@ -53,7 +56,9 @@ export default function Dialog({ show, children, onClose }: DialogProps) {
                     'w-full h-full flex flex-col items-center justify-center'
                   }
                 >
-                  <Suspense fallback={<Spinner />}>{children}</Suspense>
+                  <Suspense fallback={<Spinner />}>
+                    <div className='pointer-events-auto w-full'>{children}</div>
+                  </Suspense>
                 </div>
               </div>
             </div>

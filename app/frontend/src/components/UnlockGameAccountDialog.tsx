@@ -1,7 +1,7 @@
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { unlockGameAccountAtom } from '../atoms/unlockGameAccountAtom'
 import { Dialogs, showDialogAtom } from '../atoms/showDialogAtom'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import Dialog from './Dialog'
 import { AuthForm } from './AuthForm'
 import { trimAddress } from '../utils/trimAddress'
@@ -21,19 +21,24 @@ function Inner() {
   const setGameAccount = useSetAtom(gameAccountsAtom)
   const setCurrentAccount = useSetAtom(currentAccountAtom)
   const setKeypair = useSetAtom(keypairAtom)
-  const account = useRef(unlockAccount)
   const [message, setMessage] = useState('')
+  const [prevAccount, setPrevAccount] = useState('')
 
-  if (!unlockAccount) return null
+  useEffect(() => {
+    if (unlockAccount) {
+      setPrevAccount(unlockAccount)
+    }
+  }, [unlockAccount, setPrevAccount])
 
   return (
-    <div className='p-5 w-full overflow-y-auto overflow-x-hidden'>
+    <div className='px-5 pt-5 w-full overflow-y-auto overflow-x-hidden'>
       <div className='p-5 rounded-xl bg-stone-800 max-w-sm mx-auto w-full flex flex-col gap-5 items-center'>
         <AuthForm
-          username={unlockAccount}
+          username={unlockAccount ?? undefined}
           onSubmit={async ({ password }) => {
             setMessage('')
             try {
+              if (!unlockAccount) return
               const record = await idb.get('game_accounts', unlockAccount)
               if (!record) return
 
@@ -63,14 +68,20 @@ function Inner() {
         >
           <div className='flex flex-col gap-2'>
             <p className='font-bold'>
-              Unlock {trimAddress(account.current ?? '')}
+              Unlock {trimAddress(unlockAccount ?? prevAccount)}
             </p>
             {message && <p className='text-sm text-red-400'>{message}</p>}
           </div>
         </AuthForm>
-
-        <button onClick={() => setUnlockAccount(null)}>Cancel</button>
       </div>
+      <button
+        className='text-center py-5 w-full'
+        onClick={() => {
+          setUnlockAccount(null)
+        }}
+      >
+        Cancel
+      </button>
     </div>
   )
 }

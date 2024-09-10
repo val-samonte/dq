@@ -51,8 +51,8 @@ function Inner() {
   const showDialog = useSetAtom(showDialogAtom)
 
   return (
-    <div className='flex flex-col w-full gap-5 p-5 overflow-y-auto overflow-x-hidden max-w-lg mx-auto'>
-      <div className='flex flex-col w-full gap-5'>
+    <div className='flex flex-col w-full gap-5 px-5 pt-5 overflow-y-auto overflow-x-hidden max-w-lg mx-auto'>
+      <div className='flex flex-col w-full gap-5 px-5'>
         <h1 className='font-serif text-center'>Load Game</h1>
 
         {gameAccounts.map((data) => (

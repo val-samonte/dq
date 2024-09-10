@@ -2,7 +2,7 @@ import { Eye, EyeSlash } from '@phosphor-icons/react'
 import { ReactNode, useState } from 'react'
 
 export interface AuthFormProps {
-  username: string
+  username?: string
   submitLabel?: string | ReactNode
   children?: ReactNode
   newAccount?: boolean
@@ -25,6 +25,32 @@ export function AuthForm({
   const [password, setPassword] = useState('')
   const [visible, setVisible] = useState(false)
 
+  if (!username) {
+    return (
+      <div className='flex flex-col relative text-center w-full'>
+        {children}
+        <input style={{ visibility: 'hidden' }} type='text' readOnly />
+        <div className='relative w-full'>
+          <input
+            className='bg-stone-900 rounded px-10 py-2 text-center w-full'
+            autoFocus
+            type={!visible ? 'password' : 'text'}
+            value={password}
+          />
+          <button
+            type='button'
+            className='absolute right-0 top-0 h-full flex items-center justify-center aspect-square'
+          >
+            {!visible ? <Eye size={20} /> : <EyeSlash size={20} />}
+          </button>
+        </div>
+        <button className='mt-5 px-3 py-2 bg-amber-100 rounded text-stone-800 flex items-center justify-center gap-2'>
+          {submitLabel ?? 'Submit'}
+        </button>
+      </div>
+    )
+  }
+
   return (
     <form
       onSubmit={(e) => {
@@ -33,7 +59,7 @@ export function AuthForm({
       }}
       action='#'
       method='post'
-      className='flex flex-col relative text-center'
+      className='w-full flex flex-col relative text-center'
     >
       {children}
       <input

@@ -21,7 +21,7 @@ function Inner() {
   }, [kp])
 
   return (
-    <div className='p-5 w-full overflow-y-auto overflow-x-hidden'>
+    <div className='px-5 pt-5 w-full overflow-y-auto overflow-x-hidden'>
       <div className='p-5 rounded-xl bg-stone-800 max-w-sm mx-auto w-full'>
         <div className='flex flex-col text-center gap-5 items-center'>
           <QRCode data={pubkey ?? undefined} />
@@ -59,9 +59,14 @@ function Inner() {
           >
             Export Private Key
           </button>
-          <button onClick={() => showDialog(Dialogs.NONE)}>Close</button>
         </div>
       </div>
+      <button
+        className='text-center py-5 w-full'
+        onClick={() => showDialog(Dialogs.NONE)}
+      >
+        Close
+      </button>
     </div>
   )
 }
