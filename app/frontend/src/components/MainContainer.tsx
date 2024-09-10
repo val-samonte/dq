@@ -1,6 +1,6 @@
 import { ReactNode, useEffect, useMemo } from 'react'
 import { CaretLeft, List } from '@phosphor-icons/react'
-import { useAtomValue, useSetAtom } from 'jotai'
+import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { Dialogs, showDialogAtom } from '../atoms/showDialogAtom'
 import { NewGameDialog } from './NewGameDialog'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
@@ -10,7 +10,10 @@ import { UnlockGameAccountDialog } from './UnlockGameAccountDialog'
 import { Title } from './Title'
 import { MainMenuDialog } from './MainMenuDialog'
 import { connectionAtom } from '../atoms/connectionAtom'
-import { solBalanceAtom } from '../atoms/solBalanceAtom'
+import {
+  solBalanceAtom,
+  solBalanceFormattedAtom,
+} from '../atoms/solBalanceAtom'
 import { GameAccountDialog } from './GameAccountDialog'
 import { ExportPrivateKeyDialog } from './ExportPrivateKeyDialog'
 import { LoadGameAccountDialog } from './LoadGameAccountDialog'
@@ -22,6 +25,7 @@ export function MainContainer({ children }: { children: ReactNode }) {
   const location = useLocation()
   const navigate = useNavigate()
   const setBalance = useSetAtom(solBalanceAtom)
+  const balance = useAtomValue(solBalanceFormattedAtom)
 
   useEffect(() => {
     if (!kp) {
@@ -125,8 +129,8 @@ export function MainContainer({ children }: { children: ReactNode }) {
   return (
     <div className='fixed inset-0 overflow-hidden'>
       <div className='flex flex-col max-w-lg mx-auto bg-stone-950 h-full'>
-        <nav className='flex flex-none px-3 py-2 justify-between items-center'>
-          <div className='font-serif flex gap-2 items-center'>
+        <nav className='flex flex-none px-3 py-2 justify-between items-center gap-5'>
+          <div className='font-serif flex gap-2 items-center flex-none'>
             {navLinks.map((item, i) => {
               if (item.type === 'back') {
                 return (
@@ -138,9 +142,23 @@ export function MainContainer({ children }: { children: ReactNode }) {
               return <span key={'nav_' + i}>{item.value}</span>
             })}
           </div>
-          <button disabled={!kp} onClick={() => showDialog(Dialogs.MAIN_MENU)}>
-            <List size={32} />
-          </button>
+          <div className='flex flex-auto items-center gap-3 overflow-hidden'>
+            {!!kp && (
+              <button
+                onClick={() => showDialog(Dialogs.GAME_ACCOUNT)}
+                className='text-right text-stone-300 text-xs font-serif overflow-hidden flex-auto whitespace-nowrap text-ellipsis'
+              >
+                {balance} SOL
+              </button>
+            )}
+            <button
+              disabled={!kp}
+              className='flex-none'
+              onClick={() => showDialog(Dialogs.MAIN_MENU)}
+            >
+              <List size={32} />
+            </button>
+          </div>
         </nav>
         <main className='flex-auto flex flex-col overflow-hidden'>
           {children}

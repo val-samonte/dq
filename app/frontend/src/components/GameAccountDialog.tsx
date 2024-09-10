@@ -25,7 +25,7 @@ function Inner() {
       <div className='p-5 rounded-xl bg-stone-800 max-w-sm mx-auto w-full'>
         <div className='flex flex-col text-center gap-5 items-center'>
           <QRCode data={pubkey ?? undefined} />
-          <div className='text-2xl'>{balance} SOL</div>
+          <div className='text-2xl font-serif'>{balance} SOL</div>
           <button
             className={cn(
               'bg-stone-900 hover:bg-stone-700 transition-colors rounded',
