@@ -1,6 +1,6 @@
 import { ReactNode, useEffect, useMemo } from 'react'
 import { CaretLeft, List } from '@phosphor-icons/react'
-import { useAtom, useAtomValue, useSetAtom } from 'jotai'
+import { useAtomValue, useSetAtom } from 'jotai'
 import { Dialogs, showDialogAtom } from '../atoms/showDialogAtom'
 import { NewGameDialog } from './NewGameDialog'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
