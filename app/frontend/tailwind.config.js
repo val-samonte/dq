@@ -5,6 +5,9 @@ export default {
   content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   theme: {
     extend: {
+      transitionTimingFunction: {
+        back: 'cubic-bezier(.52,-0.51,.16,1.66)',
+      },
       fontFamily: {
         sans: ['Roboto', 'sans-serif'], // Overrides the default sans-serif font
         serif: ['Inknut Antiqua', 'serif'], // Overrides the default serif font

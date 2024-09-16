@@ -1,9 +1,11 @@
+import { useSetAtom } from 'jotai'
 import { Link } from 'react-router-dom'
+import { Dialogs, showDialogAtom } from '../atoms/showDialogAtom'
 
 export function Tavern() {
+  const showDialog = useSetAtom(showDialogAtom)
   const onHire = () => {
-    // check balance
-    // show mint character dialog
+    showDialog(Dialogs.MINT_CHARACTER)
   }
 
   return (
@@ -36,7 +38,10 @@ export function Tavern() {
           <div className='aspect-[3/4] h-full pointer-events-none' />
         </div>
         <div className='absolute inset-0 flex flex-col p-5 gap-5 justify-center'>
-          <button className='text-left bg-stone-900 p-5 gap-2 rounded-xl relative overflow-hidden flex flex-col justify-center border border-stone-800 transition-all duration-300 hover:scale-105'>
+          <button
+            onClick={onHire}
+            className='text-left bg-stone-900 p-5 gap-2 rounded-xl relative overflow-hidden flex flex-col justify-center border border-stone-800 transition-all duration-300 hover:scale-105'
+          >
             <div className='flex flex-col gap-2'>
               <p className='text-sm'>
                 &ldquo;I am looking to hire someone. I heard you know where to

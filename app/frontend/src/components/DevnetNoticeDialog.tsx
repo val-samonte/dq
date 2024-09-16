@@ -37,7 +37,7 @@ function Inner() {
         className='text-center py-5 w-full'
         onClick={() => showDialog(Dialogs.NONE)}
       >
-        Cancel
+        Close
       </button>
     </div>
   )

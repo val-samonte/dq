@@ -19,6 +19,7 @@ import { ExportPrivateKeyDialog } from './ExportPrivateKeyDialog'
 import { LoadGameAccountDialog } from './LoadGameAccountDialog'
 import { NotEnoughBalanceDialog } from './NotEnoughBalanceDialog'
 import { DevnetNoticeDialog } from './DevnetNoticeDialog'
+import { MintCharacterDialog } from './MintCharacterDialog'
 
 export function MainContainer({ children }: { children: ReactNode }) {
   const connection = useAtomValue(connectionAtom)
@@ -204,6 +205,7 @@ export function MainContainer({ children }: { children: ReactNode }) {
           </div>
         )}
         <NotEnoughBalanceDialog />
+        <MintCharacterDialog />
         <ExportPrivateKeyDialog />
         <NewGameDialog />
         <LoadGameAccountDialog />
