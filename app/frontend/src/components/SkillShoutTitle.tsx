@@ -18,11 +18,11 @@ export function SkillShoutTitle() {
             key={'skill_' + skillTitle.timeExecuted}
             className={cn(
               'relative',
-              'whitespace-nowrap',
-              'flex items-center justify-end',
+              'whitespace-nowrap font-serif',
+              'flex items-center justify-center',
               'pointer-events-none select-none',
               'animate-fade-in-out',
-              'text-lg px-3 py-2 bg-gradient-to-r max-w-sm w-full',
+              'px-3 py-2 bg-gradient-to-r max-w-sm w-full',
               'border-t border-b',
               skillTitle.command.skillType === 'offensive' && [
                 'border-red-500/30',

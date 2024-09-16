@@ -17,7 +17,7 @@ createRoot(document.getElementById('root')!).render(
           <Route path={'/tutorial'} element={<Tutorial />} />
           <Route path={'/tutorial/basics'} element={<TutorialBasic />} />
           <Route path={'/practice'} element={<Practice />} />
-          {/* <Route path={'/challenge'} element={<Tutorial />} /> */}
+          <Route path={'/arena'} element={<Tutorial />} />
         </Routes>
       </MainContainer>
     </Router>

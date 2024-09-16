@@ -1,6 +1,21 @@
+import { useAtomValue, useSetAtom } from 'jotai'
 import { Link } from 'react-router-dom'
+import { solBalanceAtom } from '../atoms/solBalanceAtom'
+import { Dialogs, showDialogAtom } from '../atoms/showDialogAtom'
 
 export function HomeScreen() {
+  const balance = useAtomValue(solBalanceAtom)
+  const insufficientArena = (balance ?? 0) < 0.01
+  const showDialog = useSetAtom(showDialogAtom)
+
+  // arena: check balance, check character, check pvp PDA
+  const handleArenaNavigation = () => {
+    if (insufficientArena) {
+      showDialog(Dialogs.NOT_ENOUGH_BALANCE)
+      return
+    }
+  }
+
   return (
     <div className='w-full h-full flex flex-col p-5 gap-5'>
       <Link
@@ -31,9 +46,9 @@ export function HomeScreen() {
           Practice
         </span>
       </Link>
-      <Link
-        to={'/challenge'}
-        className='h-32 rounded-xl relative overflow-hidden flex flex-col justify-end border border-stone-800 transition-all duration-300 hover:scale-105'
+      <button
+        onClick={handleArenaNavigation}
+        className='w-full h-32 rounded-xl relative overflow-hidden flex flex-col justify-end border border-stone-800 transition-all duration-300 hover:scale-105'
         style={{
           backgroundImage: 'url("/bg_ruins.png")',
           backgroundSize: 'cover',
@@ -42,9 +57,9 @@ export function HomeScreen() {
         }}
       >
         <span className='text-white font-serif relative text-2xl px-3 py-2 bg-gradient-to-tr from-black via-black/0 to-black/0'>
-          Challenge
+          Arena
         </span>
-      </Link>
+      </button>
     </div>
   )
 }

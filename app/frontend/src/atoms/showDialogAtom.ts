@@ -7,6 +7,7 @@ export enum Dialogs {
   GAME_ACCOUNT,
   EXPORT_PRIVATE_KEY,
   LOAD_GAME,
+  NOT_ENOUGH_BALANCE,
 }
 
 export const showDialogAtom = atom<Dialogs>(Dialogs.NONE)

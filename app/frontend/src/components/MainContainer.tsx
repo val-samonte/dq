@@ -11,12 +11,13 @@ import { Title } from './Title'
 import { MainMenuDialog } from './MainMenuDialog'
 import { connectionAtom } from '../atoms/connectionAtom'
 import {
-  solBalanceAtom,
+  solBalanceInLamportAtom,
   solBalanceFormattedAtom,
 } from '../atoms/solBalanceAtom'
 import { GameAccountDialog } from './GameAccountDialog'
 import { ExportPrivateKeyDialog } from './ExportPrivateKeyDialog'
 import { LoadGameAccountDialog } from './LoadGameAccountDialog'
+import { NotEnoughBalanceDialog } from './NotEnoughBalanceDialog'
 
 export function MainContainer({ children }: { children: ReactNode }) {
   const connection = useAtomValue(connectionAtom)
@@ -24,7 +25,7 @@ export function MainContainer({ children }: { children: ReactNode }) {
   const kp = useAtomValue(keypairAtom)
   const location = useLocation()
   const navigate = useNavigate()
-  const setBalance = useSetAtom(solBalanceAtom)
+  const setBalance = useSetAtom(solBalanceInLamportAtom)
   const balance = useAtomValue(solBalanceFormattedAtom)
 
   useEffect(() => {
@@ -109,12 +110,12 @@ export function MainContainer({ children }: { children: ReactNode }) {
           value: 'Practice',
         },
       ]
-    } else if (location.pathname.toLowerCase().includes('challenge')) {
+    } else if (location.pathname.toLowerCase().includes('arena')) {
       return [
         ...common,
         {
           type: 'title',
-          value: 'Challenge',
+          value: 'Arena',
         },
       ]
     }
@@ -193,6 +194,7 @@ export function MainContainer({ children }: { children: ReactNode }) {
             </div>
           </div>
         )}
+        <NotEnoughBalanceDialog />
         <ExportPrivateKeyDialog />
         <NewGameDialog />
         <LoadGameAccountDialog />

@@ -25,6 +25,6 @@ export function QRCode({ data }: { data?: string }) {
     })
   }, [data])
 
-  if (!data) return <div className='w-64 aspect-square bg-white' />
-  return <div ref={ref} className='w-64 aspect-square bg-white' />
+  if (!data) return <div className='mx-auto w-64 aspect-square bg-white' />
+  return <div ref={ref} className='mx-auto w-64 aspect-square bg-white' />
 }
