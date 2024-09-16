@@ -1,6 +1,11 @@
 import { Link } from 'react-router-dom'
 
 export function Tavern() {
+  const onHire = () => {
+    // check balance
+    // show mint character dialog
+  }
+
   return (
     <div className='flex-auto h-full w-full flex flex-col'>
       <div

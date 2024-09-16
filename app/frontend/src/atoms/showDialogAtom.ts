@@ -8,6 +8,8 @@ export enum Dialogs {
   EXPORT_PRIVATE_KEY,
   LOAD_GAME,
   NOT_ENOUGH_BALANCE,
+  MINT_CHARACTER,
+  DEVNET_NOTICE,
 }
 
 export const showDialogAtom = atom<Dialogs>(Dialogs.NONE)

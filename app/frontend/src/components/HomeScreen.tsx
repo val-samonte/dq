@@ -17,10 +17,10 @@ export function HomeScreen() {
   }
 
   return (
-    <div className='w-full h-full flex flex-col p-5 gap-5'>
+    <div className='w-full h-full flex flex-col p-5 gap-5 overflow-x-auto'>
       <Link
         to={'/tutorial'}
-        className='h-32 rounded-xl relative overflow-hidden flex flex-col justify-end border border-stone-800 transition-all duration-300 hover:scale-105'
+        className='flex-none h-32 rounded-xl relative overflow-hidden flex flex-col justify-end border border-stone-800 transition-all duration-300 hover:scale-105'
         style={{
           backgroundImage: 'url("/bg_library.png")',
           backgroundSize: 'cover',
@@ -34,7 +34,7 @@ export function HomeScreen() {
       </Link>
       <Link
         to={'/practice'}
-        className='h-32 rounded-xl relative overflow-hidden flex flex-col justify-end border border-stone-800 transition-all duration-300 hover:scale-105'
+        className='flex-none h-32 rounded-xl relative overflow-hidden flex flex-col justify-end border border-stone-800 transition-all duration-300 hover:scale-105'
         style={{
           backgroundImage: 'url("/target_dummy.png")',
           backgroundSize: 'cover',
@@ -48,7 +48,7 @@ export function HomeScreen() {
       </Link>
       <Link
         to={'/tavern'}
-        className='h-32 rounded-xl relative overflow-hidden flex flex-col justify-end border border-stone-800 transition-all duration-300 hover:scale-105'
+        className='flex-none h-32 rounded-xl relative overflow-hidden flex flex-col justify-end border border-stone-800 transition-all duration-300 hover:scale-105'
         style={{
           backgroundImage: 'url("/bg_bar.png")',
           backgroundSize: 'cover',
@@ -62,7 +62,7 @@ export function HomeScreen() {
       </Link>
       <button
         onClick={handleArenaNavigation}
-        className='w-full h-32 rounded-xl relative overflow-hidden flex flex-col justify-end border border-stone-800 transition-all duration-300 hover:scale-105'
+        className='flex-none w-full h-32 rounded-xl relative overflow-hidden flex flex-col justify-end border border-stone-800 transition-all duration-300 hover:scale-105'
         style={{
           backgroundImage: 'url("/bg_ruins.png")',
           backgroundSize: 'cover',

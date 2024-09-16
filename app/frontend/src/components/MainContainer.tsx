@@ -18,6 +18,7 @@ import { GameAccountDialog } from './GameAccountDialog'
 import { ExportPrivateKeyDialog } from './ExportPrivateKeyDialog'
 import { LoadGameAccountDialog } from './LoadGameAccountDialog'
 import { NotEnoughBalanceDialog } from './NotEnoughBalanceDialog'
+import { DevnetNoticeDialog } from './DevnetNoticeDialog'
 
 export function MainContainer({ children }: { children: ReactNode }) {
   const connection = useAtomValue(connectionAtom)
@@ -210,6 +211,17 @@ export function MainContainer({ children }: { children: ReactNode }) {
         <GameAccountDialog />
         <MainMenuDialog />
       </div>
+      <div className='fixed z-50 inset-x-0 top-0 pointer-events-none flex items-center justify-center'>
+        <button
+          onClick={() => {
+            showDialog(Dialogs.DEVNET_NOTICE)
+          }}
+          className='bg-yellow-400 text-black rounded-b-lg text-xs font-bold px-3 py-1 pointer-events-auto'
+        >
+          DEVNET
+        </button>
+      </div>
+      <DevnetNoticeDialog />
     </div>
   )
 }
