@@ -118,6 +118,14 @@ export function MainContainer({ children }: { children: ReactNode }) {
           value: 'Arena',
         },
       ]
+    } else if (location.pathname.toLowerCase().includes('tavern')) {
+      return [
+        ...common,
+        {
+          type: 'title',
+          value: 'Tavern',
+        },
+      ]
     }
     return [
       {

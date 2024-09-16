@@ -46,6 +46,20 @@ export function HomeScreen() {
           Practice
         </span>
       </Link>
+      <Link
+        to={'/tavern'}
+        className='h-32 rounded-xl relative overflow-hidden flex flex-col justify-end border border-stone-800 transition-all duration-300 hover:scale-105'
+        style={{
+          backgroundImage: 'url("/bg_bar.png")',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center 35%',
+          backgroundRepeat: 'no-repeat',
+        }}
+      >
+        <span className='text-white font-serif relative text-2xl px-3 py-2 bg-gradient-to-tr from-black via-black/0 to-black/0'>
+          Tavern
+        </span>
+      </Link>
       <button
         onClick={handleArenaNavigation}
         className='w-full h-32 rounded-xl relative overflow-hidden flex flex-col justify-end border border-stone-800 transition-all duration-300 hover:scale-105'
