@@ -1,7 +1,7 @@
 import { useAtom, useSetAtom } from 'jotai'
 import Dialog from './Dialog'
 import { newCharacterMintedAtom } from '../atoms/newCharacterMintedAtom'
-import { useEffect, useRef } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import { Dialogs, showDialogAtom } from '../atoms/showDialogAtom'
 
 const adventurerResponses = [
@@ -15,28 +15,28 @@ const adventurerResponses = [
 function Inner() {
   const [newMint, setNewMint] = useAtom(newCharacterMintedAtom)
   const prevMint = useRef(newMint)
-  const pickMessage = useRef(Date.now() % adventurerResponses.length)
+  const message = useMemo(() => {
+    return adventurerResponses[Date.now() % adventurerResponses.length]
+  }, [newMint])
 
   return (
     <div className='px-5 pt-5 w-full overflow-y-auto overflow-x-hidden'>
       <div className='px-5 rounded-xl max-w-sm mx-auto w-full'>
         <div className='flex flex-col text-center gap-5'>
           <h1 className='font-serif text-center font-bold text-lg'>
-            {prevMint.current?.details.name} joined the party!
+            {prevMint.current?.details?.name} joined the party!
           </h1>
           <div className='flex flex-col text-center gap-2'>
             <img
-              src={prevMint.current?.details.image}
-              alt={prevMint.current?.details.name}
+              src={prevMint.current?.details?.image}
+              alt={prevMint.current?.details?.name}
               className='w-full aspect-square'
             />
             <div className='text-left flex flex-col gap-2 border-l border-amber-300 px-5 py-3 bg-gradient-to-r from-black/80 via-black/80 to-black/10'>
               <p className='font-serif text-amber-100'>
-                {prevMint.current?.details.name}
+                {prevMint.current?.details?.name}
               </p>
-              <p className='text-sm'>
-                {adventurerResponses[pickMessage.current]}
-              </p>
+              <p className='text-sm'>{message}</p>
             </div>
           </div>
         </div>
