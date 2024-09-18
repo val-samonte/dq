@@ -62,12 +62,17 @@ function Inner() {
         ],
       }).sendAndConfirm(umi)
 
+      setTimeout(() => {
+        setBusy(false)
+      }, 1000)
+
       setNewMint(assetSigner.publicKey)
     } catch (e) {
       showDialog(Dialogs.NOT_ENOUGH_BALANCE)
       console.log(e)
+
+      setBusy(false)
     }
-    setBusy(false)
   }
 
   return (

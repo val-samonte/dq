@@ -1,7 +1,7 @@
 import { useAtom, useSetAtom } from 'jotai'
 import Dialog from './Dialog'
 import { newCharacterMintedAtom } from '../atoms/newCharacterMintedAtom'
-import { useEffect, useMemo, useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import { Dialogs, showDialogAtom } from '../atoms/showDialogAtom'
 
 const adventurerResponses = [
@@ -15,9 +15,7 @@ const adventurerResponses = [
 function Inner() {
   const [newMint, setNewMint] = useAtom(newCharacterMintedAtom)
   const prevMint = useRef(newMint)
-  const message = useMemo(() => {
-    return adventurerResponses[Date.now() % adventurerResponses.length]
-  }, [newMint])
+  const pickMessage = useRef(Date.now() % adventurerResponses.length)
 
   return (
     <div className='px-5 pt-5 w-full overflow-y-auto overflow-x-hidden'>
@@ -36,7 +34,9 @@ function Inner() {
               <p className='font-serif text-amber-100'>
                 {prevMint.current?.details?.name}
               </p>
-              <p className='text-sm'>{message}</p>
+              <p className='text-sm'>
+                {adventurerResponses[pickMessage.current]}
+              </p>
             </div>
           </div>
         </div>
