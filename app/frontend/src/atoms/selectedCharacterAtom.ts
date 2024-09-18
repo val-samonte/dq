@@ -35,7 +35,7 @@ export const selectedCharacterAddressAtom = atom(
   }
 )
 
-export const selectedCharacter = atom(async (get) => {
+export const selectedCharacterAtom = atom(async (get) => {
   const selectedAddress = get(selectedCharacterAddressAtom)
 
   if (!selectedAddress) return null
@@ -47,7 +47,7 @@ export const selectedCharacter = atom(async (get) => {
     skipDerivePlugins: true,
   })
 
-  const details = get(characterUriDetailsAtom(getUri(rpc, asset.uri)))
+  const details = await get(characterUriDetailsAtom(getUri(rpc, asset.uri)))
 
   return { asset, details }
 })

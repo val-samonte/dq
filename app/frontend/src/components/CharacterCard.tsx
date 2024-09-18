@@ -73,7 +73,7 @@ function Inner({ uri, publicKey: pubkey }: CharacterCardProps) {
               'sm:relative sm:h-full',
               'border border-stone-800',
               'flex-auto flex flex-col items-center justify-center p-3',
-              'aspect-square object-contain h-full rounded bg-stone-950'
+              'aspect-square object-contain rounded bg-stone-950'
             )}
           >
             <span className='text-[0.5em] text-center font-bold uppercase opacity-20'>

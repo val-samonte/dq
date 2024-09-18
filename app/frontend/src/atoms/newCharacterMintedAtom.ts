@@ -20,7 +20,7 @@ export const newCharacterMintedAtom = atom(
       skipDerivePlugins: true,
     })
 
-    const details = get(characterUriDetailsAtom(getUri(rpc, asset.uri)))
+    const details = await get(characterUriDetailsAtom(getUri(rpc, asset.uri)))
 
     return { asset, details }
   },
