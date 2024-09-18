@@ -8,6 +8,7 @@ import { Tutorial } from './components/Tutorial'
 import { TutorialBasic } from './components/TutorialBasic'
 import { Practice } from './components/Practice'
 import { Tavern } from './components/Tavern'
+import { Barracks } from './components/Barracks'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -20,6 +21,7 @@ createRoot(document.getElementById('root')!).render(
           <Route path={'/practice'} element={<Practice />} />
           <Route path={'/arena'} element={<Tutorial />} />
           <Route path={'/tavern'} element={<Tavern />} />
+          <Route path={'/barracks'} element={<Barracks />} />
         </Routes>
       </MainContainer>
     </Router>

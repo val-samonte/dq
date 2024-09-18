@@ -1,7 +1,5 @@
 import { atom } from 'jotai'
 import { atomWithStorage } from 'jotai/utils'
-import { WalletAdapterNetwork } from '@solana/wallet-adapter-base'
-import { clusterApiUrl } from '@solana/web3.js'
 
 export enum RPCDispatchType {
   ADD_CUSTOM_RPC,
@@ -20,7 +18,7 @@ interface RPC {
 const officialRpcs: RPC[] = [
   {
     name: 'Devnet',
-    url: clusterApiUrl(WalletAdapterNetwork.Devnet),
+    url: 'https://devnet.helius-rpc.com/?api-key=8e1061ca-764a-4435-a567-bba9405cc1c2',
   },
 ]
 

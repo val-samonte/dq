@@ -31,7 +31,7 @@ function Card({
       className={cn(
         'bg-stone-900 p-5 gap-2 rounded-xl relative overflow-hidden',
         'flex flex-col justify-center border border-stone-800',
-        'transition-all duration-300 hover:scale-105'
+        'transition-all duration-300 hover:scale-[1.025]'
       )}
       onClick={() => onClick(pubkey)}
     >
@@ -71,7 +71,7 @@ function Inner() {
           className={cn(
             'bg-stone-900 p-5 gap-2 rounded-xl relative overflow-hidden',
             'flex flex-col justify-center border border-stone-800',
-            'transition-all duration-300 hover:scale-105'
+            'transition-all duration-300 hover:scale-[1.025]'
           )}
           onClick={() => {}}
         >

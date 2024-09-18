@@ -129,6 +129,14 @@ export function MainContainer({ children }: { children: ReactNode }) {
           value: 'Tavern',
         },
       ]
+    } else if (location.pathname.toLowerCase().includes('barracks')) {
+      return [
+        ...common,
+        {
+          type: 'title',
+          value: 'Barracks',
+        },
+      ]
     }
     return [
       {

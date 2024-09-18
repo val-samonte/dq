@@ -1,6 +1,7 @@
 import { useSetAtom } from 'jotai'
 import { Link } from 'react-router-dom'
 import { Dialogs, showDialogAtom } from '../atoms/showDialogAtom'
+import { InputStage } from './InputStage'
 
 export function Tavern() {
   const showDialog = useSetAtom(showDialogAtom)
@@ -33,35 +34,30 @@ export function Tavern() {
           </p>
         </div>
       </div>
-      <div className='relative flex-none grid grid-cols-12 max-h-[50%]'>
-        <div className='col-span-7 h-full pointer-events-none opacity-0'>
-          <div className='aspect-[3/4] h-full pointer-events-none' />
-        </div>
-        <div className='absolute inset-0 flex flex-col p-5 gap-5 justify-center'>
-          <button
-            onClick={onHire}
-            className='text-left bg-stone-900 p-5 gap-2 rounded-xl relative overflow-hidden flex flex-col justify-center border border-stone-800 transition-all duration-300 hover:scale-105'
-          >
-            <div className='flex flex-col gap-2'>
-              <p className='text-sm'>
-                &ldquo;I am looking to hire someone. I heard you know where to
-                find good help.&rdquo;
-              </p>
-            </div>
-          </button>
-          <Link
-            to={'/'}
-            className='bg-stone-900 p-5 gap-2 rounded-xl relative overflow-hidden flex flex-col justify-center border border-stone-800 transition-all duration-300 hover:scale-105'
-          >
-            <div className='flex flex-col gap-2'>
-              <p className='text-sm'>
-                &ldquo;Thank you, Gabranth. Nothing I need anymore.
-                Farewell.&rdquo;
-              </p>
-            </div>
-          </Link>
-        </div>
-      </div>
+      <InputStage>
+        <button
+          onClick={onHire}
+          className='text-left bg-stone-900 p-5 gap-2 rounded-xl relative overflow-hidden flex flex-col justify-center border border-stone-800 transition-all duration-300 hover:scale-[1.025]'
+        >
+          <div className='flex flex-col gap-2'>
+            <p className='text-sm'>
+              &ldquo;I am looking to hire someone. I heard you know where to
+              find good help.&rdquo;
+            </p>
+          </div>
+        </button>
+        <Link
+          to={'/'}
+          className='bg-stone-900 p-5 gap-2 rounded-xl relative overflow-hidden flex flex-col justify-center border border-stone-800 transition-all duration-300 hover:scale-[1.025]'
+        >
+          <div className='flex flex-col gap-2'>
+            <p className='text-sm'>
+              &ldquo;Thank you, Gabranth. Nothing I need anymore.
+              Farewell.&rdquo;
+            </p>
+          </div>
+        </Link>
+      </InputStage>
     </div>
   )
 }
