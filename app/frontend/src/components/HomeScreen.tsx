@@ -108,6 +108,7 @@ function CharacterPreview() {
     <Link
       to={'/barracks'}
       className={cn(
+        'animate-fade-in',
         'sticky bottom-0 inset-x-0',
         'bg-gradient-to-t from-black via-black/80 to-black/0',
         'flex items-end'

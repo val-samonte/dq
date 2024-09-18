@@ -4,6 +4,7 @@ import { useAtom, useAtomValue } from 'jotai'
 import cn from 'classnames'
 import { selectedCharacterAddressAtom } from '../atoms/selectedCharacterAtom'
 import { publicKey } from '@metaplex-foundation/umi'
+import { useNavigate } from 'react-router-dom'
 
 interface CharacterCardProps {
   uri: string
@@ -14,6 +15,7 @@ interface CharacterCardProps {
 function Inner({ uri, publicKey: pubkey }: CharacterCardProps) {
   const [selected, selectCharacter] = useAtom(selectedCharacterAddressAtom)
   const characterDetails = useAtomValue(characterUriDetailsAtom(uri))
+  const navigate = useNavigate()
 
   const isSelected = useMemo(() => {
     return publicKey(pubkey) === selected
@@ -23,7 +25,13 @@ function Inner({ uri, publicKey: pubkey }: CharacterCardProps) {
 
   return (
     <button
-      onClick={() => selectCharacter(pubkey)}
+      onClick={() => {
+        if (!isSelected) {
+          selectCharacter(pubkey)
+        } else {
+          navigate('/')
+        }
+      }}
       className={cn(
         isSelected
           ? 'border-amber-300 bg-stone-800'
