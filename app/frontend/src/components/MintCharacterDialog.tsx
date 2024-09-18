@@ -6,8 +6,9 @@ import cn from 'classnames'
 import { GenderFemale, GenderMale } from '@phosphor-icons/react'
 import { umiAtom } from '../atoms/umiAtom'
 import { generateSigner } from '@metaplex-foundation/umi'
-import { create } from '@metaplex-foundation/mpl-core'
+import { create, fetchCollection } from '@metaplex-foundation/mpl-core'
 import { solBalanceAtom } from '../atoms/solBalanceAtom'
+import { charCollectionAddress } from '../constants/addresses'
 
 const busyAtom = atom(false)
 
@@ -39,14 +40,20 @@ function Inner() {
         image: `https://deez.quest/char_${gender}.png`,
       })
 
+      const collection = await fetchCollection(umi, charCollectionAddress)
+
       const assetSigner = generateSigner(umi)
       const result = await create(umi, {
         asset: assetSigner,
         name,
         uri,
+        collection, // "NoApprovals: Neither the asset or any plugins have approved this operation"
       }).sendAndConfirm(umi)
 
       console.log(result)
+      console.log('Asset pubkey:', assetSigner.publicKey)
+
+      console.log(collection)
 
       // todo:
       // premint collection
