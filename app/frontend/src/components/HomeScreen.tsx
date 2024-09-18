@@ -109,7 +109,7 @@ function CharacterPreview() {
       to={'/barracks'}
       className={cn(
         'animate-fade-in',
-        'sticky bottom-0 inset-x-0',
+        'sticky bottom-0 inset-x-0 mt-auto',
         'bg-gradient-to-t from-black via-black/80 to-black/0',
         'flex items-end'
       )}
@@ -129,7 +129,7 @@ function CharacterPreview() {
               'aspect-square object-contain rounded bg-stone-950'
             )}
           >
-            <span className='text-[0.65em] text-center font-bold uppercase opacity-20'>
+            <span className='text-[0.5em] text-center font-bold uppercase opacity-20'>
               No Weapon
             </span>
           </div>
@@ -141,7 +141,7 @@ function CharacterPreview() {
               'aspect-square object-contain rounded bg-stone-950'
             )}
           >
-            <span className='text-[0.65em] text-center font-bold uppercase opacity-20'>
+            <span className='text-[0.5em] text-center font-bold uppercase opacity-20'>
               No Armor
             </span>
           </div>

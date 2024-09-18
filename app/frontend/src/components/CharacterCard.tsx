@@ -59,12 +59,12 @@ function Inner({ uri, publicKey: pubkey }: CharacterCardProps) {
             </div>
           </div>
         </div>
-        <div className='flex gap-3 h-16 relative w-20 sm:w-auto'>
+        <div className='flex gap-3 relative w-20 sm:w-auto'>
           <div
             className={cn(
               'overflow-hidden',
-              'absolute top-0 left-0 h-12',
-              'sm:relative sm:h-full',
+              'absolute top-0 left-0 w-12 h-12',
+              'sm:relative sm:w-16 sm:h-16',
               'border border-stone-800',
               'flex-auto flex flex-col items-center justify-center p-3',
               'aspect-square object-contain rounded bg-stone-950'
@@ -77,8 +77,8 @@ function Inner({ uri, publicKey: pubkey }: CharacterCardProps) {
           <div
             className={cn(
               'overflow-hidden',
-              'absolute bottom-0 right-0 h-12',
-              'sm:relative sm:h-full',
+              'absolute bottom-0 right-0 w-12 h-12',
+              'sm:relative sm:w-16 sm:h-16',
               'border border-stone-800',
               'flex-auto flex flex-col items-center justify-center p-3',
               'aspect-square object-contain rounded bg-stone-950'
