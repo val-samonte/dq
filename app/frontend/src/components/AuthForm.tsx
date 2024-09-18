@@ -36,6 +36,7 @@ export function AuthForm({
             autoFocus
             type={!visible ? 'password' : 'text'}
             value={password}
+            onChange={() => {}}
           />
           <button
             type='button'

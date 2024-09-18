@@ -6,14 +6,16 @@ import cn from 'classnames'
 import { GenderFemale, GenderMale } from '@phosphor-icons/react'
 import { umiAtom } from '../atoms/umiAtom'
 import { generateSigner } from '@metaplex-foundation/umi'
-import { create, fetchCollection } from '@metaplex-foundation/mpl-core'
+import { create } from '@metaplex-foundation/mpl-core'
 import { solBalanceAtom } from '../atoms/solBalanceAtom'
-import { charCollectionAddress } from '../constants/addresses'
+import { masterAddress } from '../constants/addresses'
+import { newCharacterMintedAtom } from '../atoms/newCharacterMintedAtom'
 
 const busyAtom = atom(false)
 
 function Inner() {
   const showDialog = useSetAtom(showDialogAtom)
+  const setNewMint = useSetAtom(newCharacterMintedAtom)
   const umi = useAtomValue(umiAtom)
   const balance = useAtomValue(solBalanceAtom)
   const [busy, setBusy] = useAtom(busyAtom)
@@ -26,7 +28,7 @@ function Inner() {
       nameRef.current?.focus()
       return
     }
-    if ((balance ?? 0) < 0.0034) {
+    if ((balance ?? 0) < 0.0042) {
       showDialog(Dialogs.NOT_ENOUGH_BALANCE)
       return
     }
@@ -40,25 +42,27 @@ function Inner() {
         image: `https://deez.quest/char_${gender}.png`,
       })
 
-      const collection = await fetchCollection(umi, charCollectionAddress)
-
       const assetSigner = generateSigner(umi)
-      const result = await create(umi, {
+      await create(umi, {
         asset: assetSigner,
         name,
         uri,
-        collection, // "NoApprovals: Neither the asset or any plugins have approved this operation"
+        owner: umi.identity.publicKey,
+        updateAuthority: masterAddress,
+        plugins: [
+          {
+            type: 'PermanentFreezeDelegate',
+            frozen: false,
+            authority: { type: 'Address', address: masterAddress },
+          },
+          {
+            type: 'PermanentBurnDelegate',
+            authority: { type: 'Address', address: masterAddress },
+          },
+        ],
       }).sendAndConfirm(umi)
 
-      console.log(result)
-      console.log('Asset pubkey:', assetSigner.publicKey)
-
-      console.log(collection)
-
-      // todo:
-      // premint collection
-      // show minted character + link
-      // show transaction signature + link
+      setNewMint(assetSigner.publicKey)
     } catch (e) {
       showDialog(Dialogs.NOT_ENOUGH_BALANCE)
       console.log(e)
@@ -150,7 +154,7 @@ function Inner() {
                 'px-3 py-2 bg-amber-100 rounded text-stone-800 flex items-center justify-center gap-2'
               )}
             >
-              {busy ? 'Please Wait' : 'Create (Cost ~0.0034 SOL)'}
+              {busy ? 'Please Wait' : 'Create (Cost ~0.0042 SOL)'}
             </button>
           </div>
         </div>

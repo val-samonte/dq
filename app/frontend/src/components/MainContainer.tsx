@@ -1,4 +1,4 @@
-import { ReactNode, useEffect, useMemo } from 'react'
+import { ReactNode, Suspense, useEffect, useMemo } from 'react'
 import { CaretLeft, List } from '@phosphor-icons/react'
 import { useAtomValue, useSetAtom } from 'jotai'
 import { Dialogs, showDialogAtom } from '../atoms/showDialogAtom'
@@ -20,6 +20,7 @@ import { LoadGameAccountDialog } from './LoadGameAccountDialog'
 import { NotEnoughBalanceDialog } from './NotEnoughBalanceDialog'
 import { DevnetNoticeDialog } from './DevnetNoticeDialog'
 import { MintCharacterDialog } from './MintCharacterDialog'
+import { NewCharacterDialog } from './NewCharacterDialog'
 
 export function MainContainer({ children }: { children: ReactNode }) {
   const connection = useAtomValue(connectionAtom)
@@ -208,6 +209,9 @@ export function MainContainer({ children }: { children: ReactNode }) {
         <MintCharacterDialog />
         <ExportPrivateKeyDialog />
         <NewGameDialog />
+        <Suspense fallback={null}>
+          <NewCharacterDialog />
+        </Suspense>
         <LoadGameAccountDialog />
         <UnlockGameAccountDialog />
         <GameAccountDialog />
