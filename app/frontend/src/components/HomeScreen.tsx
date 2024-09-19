@@ -7,6 +7,7 @@ import cn from 'classnames'
 import { selectedCharacterAtom } from '../atoms/selectedCharacterAtom'
 
 export function HomeScreen() {
+  const selectedCharacter = useAtomValue(selectedCharacterAtom)
   const balance = useAtomValue(solBalanceAtom)
   const insufficientArena = (balance ?? 0) < 0.01
   const showDialog = useSetAtom(showDialogAtom)
@@ -21,7 +22,14 @@ export function HomeScreen() {
 
   return (
     <div className='w-full h-full flex flex-col overflow-y-auto overflow-x-hidden'>
-      <div className='flex flex-col p-5 gap-5'>
+      <div
+        className='flex flex-col p-5 gap-5'
+        style={{
+          backgroundImage: 'url("/terrain.webp")',
+          backgroundSize: 'cover',
+          backgroundRepeat: 'repeat-y',
+        }}
+      >
         <Link
           to={'/tutorial'}
           className='flex-none h-32 rounded-xl relative overflow-hidden flex flex-col justify-end border border-stone-800 transition-all duration-300 hover:scale-[1.025]'
@@ -92,6 +100,9 @@ export function HomeScreen() {
             Barracks
           </span>
         </Link>
+        {selectedCharacter && (
+          <div className='aspect-square object-contain w-[60%] pointer-events-none' />
+        )}
       </div>
       <Suspense fallback={null}>
         <CharacterPreview />
@@ -109,16 +120,11 @@ function CharacterPreview() {
       to={'/barracks'}
       className={cn(
         'animate-fade-in',
-        'sticky bottom-0 inset-x-0 mt-auto',
-        'bg-gradient-to-t from-black via-black/80 to-black/0',
+        'absolute bottom-0 inset-x-0 mt-auto',
+        'bg-gradient-to-t from-sky-100 to-white/0',
         'flex items-end'
       )}
     >
-      <img
-        src={selectedCharacter.details?.image}
-        alt={selectedCharacter.details?.name}
-        className='aspect-square object-contain w-[60%] -ml-[10%]'
-      />
       <div className='flex flex-col flex-auto items-end py-5 gap-5'>
         <div className='flex gap-5 relative px-5'>
           <div
@@ -152,15 +158,23 @@ function CharacterPreview() {
             'whitespace-nowrap font-serif',
             'flex items-center justify-center',
             'pointer-events-none select-none',
-            'px-3 py-2 bg-gradient-to-r max-w-sm w-full',
-            'border-t border-b',
-            'border-amber-300/30',
-            'from-amber-300/0 to-amber-600/30'
+            'px-3 py-2 bg-gradient-to-r w-full',
+            'border-y-2',
+            'border-amber-300/80',
+            'from-black/10 to-black'
           )}
         >
-          <span>{selectedCharacter.details?.name}</span>
+          <span className='w-[50%]' />
+          <span className='w-[50%] text-center'>
+            {selectedCharacter.details?.name}
+          </span>
         </div>
       </div>
+      <img
+        src={selectedCharacter.details?.image}
+        alt={selectedCharacter.details?.name}
+        className='absolute bottom-0 left-0 aspect-square object-contain w-[60%] -ml-[10%]'
+      />
     </Link>
   )
 }

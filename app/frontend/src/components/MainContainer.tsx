@@ -180,7 +180,7 @@ export function MainContainer({ children }: { children: ReactNode }) {
             </button>
           </div>
         </nav>
-        <main className='flex-auto flex flex-col overflow-hidden'>
+        <main className='relative flex-auto flex flex-col overflow-hidden'>
           {children}
         </main>
         {!kp && (

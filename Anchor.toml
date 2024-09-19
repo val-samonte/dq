@@ -5,6 +5,7 @@ resolution = true
 skip-lint = false
 
 [programs.localnet]
+character = "E9ERMcDfFvpCRHi1mkWmnd9mVoU2b6zXx5Pc7CCAhp9h"
 dq = "9FQ8ck9nj6z8Gs9q6iF75HySuF1KXyazKrQKb5kCYv2E"
 movement = "4zTxgyxX165LiWj2rV1KYx6iUt3czpBH16u2wh3r6a5V"
 position = "9C8tuSrKjNoVNkC5tLvbDhsnnf5vNPTW64NdHMfZCFsg"
@@ -20,8 +21,8 @@ wallet = "~/.config/solana/id.json"
 members = ["programs/*", "programs-ecs/components/*", "programs-ecs/systems/*"]
 
 [scripts]
-test = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/**/*.ts"
 create-collection = "yarn run ts-node --project ./tsconfig.json scripts/create-collection.ts"
+test = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/**/*.ts"
 
 [test]
 startup_wait = 5000

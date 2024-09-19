@@ -66,7 +66,7 @@ function Inner({ uri, publicKey: pubkey }: CharacterCardProps) {
               'absolute top-0 left-0 w-12 h-12',
               'sm:relative sm:w-16 sm:h-16',
               'border border-stone-800',
-              'flex-auto flex flex-col items-center justify-center p-3',
+              'flex-none flex flex-col items-center justify-center p-3 box-border',
               'aspect-square object-contain rounded bg-stone-950'
             )}
           >
@@ -80,7 +80,7 @@ function Inner({ uri, publicKey: pubkey }: CharacterCardProps) {
               'absolute bottom-0 right-0 w-12 h-12',
               'sm:relative sm:w-16 sm:h-16',
               'border border-stone-800',
-              'flex-auto flex flex-col items-center justify-center p-3',
+              'flex-none flex flex-col items-center justify-center p-3 box-border',
               'aspect-square object-contain rounded bg-stone-950'
             )}
           >

@@ -2,11 +2,7 @@ import { publicKey, PublicKey } from '@metaplex-foundation/umi'
 import { atom } from 'jotai'
 import { pubkeyAtom } from './keypairAtom'
 import { atomFamily, atomWithStorage } from 'jotai/utils'
-import { rpcEndpointAtom } from './rpcEndpointAtom'
-import { umiAtom } from './umiAtom'
-import { fetchAsset } from '@metaplex-foundation/mpl-core'
-import { characterUriDetailsAtom } from './characterUriDetailsAtom'
-import { getUri } from '../utils/getUri'
+import { characterAtom } from './charactersAtom'
 
 export const selectedCharacterAddressBaseAtom = atomFamily((pubkey: string) =>
   atomWithStorage<PublicKey | null>(
@@ -40,14 +36,5 @@ export const selectedCharacterAtom = atom(async (get) => {
 
   if (!selectedAddress) return null
 
-  const rpc = get(rpcEndpointAtom)
-  const umi = get(umiAtom)
-
-  const asset = await fetchAsset(umi, selectedAddress, {
-    skipDerivePlugins: true,
-  })
-
-  const details = await get(characterUriDetailsAtom(getUri(rpc, asset.uri)))
-
-  return { asset, details }
+  return await get(characterAtom(selectedAddress))
 })
