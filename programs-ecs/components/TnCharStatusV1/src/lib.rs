@@ -5,8 +5,7 @@ declare_id!("5BBS4AUATNTRSyxrgmPRE3gnwYwkW1oZ22Er6aCFjWQz");
 #[component]
 #[derive(Default)]
 pub struct TnCharStatusV1 {
-    // mint
-    // battle entity
+    // character (pda)
     // buff ins code 1
     // buff ins code 2
     // buff ins code 3

@@ -5,8 +5,8 @@ declare_id!("4fqrH1Bi33PtjuGyFXwfvNKhnWG1yKLUU2SJUD95FY3P");
 #[component]
 #[derive(Default)]
 pub struct TnRankedPvpV1 {
-    // mint
-    // opponent
+    // character_owner (pda)
+    // character_opponent (pda)
     // turns
     // hp
     // max hp
@@ -15,4 +15,8 @@ pub struct TnRankedPvpV1 {
     // mp recov per turn
     // dmg res
     // mgc res
+    // int
+    // str
+    // dex
+    // vit
 }

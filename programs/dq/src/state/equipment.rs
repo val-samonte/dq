@@ -1,10 +1,8 @@
-use bolt_lang::*;
+// TnCharEquipV1 here
+// every equipment will have its own associated PDA
 
-declare_id!("2sdzNs2VSfqvJhtWbEZp9jUaMvDJVm5JgY34UruWYjMD");
-
-#[component]
-#[derive(Default)]
-pub struct TnCharEquipV1 {
+// pub mint: Pubkey,
+    
     // char mint
     // equip mint
     // status
@@ -13,4 +11,3 @@ pub struct TnCharEquipV1 {
     // type (weapon, armor)
     // learned_pts
     // learned_cap
-}
