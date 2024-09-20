@@ -5,10 +5,17 @@ resolution = true
 skip-lint = false
 
 [programs.localnet]
-character = "E9ERMcDfFvpCRHi1mkWmnd9mVoU2b6zXx5Pc7CCAhp9h"
+TnBoardV1 = "DQPBAAvhsGhf9gp5wwa3tzvSUjS4wiUTDZnioFSkpugw"
+TnCharEquipV1 = "2sdzNs2VSfqvJhtWbEZp9jUaMvDJVm5JgY34UruWYjMD"
+TnCharSkillsV1 = "Bx1yYFTaYmjmvaQ3ep7iPqeutTjYSsZauzAQcUChvjQA"
+TnCharStatsV1 = "3ddpKZ3Y4Dz6sMT6b8EHmG8Qas54pD3BkWe9Xx2vPizc"
+TnCharStatusV1 = "5BBS4AUATNTRSyxrgmPRE3gnwYwkW1oZ22Er6aCFjWQz"
+TnCharV1 = "3GReFwP9RxPkG4ZFoUB2kJpYpruwjoMLVU1P9y52jWm6"
+TnRankedEloV1 = "9egzheuShLzA5ev7w4HhARPCn15qz5AcHGKc7oXmA1L3"
+TnRankedPvpV1 = "4fqrH1Bi33PtjuGyFXwfvNKhnWG1yKLUU2SJUD95FY3P"
+accept_rank = "wYG5NKfHqwZEQGVjEkEKSPHvHmtb5gvrHCJhLdfF3HV"
 dq = "9FQ8ck9nj6z8Gs9q6iF75HySuF1KXyazKrQKb5kCYv2E"
-movement = "4zTxgyxX165LiWj2rV1KYx6iUt3czpBH16u2wh3r6a5V"
-position = "9C8tuSrKjNoVNkC5tLvbDhsnnf5vNPTW64NdHMfZCFsg"
+start_rank = "AWdmUJiP39vCGeudvCZCpHNmnHMxM1nZmDqvPFH8xd3J"
 
 [registry]
 url = "https://api.apr.dev"

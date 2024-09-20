@@ -13,3 +13,8 @@ pub mod dq {
 
 #[derive(Accounts)]
 pub struct Initialize {}
+
+
+// dao token mint
+// treasury
+// authority

@@ -1,0 +1,1 @@
+// freeze character and equipment

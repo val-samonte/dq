@@ -1,12 +1,12 @@
 [package]
-name = "character"
+name = "TnCharStatsV1"
 version = "0.1.8"
 description = "Created with Bolt"
 edition = "2021"
 
 [lib]
 crate-type = ["cdylib", "lib"]
-name = "character"
+name = "tn_char_stats_v1"
 
 [features]
 no-entrypoint = []

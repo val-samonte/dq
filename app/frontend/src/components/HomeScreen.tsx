@@ -7,7 +7,6 @@ import cn from 'classnames'
 import { selectedCharacterAtom } from '../atoms/selectedCharacterAtom'
 
 export function HomeScreen() {
-  const selectedCharacter = useAtomValue(selectedCharacterAtom)
   const balance = useAtomValue(solBalanceAtom)
   const insufficientArena = (balance ?? 0) < 0.01
   const showDialog = useSetAtom(showDialogAtom)
@@ -100,14 +99,25 @@ export function HomeScreen() {
             Barracks
           </span>
         </Link>
-        {selectedCharacter && (
-          <div className='aspect-square object-contain w-[60%] pointer-events-none' />
-        )}
+        <Suspense fallback={null}>
+          <Filler />
+        </Suspense>
       </div>
       <Suspense fallback={null}>
         <CharacterPreview />
       </Suspense>
     </div>
+  )
+}
+
+function Filler() {
+  const selectedCharacter = useAtomValue(selectedCharacterAtom)
+  return (
+    <>
+      {selectedCharacter && (
+        <div className='aspect-square object-contain w-[60%] pointer-events-none' />
+      )}
+    </>
   )
 }
 
