@@ -1,3 +1,3 @@
-mod main;
+pub mod main;
 
 pub use main::*;

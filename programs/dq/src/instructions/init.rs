@@ -1,6 +1,6 @@
 use anchor_lang::prelude::*;
 
-use crate::{state::main, state::Counter};
+use crate::state::Main;
 
 #[derive(AnchorDeserialize, AnchorSerialize)]
 pub struct InitParams {
@@ -35,7 +35,7 @@ pub fn init_handler(ctx: Context<Init>, params: InitParams) -> Result<()> {
   main.bump = ctx.bumps.main;
   main.authority = ctx.accounts.authority.key();
   main.treasury = params.treasury.key();
-  main.token_mint = params.token.key();
+  main.token_mint = params.token_mint.key();
   main.character_mint_fee = params.character_mint_fee;
   
   Ok(())

@@ -5,6 +5,7 @@ declare_id!("9egzheuShLzA5ev7w4HhARPCn15qz5AcHGKc7oXmA1L3");
 #[component]
 #[derive(Default)]
 pub struct TnRankedEloV1 {
+    pub authority: Pubkey,
     // owner
     // status:
     // - 0 idle

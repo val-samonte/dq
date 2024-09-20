@@ -70,6 +70,7 @@ dependencies = [
 name = "accept_rank"
 version = "0.1.8"
 dependencies = [
+ "TnRankedEloV1",
  "anchor-lang",
  "bolt-lang",
  "serde",
@@ -1888,6 +1889,7 @@ checksum = "468aa43b7edb1f9b7b7b686d5c3aeb6630dc1708e86e31343499dd5c4d775183"
 name = "start_rank"
 version = "0.1.8"
 dependencies = [
+ "TnRankedEloV1",
  "anchor-lang",
  "bolt-lang",
  "serde",
