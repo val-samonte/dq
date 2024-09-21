@@ -17,6 +17,9 @@ pub struct Main {
   /// Amount of fee being collected when minting a character. (8)
   pub character_mint_fee: u64,
 
+  /// How many seconds for the character before regaining 1 energy. (8)
+  pub character_energy_replenish: u64,
+
   /// Unused reserved byte space for future additive changes. (128)
   pub _reserved: [u8; 128],
 }
