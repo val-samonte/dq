@@ -32,7 +32,7 @@ pub struct Main {
 
 impl Main {
   pub fn len() -> usize {
-    8 + 1 + 32 + 32 + 32 + 8 + 128
+    8 + 1 + 32 + 32 + 32 + 8 + 8 + 128
   }
 }
 
