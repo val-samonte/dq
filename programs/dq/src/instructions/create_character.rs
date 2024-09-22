@@ -1,6 +1,6 @@
 use anchor_lang::prelude::*;
 
-use crate::state::{Main, Character};
+use crate::states::{Main, Character};
 
 use mpl_core::{
   instructions::CreateV2CpiBuilder, 

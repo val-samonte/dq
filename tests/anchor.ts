@@ -83,7 +83,7 @@ describe('DeezQuest: Trinexus Program', () => {
     expect(main.authority.equals(program.provider.publicKey)).to.be.true
   })
 
-  it('mints a character', async () => {
+  it('creates a character', async () => {
     await program.methods
       .createCharacter({
         name: 'Shivani',

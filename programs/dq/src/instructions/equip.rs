@@ -1,2 +1,2 @@
-// freeze character and equipment
+// how to freeze character and equipment
 // try to assign skill to TnCharSkillsV1

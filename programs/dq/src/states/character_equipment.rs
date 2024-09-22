@@ -1,7 +1,7 @@
 use anchor_lang::prelude::*;
 
 #[account]
-pub struct Equipment {
+pub struct CharacterEquipment {
   /// Bump nonce of the PDA. (1)
   pub bump: u8,
 
@@ -27,7 +27,7 @@ pub struct Equipment {
   pub _reserved: [u8; 128],
 }
 
-impl Equipment {
+impl CharacterEquipment {
   pub fn len() -> usize {
     8 + 1 + 32 + 32 + 1 + 1 + 1 + 1 + 128
   }

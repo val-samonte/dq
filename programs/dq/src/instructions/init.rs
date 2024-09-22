@@ -1,6 +1,6 @@
 use anchor_lang::prelude::*;
 
-use crate::state::Main;
+use crate::states::Main;
 
 #[derive(AnchorDeserialize, AnchorSerialize)]
 pub struct InitArgs {
