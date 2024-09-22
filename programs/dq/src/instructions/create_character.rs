@@ -127,8 +127,8 @@ pub fn create_character_handler(ctx: Context<CreateCharacter>, args: CreateChara
     .plugins(plugins)
     .payer(&ctx.accounts.owner.to_account_info())
     .update_authority(Some(&ctx.accounts.main.to_account_info()))
-    .owner(None)
-    .authority(None)
+    .owner(Some(&ctx.accounts.owner.to_account_info()))
+    .authority(Some(&ctx.accounts.owner.to_account_info()))
     .collection(None)
     .system_program(&ctx.accounts.system_program.to_account_info())
     .invoke()?;

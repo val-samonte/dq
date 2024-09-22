@@ -50,6 +50,6 @@ pub struct Character {
 
 impl Character {
   pub fn len() -> usize {
-    8 + 1 + 32 + 1 + 8 + 1 + 2 + 2 + 32 + 32 + 128
+    8 + 1 + 32 + 1 + 8 + 1 + 2 + 2 + 1 + 1 + 1 + 1 + 1 + 32 + 32 + 128
   }
 }
