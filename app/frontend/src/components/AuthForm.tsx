@@ -33,7 +33,6 @@ export function AuthForm({
         <div className='relative w-full'>
           <input
             className='bg-stone-900 rounded px-10 py-2 text-center w-full'
-            autoFocus
             type={!visible ? 'password' : 'text'}
             value={password}
             onChange={() => {}}

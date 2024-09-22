@@ -23,6 +23,21 @@ pub struct Character {
   /// How many PvP fights the character lost. (2)
   pub loses: u16,
 
+  /// Male [0], Female [1]. (1)
+  pub gender: u8,
+
+  /// Intelligence.
+  pub stat_int: u8,
+
+  /// Strength.
+  pub stat_str: u8,
+
+  /// Dexterity.
+  pub stat_dex: u8,
+
+  /// Vitality.
+  pub stat_vit: u8,
+
   /// The mint address of the weapon asset equipped. (32)
   pub weapon_mint: Pubkey,
 

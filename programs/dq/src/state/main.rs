@@ -14,6 +14,12 @@ pub struct Main {
   /// Governance token of TriNexus. (32)
   pub token_mint: Pubkey,
 
+  // todo:
+  // characters_collection_address
+  // equipment_collection_address
+  // consumables_collection_address
+  // materials_collection_address
+
   /// Amount of fee being collected when minting a character. (8)
   pub character_mint_fee: u64,
 

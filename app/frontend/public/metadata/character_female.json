@@ -1,0 +1,12 @@
+{
+  "name": "TriNexus Female",
+  "description": "DeezQuest: TriNexus Female Adventurer",
+  "external_url": "https://deez.quest",
+  "image": "https://shdw-drive.genesysgo.net/EQUAMGwdZNwhuZxXVFeVmxVYd3ZWMhL1TYFoM1WScLgQ/character_female.webp",
+  "attributes": [
+    {
+      "trait_type": "Gender",
+      "value": "Female"
+    }
+  ]
+}

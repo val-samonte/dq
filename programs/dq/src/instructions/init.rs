@@ -3,14 +3,14 @@ use anchor_lang::prelude::*;
 use crate::state::Main;
 
 #[derive(AnchorDeserialize, AnchorSerialize)]
-pub struct InitParams {
+pub struct InitArgs {
   pub treasury: Pubkey,
   pub token_mint: Pubkey,
   pub character_mint_fee: u64,
 }
 
 #[derive(Accounts)]
-#[instruction(params: InitParams)]
+#[instruction(args: InitArgs)]
 pub struct Init<'info> {
   #[account(
     init, 
@@ -29,14 +29,14 @@ pub struct Init<'info> {
   pub system_program: Program<'info, System>,
 }
 
-pub fn init_handler(ctx: Context<Init>, params: InitParams) -> Result<()> {
+pub fn init_handler(ctx: Context<Init>, args: InitArgs) -> Result<()> {
   let main = &mut ctx.accounts.main;
 
   main.bump = ctx.bumps.main;
   main.authority = ctx.accounts.authority.key();
-  main.treasury = params.treasury.key();
-  main.token_mint = params.token_mint.key();
-  main.character_mint_fee = params.character_mint_fee;
+  main.treasury = args.treasury.key();
+  main.token_mint = args.token_mint.key();
+  main.character_mint_fee = args.character_mint_fee;
   
   Ok(())
 }

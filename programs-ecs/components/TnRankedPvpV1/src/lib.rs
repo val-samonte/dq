@@ -43,14 +43,14 @@ pub struct TnRankedPvpV1 {
     pub mag_res: u8,
 
     /// Intelligence.
-    pub int: u8,
+    pub stat_int: u8,
 
     /// Strength.
-    pub str: u8,
+    pub stat_str: u8,
 
     /// Dexterity.
-    pub dex: u8,
+    pub stat_dex: u8,
 
     /// Vitality.
-    pub vit: u8,
+    pub stat_vit: u8,
 }

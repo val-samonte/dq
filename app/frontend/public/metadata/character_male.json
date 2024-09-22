@@ -1,0 +1,12 @@
+{
+  "name": "TriNexus Male",
+  "description": "DeezQuest: TriNexus Male Adventurer",
+  "external_url": "https://deez.quest",
+  "image": "https://shdw-drive.genesysgo.net/EQUAMGwdZNwhuZxXVFeVmxVYd3ZWMhL1TYFoM1WScLgQ/character_male.webp",
+  "attributes": [
+    {
+      "trait_type": "Gender",
+      "value": "Male"
+    }
+  ]
+}
