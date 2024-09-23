@@ -4,7 +4,7 @@ use crate::states::{Main, Character};
 
 use mpl_core::{
   instructions::CreateV2CpiBuilder, 
-  types::{PermanentBurnDelegate, PermanentFreezeDelegate, PluginAuthority, PluginAuthorityPair}, ID as MPL_CORE_ID 
+  types::{Plugin, PermanentBurnDelegate, PermanentFreezeDelegate, PluginAuthority, PluginAuthorityPair}, ID as MPL_CORE_ID 
 };
 
 #[derive(AnchorDeserialize, AnchorSerialize)]
@@ -101,14 +101,14 @@ pub fn create_character_handler(ctx: Context<CreateCharacter>, args: CreateChara
 
   plugins.push(
     PluginAuthorityPair {
-      plugin: mpl_core::types::Plugin::PermanentFreezeDelegate(PermanentFreezeDelegate { frozen: false }),
+      plugin: Plugin::PermanentFreezeDelegate(PermanentFreezeDelegate { frozen: false }),
       authority: Some(PluginAuthority::Address { address: ctx.accounts.main.key() }),
     }
   );
 
   plugins.push(
     PluginAuthorityPair {
-      plugin: mpl_core::types::Plugin::PermanentBurnDelegate(PermanentBurnDelegate {  }),
+      plugin: Plugin::PermanentBurnDelegate(PermanentBurnDelegate {  }),
       authority: Some(PluginAuthority::Address { address: ctx.accounts.main.key() }),
     }
   );
@@ -132,6 +132,10 @@ pub fn create_character_handler(ctx: Context<CreateCharacter>, args: CreateChara
     .collection(None)
     .system_program(&ctx.accounts.system_program.to_account_info())
     .invoke()?;
+
+  // todo:
+  // collection
+  // attributes
   
   Ok(())
 }

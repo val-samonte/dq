@@ -42,6 +42,11 @@ address = "CoREENxT6tW1HoK8ypY1SxRMZTcVPm7R94rH4PZNhX7d"
 program = "tests/fixtures/mpl_core.so"
 upgradeable = false
 
+[[test.genesis]]
+address = "metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s"
+program = "tests/fixtures/mpl_token_metadata.so"
+upgradeable = false
+
 [test.validator]
 bind_address = "0.0.0.0"
 url = "https://rpc.magicblock.app/devnet/"

@@ -5,7 +5,7 @@ import {
   setProvider,
   workspace,
 } from '@coral-xyz/anchor'
-import { Dq } from '../target/types/dq'
+import { Itembox } from '../target/types/itembox'
 import { loadKeypair } from './utils'
 import {
   Keypair,
@@ -16,20 +16,20 @@ import {
 } from '@solana/web3.js'
 import { expect } from 'chai'
 import { createUmi } from '@metaplex-foundation/umi-bundle-defaults'
-import { fetchAsset, mplCore } from '@metaplex-foundation/mpl-core'
+import { fetchCollection, mplCore } from '@metaplex-foundation/mpl-core'
 import {
   signerIdentity,
   createSignerFromKeypair,
 } from '@metaplex-foundation/umi'
 import { fromWeb3JsPublicKey } from '@metaplex-foundation/umi-web3js-adapters'
 
-describe('DeezQuest: Trinexus Program', () => {
+describe('DeezQuest: Itembox Program', () => {
   setProvider(AnchorProvider.env())
 
-  const program = workspace.Dq as Program<Dq>
+  const program = workspace.Itembox as Program<Itembox>
   const authority = loadKeypair('~/.config/solana/id.json')
   const treasuryKeypair = Keypair.generate()
-  const characterAsset = Keypair.generate()
+  const collection = Keypair.generate()
   const token = Keypair.generate()
 
   const umi = createUmi(program.provider.connection.rpcEndpoint, 'confirmed')
@@ -45,14 +45,9 @@ describe('DeezQuest: Trinexus Program', () => {
     program.programId
   )
 
-  const [characterPda] = PublicKey.findProgramAddressSync(
-    [Buffer.from('character'), characterAsset.publicKey.toBytes()],
-    program.programId
-  )
-
-  console.log('TriNexus Program ID', program.programId.toBase58())
-  console.log('TriNexus Main Pda', mainPda.toBase58())
-  console.log('Character Asset', characterAsset.publicKey.toBase58())
+  console.log('Itembox Program ID', program.programId.toBase58())
+  console.log('Itembox Main Pda', mainPda.toBase58())
+  console.log('Blueprint Collection ID', collection.publicKey.toBase58())
 
   before(async () => {
     // fund treasury
@@ -70,7 +65,7 @@ describe('DeezQuest: Trinexus Program', () => {
   it('initialize main', async () => {
     await program.methods
       .init({
-        characterMintFee: new BN(0.0002 * LAMPORTS_PER_SOL),
+        blueprintMintFee: new BN(0.0002 * LAMPORTS_PER_SOL),
         tokenMint: token.publicKey,
         treasury: treasuryKeypair.publicKey,
       })
@@ -78,48 +73,35 @@ describe('DeezQuest: Trinexus Program', () => {
         authority: authority.publicKey,
       })
       .rpc()
-
     const main = await program.account.main.fetch(mainPda)
-
     expect(main.authority.equals(program.provider.publicKey)).to.be.true
   })
 
-  it('creates a character', async () => {
+  it('creates a non-fungible blueprint', async () => {
     await program.methods
-      .createCharacter({
-        name: 'Shivani',
-        gender: 'female',
-        statInt: 3,
-        statStr: 3,
-        statDex: 3,
-        statVit: 3,
+      .createBlueprint({
+        mintAuthority: authority.publicKey,
+        treasury: treasuryKeypair.publicKey,
+        name: 'Non-Fungible Blueprint',
+        nonFungible: true,
+        uri: 'https://example.com/metadata.json',
       })
       .accounts({
-        asset: characterAsset.publicKey,
+        asset: collection.publicKey,
         owner: authority.publicKey,
       })
-      .signers([characterAsset])
+      .signers([collection])
       .rpc()
-
-    const character = await program.account.character.fetch(characterPda)
-
-    expect(character.gender).eq(1)
-    expect(character.statInt).eq(3)
-    expect(character.statStr).eq(3)
-    expect(character.statDex).eq(3)
-    expect(character.statVit).eq(3)
 
     await sleep(1000)
 
-    const characterData = await fetchAsset(
+    const collectionData = await fetchCollection(
       umi,
-      fromWeb3JsPublicKey(characterAsset.publicKey)
+      fromWeb3JsPublicKey(collection.publicKey)
     )
 
-    expect(characterData.publicKey.toString()).eq(
-      characterAsset.publicKey.toBase58()
-    )
-    expect(characterData.owner.toString()).eq(authority.publicKey.toBase58())
+    expect(collectionData.name).eq('Non-Fungible Blueprint')
+    expect(collectionData.uri).eq('https://example.com/metadata.json')
   })
 })
 
