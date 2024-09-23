@@ -35,10 +35,3 @@ impl Main {
     8 + 1 + 32 + 32 + 32 + 8 + 8 + 128
   }
 }
-
-
-#[error_code]
-pub enum MainError {
-  #[msg("The update authority provided is invalid.")]
-  InvalidUpdateAuthority,
-}
