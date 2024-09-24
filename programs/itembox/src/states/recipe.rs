@@ -2,7 +2,6 @@ use anchor_lang::prelude::*;
 
 #[account]
 pub struct Recipe {
-
   /// Bump nonce of the PDA. (1)
   pub bump: u8,
 
@@ -21,18 +20,18 @@ impl Recipe {
   }
 }
 
-#[derive(AnchorSerialize, AnchorDeserialize, Clone, Debug)]
+#[derive(AnchorSerialize, AnchorDeserialize, Copy, Clone)]
 pub struct Ingredient {
 
-    /// A blueprint or the mint address of the SPL token. (32)
-    pub asset: Pubkey,
+  /// A blueprint or the mint address of the SPL token. (32)
+  pub asset: Pubkey,
 
-    /// SPL [0], Blueprint [1]. (1)
-    pub asset_type: u8,
+  /// Blueprint [0], SPL [1], Token Extensions [2]. (1)
+  pub asset_type: u8,
 
-    /// Amount needed, only applicable to fungible assets. (8)
-    pub amount: u64,
+  /// Amount needed, only applicable to fungible assets. (8)
+  pub amount: u64,
 
-    /// What to do with this asset after crafting the recipe. Burn [0], Transfer [1]. (1)
-    pub consume_method: u8,
+  /// What to do with this asset after crafting the recipe. Burn [0], Transfer [1]. (1)
+  pub consume_method: u8,
 }

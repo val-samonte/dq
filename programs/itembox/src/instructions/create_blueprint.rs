@@ -1,7 +1,7 @@
 // use mpl_core to create a master edition collection
 
 use anchor_lang::prelude::*;
-// use mpl_token_metadata::instructions::CreateV1CpiBuilder;
+// use mpl_token_metadata::{instructions::CreateV1CpiBuilder, types::TokenStandard};
 
 use crate::states::{Main, Blueprint};
 
@@ -9,7 +9,7 @@ use mpl_core::{
   instructions::CreateCollectionV2CpiBuilder, 
   types::{Plugin, MasterEdition, PluginAuthority, PluginAuthorityPair}, ID as MPL_CORE_ID 
 };
-use mpl_token_metadata:: ID as MPL_TOKEN_METADATA_ID;
+// use mpl_token_metadata:: ID as MPL_TOKEN_METADATA_ID;
 
 #[derive(AnchorDeserialize, AnchorSerialize)]
 pub struct CreateBlueprintArgs {
@@ -28,7 +28,7 @@ pub struct CreateBlueprint<'info> {
     payer = owner, 
     seeds = [
       b"blueprint",
-      asset.key().as_ref()
+      mint.key().as_ref()
     ], 
     bump, 
     space = Blueprint::len()
@@ -49,7 +49,7 @@ pub struct CreateBlueprint<'info> {
   pub main: Box<Account<'info, Main>>,
 
   #[account(mut)]
-  pub asset: Signer<'info>,
+  pub mint: Signer<'info>,
 
   #[account(mut)]
   pub owner: Signer<'info>,
@@ -58,9 +58,9 @@ pub struct CreateBlueprint<'info> {
   /// CHECK: this account is checked by the address constraint
   pub mpl_core_program: UncheckedAccount<'info>,
 
-  #[account(address = MPL_TOKEN_METADATA_ID)]
-  /// CHECK: this account is checked by the address constraint
-  pub mpl_token_metadata_program: UncheckedAccount<'info>,
+  // #[account(address = MPL_TOKEN_METADATA_ID)]
+  // /// CHECK: this account is checked by the address constraint
+  // pub mpl_token_metadata_program: UncheckedAccount<'info>,
 
   pub system_program: Program<'info, System>,
 }
@@ -89,7 +89,7 @@ pub fn create_blueprint_handler(ctx: Context<CreateBlueprint>, args: CreateBluep
   )?;
 
   blueprint.bump = ctx.bumps.blueprint;
-  blueprint.mint = ctx.accounts.asset.key();
+  blueprint.mint = ctx.accounts.mint.key();
   blueprint.authority = ctx.accounts.owner.key();
   blueprint.treasury = args.treasury.key();
   blueprint.mint_authority = args.mint_authority.key();
@@ -97,7 +97,7 @@ pub fn create_blueprint_handler(ctx: Context<CreateBlueprint>, args: CreateBluep
 
   // let main_seed = &[&b"main"[..], &[main.bump]];
 
-  if args.non_fungible {
+  // if args.non_fungible {
     // create core collection with master edition plugin
 
     let mut plugins: Vec<PluginAuthorityPair> = vec![];
@@ -114,7 +114,7 @@ pub fn create_blueprint_handler(ctx: Context<CreateBlueprint>, args: CreateBluep
     );
 
     CreateCollectionV2CpiBuilder::new(&ctx.accounts.mpl_core_program.to_account_info())
-      .collection(&ctx.accounts.asset.to_account_info())
+      .collection(&ctx.accounts.mint.to_account_info())
       .payer(&ctx.accounts.owner.to_account_info())
       .update_authority(Some(&ctx.accounts.main.to_account_info()))
       .system_program(&ctx.accounts.system_program.to_account_info())
@@ -123,8 +123,8 @@ pub fn create_blueprint_handler(ctx: Context<CreateBlueprint>, args: CreateBluep
       .plugins(plugins)
       .invoke()?;
 
-  } else {
-    let asset = &ctx.accounts.asset;
+  // } else {
+    // let mint = &ctx.accounts.mint;
     // create SPL token mint and apply token metadata
     // todo:
 
@@ -132,12 +132,21 @@ pub fn create_blueprint_handler(ctx: Context<CreateBlueprint>, args: CreateBluep
     //   &[
     //       b"metadata",
     //       MPL_TOKEN_METADATA_ID.as_ref(),
-    //       asset.key().as_ref(),
+    //       mint.key().as_ref(),
     //   ],
     //   &MPL_TOKEN_METADATA_ID,
     // );
-    // CreateV1CpiBuilder::new(&ctx.accounts.mpl_token_metadata_program.to_account_info());
-  }
+    // CreateV1CpiBuilder::new(&ctx.accounts.mpl_token_metadata_program.to_account_info())
+    //   .metadata(metadata)
+    //   .mint(mint.to_account_info())
+    //   .token_standard(TokenStandard::Fungible)
+    //   // .spl_token_program()
+    //   .system_program(&ctx.accounts.system_program.to_account_info())
+    //   .update_authority(&ctx.accounts.main.to_account_info(), true)
+    //   .name(args.name)
+    //   .uri(args.uri)
+    //   .invoke()?;
+  // }
   
   Ok(())
 }
