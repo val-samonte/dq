@@ -18,4 +18,8 @@ pub mod itembox {
     pub fn create_blueprint(ctx: Context<CreateBlueprint>, args: CreateBlueprintArgs) -> Result<()> {
         create_blueprint_handler(ctx, args)
     }
+
+    pub fn create_recipe(ctx: Context<CreateRecipe>, args: CreateRecipeArgs) -> Result<()> {
+        create_recipe_handler(ctx, args)
+    }
 }

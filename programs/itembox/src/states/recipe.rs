@@ -32,6 +32,6 @@ pub struct Ingredient {
   /// Amount needed, only applicable to fungible assets. (8)
   pub amount: u64,
 
-  /// What to do with this asset after crafting the recipe. Burn [0], Transfer [1]. (1)
+  /// What to do with this asset after crafting the recipe. Retain [0], Burn [1], Transfer [2]. (1)
   pub consume_method: u8,
 }

@@ -1,7 +1,4 @@
 use anchor_lang::prelude::*;
-use spl_token::state::Account as SplTokenAccount;
-use spl_token::solana_program::program_pack::Pack;
-use spl_token_2022::state::Account as SplToken2022Account;
 
 use crate::states::{Blueprint, Ingredient, Recipe};
 
@@ -47,6 +44,11 @@ pub fn create_recipe_handler(ctx: Context<CreateRecipe>, args: CreateRecipeArgs)
   recipe.blueprint = ctx.accounts.blueprint.key();
 
   for (index, account_info) in remaining_accounts.iter().enumerate() {
+
+    if account_info.key().eq(&recipe.blueprint) {
+      return Err(CreateRecipeError::BlueprintOutputIsAnIngredient.into());
+    }
+
     if let Some(ingredient) = args.ingredients.get(index) {
       if let Ok(_blueprint_account) = Blueprint::try_from_slice(&account_info.data.borrow()) {
         
@@ -54,25 +56,26 @@ pub fn create_recipe_handler(ctx: Context<CreateRecipe>, args: CreateRecipeArgs)
           amount: ingredient.amount,
           asset: account_info.key(),
           asset_type: 0,
-          consume_method: 0
+          consume_method: ingredient.consume_method
         });
 
-      } else if let Ok(_spl_token_account) = SplTokenAccount::unpack(&account_info.data.borrow()) {
-
+        // TODO: SECURITY RISK, we cannot rely with this comparison
+      } else if account_info.owner.to_string() == "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA" {
+        
         recipe.ingredients.push(Ingredient {
           amount: ingredient.amount,
           asset: account_info.key(),
           asset_type: 1,
-          consume_method: 1
+          consume_method: ingredient.consume_method
         });
 
-      } else if let Ok(_spl_token_2022_account) = SplToken2022Account::unpack(&account_info.data.borrow()) {
+      } else if account_info.owner.to_string() == "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb" {
         
         recipe.ingredients.push(Ingredient {
           amount: ingredient.amount,
           asset: account_info.key(),
           asset_type: 2,
-          consume_method: 1
+          consume_method: ingredient.consume_method
         });
 
       } else {
@@ -93,15 +96,18 @@ pub struct IngredientDefinition {
   /// Amount needed, only applicable to fungible assets. (8)
   pub amount: u64,
 
-  /// What to do with this asset after crafting the recipe. Burn [0], Transfer [1]. (1)
+  /// What to do with this asset after crafting the recipe. Retain [0], Burn [1], Transfer [2]. (1)
   pub consume_method: u8,
 }
 
 #[error_code]
 pub enum CreateRecipeError {
-  #[msg("The account provided is not a valid ingredient.")]
+  #[msg("Blueprint output should not be a part of the ingredients")]
+  BlueprintOutputIsAnIngredient,
+
+  #[msg("The account provided is not a valid ingredient")]
   InvalidIngredient,
 
-  #[msg("Missing ingredient definition for the remaining accounts.")]
+  #[msg("Missing ingredient definition for the remaining accounts")]
   MissingIngredientDefinition,
 }

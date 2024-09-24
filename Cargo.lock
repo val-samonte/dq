@@ -1340,7 +1340,6 @@ dependencies = [
  "anchor-lang",
  "mpl-core",
  "mpl-token-metadata",
- "spl-token",
  "spl-token-2022",
 ]
 
