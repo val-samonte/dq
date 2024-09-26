@@ -2,26 +2,32 @@ use std::{collections::HashMap, str::FromStr};
 
 use anchor_lang::prelude::*;
 use anchor_spl::{
-  token::{self, spl_token, Burn, Transfer}, 
-  token_2022::{self, spl_token_2022::{self, state::Account as AssociatedTokenAccount}, Burn as Burn2022, MintTo, TransferChecked}
+  token::{
+    self, 
+    spl_token, 
+    Burn, 
+    Transfer,
+    Token,
+    TokenAccount
+  }, 
+  token_2022::{
+    self, 
+    spl_token_2022::{
+      self, 
+      state::Account as AssociatedTokenAccount
+    }, 
+    Burn as Burn2022, 
+    MintTo, 
+    TransferChecked
+  },
+  token_interface::Token2022,
+  associated_token::AssociatedToken
 };
-use anchor_spl::token::TokenAccount;
 use anchor_lang::solana_program::program_pack::Pack;
-// use spl_token_2022::state::Account as AssociatedTokenAccount;
-
-use anchor_spl::token::Token;
-use anchor_spl::token_interface::Token2022;
-use anchor_spl::associated_token::AssociatedToken;
-
 use crate::states::{Blueprint, Main, Recipe};
 
-#[derive(AnchorDeserialize, AnchorSerialize)]
-pub struct CreateItemArgs {
-  
-}
 
 #[derive(Accounts)]
-// #[instruction(args: CraftItemArgs)]
 pub struct CraftItem<'info> {
   #[account(
     has_one = blueprint
@@ -65,170 +71,169 @@ pub struct CraftItem<'info> {
 }
 
 pub fn craft_item_handler<'a, 'b, 'c, 'info>(
-  ctx: Context<'a, 'b, 'c, 'info, CraftItem<'info>>,
-  _args: CreateItemArgs
+  ctx: Context<'a, 'b, 'c, 'info, CraftItem<'info>>
 ) -> Result<()> {
 
-  // let recipe = &ctx.accounts.recipe;
-  // let owner_pubkey = ctx.accounts.owner.key();
+  let recipe = &ctx.accounts.recipe;
+  let owner_pubkey = ctx.accounts.owner.key();
 
-  // let mut account_map: HashMap<Pubkey, &AccountInfo<'info>> = HashMap::new();
-  // for account in ctx.remaining_accounts.iter() {
-  //   account_map.insert(*account.key, account);
-  // }
+  let mut account_map: HashMap<Pubkey, &AccountInfo<'info>> = HashMap::new();
+  for account in ctx.remaining_accounts.iter() {
+    account_map.insert(*account.key, account);
+  }
 
-  // for ingredient in recipe.ingredients.iter() {
-  //   if let Some(asset_account) = account_map.get(&ingredient.asset) {
-  //     match ingredient.asset_type {
-  //       0 => {
-  //         // todo: parse blueprint
-  //         // if let Ok(blueprint_account) = Blueprint::try_from_slice(&account_info.data.borrow()) {
-  //           // let mint = account_map.get(&blueprint_account.mint).unwrap();
-  //         // }
-  //       }
-  //       _ => {
-  //         let token_program_id = if ingredient.asset_type == 1 {
-  //           spl_token::id()
-  //         } else {
-  //           spl_token_2022::id()
-  //         };
+  for ingredient in recipe.ingredients.iter() {
+    if let Some(asset_account) = account_map.get(&ingredient.asset) {
+      match ingredient.asset_type {
+        0 => {
+          // todo: parse blueprint
+          // if let Ok(blueprint_account) = Blueprint::try_from_slice(&account_info.data.borrow()) {
+            // let mint = account_map.get(&blueprint_account.mint).unwrap();
+          // }
+        }
+        _ => {
+          let token_program_id = if ingredient.asset_type == 1 {
+            spl_token::id()
+          } else {
+            spl_token_2022::id()
+          };
 
-  //         let ata_pubkey = get_associated_token_address(
-  //           &owner_pubkey.key(), 
-  //           &token_program_id.key(), 
-  //           &ingredient.asset.key()
-  //         );
+          let ata_pubkey = get_associated_token_address(
+            &owner_pubkey.key(), 
+            &token_program_id.key(), 
+            &ingredient.asset.key()
+          );
 
-  //         if let Some(ata_account_info) = account_map.get(&ata_pubkey) {
-  //           let ata_account = deserialize_ata(ata_account_info)?;
-  //           if ata_account.amount < ingredient.amount {
-  //             return Err(CraftItemError::InsufficientIngredientAmount.into());
-  //           }
+          if let Some(ata_account_info) = account_map.get(&ata_pubkey) {
+            let ata_account = deserialize_ata(ata_account_info)?;
+            if ata_account.amount < ingredient.amount {
+              return Err(CraftItemError::InsufficientIngredientAmount.into());
+            }
 
-  //           match ingredient.consume_method {
-  //             // burn
+            match ingredient.consume_method {
+              // burn
 
-  //             1 => {
-  //               if ingredient.asset_type == 1 {
-  //                 token::burn(
-  //                   CpiContext::new(
-  //                     ctx.accounts.token_program.to_account_info(), 
-  //                     Burn {
-  //                       mint: asset_account.to_account_info(),    
-  //                       from: ata_account_info.to_account_info(), 
-  //                       authority: ctx.accounts.owner.to_account_info(), 
-  //                     },
-  //                   ),
-  //                   ingredient.amount
-  //                 )?;
-  //               } else {
-  //                 token_2022::burn(
-  //                   CpiContext::new(
-  //                     ctx.accounts.token_program_2022.to_account_info(),
-  //                     Burn2022 {
-  //                       mint: asset_account.to_account_info(),
-  //                       from: ata_account_info.to_account_info(),
-  //                       authority: ctx.accounts.owner.to_account_info(),
-  //                     },
-  //                   ),
-  //                   ingredient.amount
-  //                 )?;
-  //               }
-  //             }
-  //             2 => {
-  //               // transfer
-  //               // get the receiver's ata, the blueprint treasury is the receiver
+              1 => {
+                if ingredient.asset_type == 1 {
+                  token::burn(
+                    CpiContext::new(
+                      ctx.accounts.token_program.to_account_info(), 
+                      Burn {
+                        mint: asset_account.to_account_info(),    
+                        from: ata_account_info.to_account_info(), 
+                        authority: ctx.accounts.owner.to_account_info(), 
+                      },
+                    ),
+                    ingredient.amount
+                  )?;
+                } else {
+                  token_2022::burn(
+                    CpiContext::new(
+                      ctx.accounts.token_program_2022.to_account_info(),
+                      Burn2022 {
+                        mint: asset_account.to_account_info(),
+                        from: ata_account_info.to_account_info(),
+                        authority: ctx.accounts.owner.to_account_info(),
+                      },
+                    ),
+                    ingredient.amount
+                  )?;
+                }
+              }
+              2 => {
+                // transfer
+                // get the receiver's ata, the blueprint treasury is the receiver
 
-  //               let receiver_ata_pubkey = get_associated_token_address(
-  //                 &ctx.accounts.blueprint.treasury.key(),
-  //                 &token_program_id.key(),
-  //                 &ingredient.asset.key()
-  //               );
+                let receiver_ata_pubkey = get_associated_token_address(
+                  &ctx.accounts.blueprint.treasury.key(),
+                  &token_program_id.key(),
+                  &ingredient.asset.key()
+                );
 
-  //               if let Some(receiver_ata_account_info) = account_map.get(&receiver_ata_pubkey) {
+                if let Some(receiver_ata_account_info) = account_map.get(&receiver_ata_pubkey) {
 
-  //                 let receiver_ata_account = deserialize_ata(receiver_ata_account_info)?;
-  //                 if receiver_ata_account.amount < ingredient.amount {
-  //                   return Err(CraftItemError::InsufficientIngredientAmount.into());
-  //                 }
+                  let receiver_ata_account = deserialize_ata(receiver_ata_account_info)?;
+                  if receiver_ata_account.amount < ingredient.amount {
+                    return Err(CraftItemError::InsufficientIngredientAmount.into());
+                  }
 
-  //                 if ingredient.asset_type == 1 {
-  //                   // =====================
-  //                   // SPL Token
-  //                   // =====================
+                  if ingredient.asset_type == 1 {
+                    // =====================
+                    // SPL Token
+                    // =====================
 
-  //                   token::transfer(
-  //                     CpiContext::new(
-  //                       ctx.accounts.token_program.to_account_info(),
-  //                       Transfer {
-  //                         from: ata_account_info.to_account_info(),
-  //                         to: receiver_ata_account_info.to_account_info(),
-  //                         authority: ctx.accounts.owner.to_account_info(),
-  //                       }
-  //                     ),
-  //                     ingredient.amount
-  //                   )?;
+                    token::transfer(
+                      CpiContext::new(
+                        ctx.accounts.token_program.to_account_info(),
+                        Transfer {
+                          from: ata_account_info.to_account_info(),
+                          to: receiver_ata_account_info.to_account_info(),
+                          authority: ctx.accounts.owner.to_account_info(),
+                        }
+                      ),
+                      ingredient.amount
+                    )?;
 
-  //                 } else {
-  //                   // =====================
-  //                   // SPL Token Extensions
-  //                   // =====================
+                  } else {
+                    // =====================
+                    // SPL Token Extensions
+                    // =====================
 
-  //                   let mint_account = deserialize_mint_2022(asset_account)?;
+                    let mint_account = deserialize_mint_2022(asset_account)?;
 
-  //                   token_2022::transfer_checked(
-  //                     CpiContext::new(
-  //                       ctx.accounts.token_program_2022.to_account_info(),
-  //                       TransferChecked {
-  //                         mint: asset_account.to_account_info(),
-  //                         from: ata_account_info.to_account_info(),
-  //                         to: receiver_ata_account_info.to_account_info(),
-  //                         authority: ctx.accounts.owner.to_account_info(),
-  //                       }
-  //                     ),
-  //                     ingredient.amount,
-  //                     mint_account.decimals
-  //                   )?;
+                    token_2022::transfer_checked(
+                      CpiContext::new(
+                        ctx.accounts.token_program_2022.to_account_info(),
+                        TransferChecked {
+                          mint: asset_account.to_account_info(),
+                          from: ata_account_info.to_account_info(),
+                          to: receiver_ata_account_info.to_account_info(),
+                          authority: ctx.accounts.owner.to_account_info(),
+                        }
+                      ),
+                      ingredient.amount,
+                      mint_account.decimals
+                    )?;
 
-  //                 }
-  //               } else {
-  //                 return Err(CraftItemError::MissingIngredientAccount.into());
-  //               }
-  //             }
-  //             _ => {
-  //               // retain - do nothing
-  //             }
-  //           }
-  //         } else {
-  //           return Err(CraftItemError::MissingIngredientAccount.into());
-  //         }
-  //       }
-  //     }
-  //   }
-  // }
+                  }
+                } else {
+                  return Err(CraftItemError::MissingIngredientAccount.into());
+                }
+              }
+              _ => {
+                // retain - do nothing
+              }
+            }
+          } else {
+            return Err(CraftItemError::MissingIngredientAccount.into());
+          }
+        }
+      }
+    }
+  }
 
-  // // todo: if everything is ok, mint the item as Edition
-  // let blueprint = &mut ctx.accounts.blueprint;
-  // let owner_ata = &ctx.accounts.owner_ata;
-  // let mint = &ctx.accounts.mint;
+  // if everything is ok, mint the item
+  let blueprint = &mut ctx.accounts.blueprint;
+  let owner_ata = &ctx.accounts.owner_ata;
+  let mint = &ctx.accounts.mint;
   
-  // blueprint.counter += 1;
+  blueprint.counter += 1;
 
-  // if blueprint.non_fungible {  
-  //   // create core collection with master edition plugin
+  if blueprint.non_fungible {  
+    // create core collection with master edition plugin
 
-  //   // Collection
-  // } else {
-  //   // invoke signed this
-  //   token_2022::mint_to(CpiContext::new(
-  //     ctx.accounts.token_program_2022.to_account_info(),
-  //     MintTo {
-  //       mint: mint.to_account_info(),
-  //       to: owner_ata.to_account_info(),
-  //       authority: ctx.accounts.main.to_account_info(),
-  //     }
-  //   ), 1)?;
-  // }
+    // Collection
+  } else {
+    // todo: invoke signed
+    token_2022::mint_to(CpiContext::new(
+      ctx.accounts.token_program_2022.to_account_info(),
+      MintTo {
+        mint: mint.to_account_info(),
+        to: owner_ata.to_account_info(),
+        authority: ctx.accounts.main.to_account_info(),
+      }
+    ), 1)?;
+  }
 
   Ok(())
 }
