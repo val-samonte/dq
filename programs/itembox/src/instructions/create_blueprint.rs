@@ -90,6 +90,7 @@ pub fn create_blueprint_handler(ctx: Context<CreateBlueprint>, args: CreateBluep
 
   blueprint.bump = ctx.bumps.blueprint;
   blueprint.mint = ctx.accounts.mint.key();
+  blueprint.non_fungible = args.non_fungible;
   blueprint.authority = ctx.accounts.owner.key();
   blueprint.treasury = args.treasury.key();
   blueprint.mint_authority = args.mint_authority.key();
@@ -97,7 +98,7 @@ pub fn create_blueprint_handler(ctx: Context<CreateBlueprint>, args: CreateBluep
 
   // let main_seed = &[&b"main"[..], &[main.bump]];
 
-  // if args.non_fungible {
+  if args.non_fungible {
     // create core collection with master edition plugin
 
     let mut plugins: Vec<PluginAuthorityPair> = vec![];
@@ -123,7 +124,7 @@ pub fn create_blueprint_handler(ctx: Context<CreateBlueprint>, args: CreateBluep
       .plugins(plugins)
       .invoke()?;
 
-  // } else {
+  } else {
     // let mint = &ctx.accounts.mint;
     // create SPL token mint and apply token metadata
     // todo:
@@ -146,7 +147,7 @@ pub fn create_blueprint_handler(ctx: Context<CreateBlueprint>, args: CreateBluep
     //   .name(args.name)
     //   .uri(args.uri)
     //   .invoke()?;
-  // }
+  }
   
   Ok(())
 }

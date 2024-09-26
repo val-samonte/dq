@@ -51,7 +51,8 @@ pub fn create_recipe_handler(ctx: Context<CreateRecipe>, args: CreateRecipeArgs)
     }
 
     if let Some(ingredient) = args.ingredients.get(index) {
-      if let Ok(_blueprint_account) = Blueprint::try_from_slice(&account_info.data.borrow()) {
+      // TODO: SECURITY RISK, we cannot rely with this comparison
+      if account_info.owner.eq(&crate::id()) {
         
         recipe.ingredients.push(Ingredient {
           amount: ingredient.amount,
@@ -60,7 +61,6 @@ pub fn create_recipe_handler(ctx: Context<CreateRecipe>, args: CreateRecipeArgs)
           consume_method: ingredient.consume_method
         });
 
-        // TODO: SECURITY RISK, we cannot rely with this comparison
       } else if account_info.owner.eq(&spl_token::id()) {
         
         recipe.ingredients.push(Ingredient {

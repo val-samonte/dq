@@ -9,6 +9,9 @@ pub struct Blueprint {
   /// the mint address of the fungible token. (32)
   pub mint: Pubkey,
 
+  /// Whether the item is non-fungible. (1)
+  pub non_fungible: bool,
+
   /// The creator and owner of this blueprint, 
   /// which also acts as the update authority. (32)
   pub authority: Pubkey,
@@ -30,6 +33,6 @@ pub struct Blueprint {
 
 impl Blueprint {
   pub fn len() -> usize {
-    8 + 1 + 32 + 32 + 32 + 32 + 8 + 128
+    8 + 1 + 32 + 1 + 32 + 32 + 32 + 8 + 128
   }
 }

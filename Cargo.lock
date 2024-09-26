@@ -1391,9 +1391,6 @@ dependencies = [
  "mpl-core",
  "mpl-token-metadata",
  "solana-program",
- "spl-pod",
- "spl-token",
- "spl-token-2022",
 ]
 
 [[package]]
