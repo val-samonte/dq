@@ -1,6 +1,7 @@
 use anchor_lang::prelude::*;
 
 use crate::states::{Blueprint, Ingredient, Recipe};
+use anchor_spl::{token::spl_token, token_2022::spl_token_2022};
 
 #[derive(AnchorDeserialize, AnchorSerialize)]
 pub struct CreateRecipeArgs {
@@ -60,7 +61,7 @@ pub fn create_recipe_handler(ctx: Context<CreateRecipe>, args: CreateRecipeArgs)
         });
 
         // TODO: SECURITY RISK, we cannot rely with this comparison
-      } else if account_info.owner.to_string() == "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA" {
+      } else if account_info.owner.eq(&spl_token::id()) {
         
         recipe.ingredients.push(Ingredient {
           amount: ingredient.amount,
@@ -69,7 +70,7 @@ pub fn create_recipe_handler(ctx: Context<CreateRecipe>, args: CreateRecipeArgs)
           consume_method: ingredient.consume_method
         });
 
-      } else if account_info.owner.to_string() == "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb" {
+      } else if account_info.owner.eq(&spl_token_2022::id()) {
         
         recipe.ingredients.push(Ingredient {
           amount: ingredient.amount,

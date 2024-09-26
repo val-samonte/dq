@@ -14,7 +14,7 @@ pub struct Main {
   /// Governance token of Itembox. (32)
   pub token_mint: Pubkey,
 
-  /// Amount of fee being collected when minting a character. (8)
+  /// Amount of fee being collected when minting a blueprint. (8)
   pub blueprint_mint_fee: u64,
 
   /// Unused reserved byte space for future additive changes. (128)

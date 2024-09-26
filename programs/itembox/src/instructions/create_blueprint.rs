@@ -150,8 +150,3 @@ pub fn create_blueprint_handler(ctx: Context<CreateBlueprint>, args: CreateBluep
   
   Ok(())
 }
-
-// #[error_code]
-// pub enum CreateBlueprintParamsError {
-// }
-
