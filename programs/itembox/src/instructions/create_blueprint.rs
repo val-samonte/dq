@@ -51,18 +51,6 @@ pub struct CreateBlueprint<'info> {
   #[account(mut)]
   pub mint: Signer<'info>,
 
-  /// CHECK: The metadata account PDA is derived with the provided seeds, ensuring correctness
-  #[account(
-    mut,
-    seeds = [
-      b"metadata",
-      MPL_TOKEN_METADATA_ID.as_ref(),
-      mint.key().as_ref(),
-    ],
-    bump,
-  )]
-  pub metadata: UncheckedAccount<'info>, 
-
   #[account(mut)]
   pub owner: Signer<'info>,
 
@@ -82,7 +70,10 @@ pub struct CreateBlueprint<'info> {
   pub sysvar_instructions: UncheckedAccount<'info>,
 }
 
-pub fn create_blueprint_handler(ctx: Context<CreateBlueprint>, args: CreateBlueprintArgs) -> Result<()> {
+pub fn create_blueprint_handler<'a, 'b, 'c, 'info>(
+  ctx: Context<'a, 'b, 'c, 'info, CreateBlueprint<'info>>, 
+  args: CreateBlueprintArgs
+) -> Result<()> {
   let blueprint = &mut ctx.accounts.blueprint;
   let treasury = &mut ctx.accounts.treasury;
   let owner = &ctx.accounts.owner;
@@ -144,31 +135,58 @@ pub fn create_blueprint_handler(ctx: Context<CreateBlueprint>, args: CreateBluep
 
   } else {
     // create SPL token mint and apply token metadata
+    let metadata_account = ctx.remaining_accounts.get(0);
+    if let Some(metadata) = metadata_account {
 
-    token_2022::initialize_mint2(
-      CpiContext::new(
-        ctx.accounts.token_program_2022.to_account_info(),
-        InitializeMint2 {
-          mint: mint.to_account_info(),
-        },
-      ),
-      0,
-      &main.key(),
-      Some(&main.key()),
-    )?;
+      let (metadata_pda, _) = Pubkey::find_program_address(
+        &[
+          b"metadata",
+          MPL_TOKEN_METADATA_ID.as_ref(),
+          mint.key().as_ref(),
+        ],
+        &MPL_TOKEN_METADATA_ID
+      );
+      
+      if metadata_pda != metadata.key() {
+        return Err(CreateBlueprintError::MetadataPdaMismatch.into());
+      }
 
-    CreateV1CpiBuilder::new(&ctx.accounts.mpl_token_metadata_program.to_account_info())
-      .metadata(&ctx.accounts.metadata.to_account_info())          
-      .mint(&mint.to_account_info(), true)
-      .authority(&main.to_account_info())
-      .payer(&owner.to_account_info())
-      .update_authority(&main.to_account_info(), true)
-      .system_program(&ctx.accounts.system_program.to_account_info())
-      .sysvar_instructions(&ctx.accounts.sysvar_instructions.to_account_info())
-      .name(args.name)               
-      .uri(args.uri)                 
-      .invoke()?;                                        
+      token_2022::initialize_mint2(
+        CpiContext::new(
+          ctx.accounts.token_program_2022.to_account_info(),
+          InitializeMint2 {
+            mint: mint.to_account_info(),
+          },
+        ),
+        0,
+        &main.key(),
+        Some(&main.key()),
+      )?;
+
+      CreateV1CpiBuilder::new(&ctx.accounts.mpl_token_metadata_program.to_account_info())
+        .metadata(&metadata.to_account_info())          
+        .mint(&mint.to_account_info(), true)
+        .authority(&main.to_account_info())
+        .payer(&owner.to_account_info())
+        .update_authority(&main.to_account_info(), true)
+        .system_program(&ctx.accounts.system_program.to_account_info())
+        .sysvar_instructions(&ctx.accounts.sysvar_instructions.to_account_info())
+        .name(args.name)               
+        .uri(args.uri)                 
+        .invoke()?;         
+    } else {
+      return Err(CreateBlueprintError::MetadataAccountNotFound.into());
+    }
   }
   
   Ok(())
+}
+
+#[error_code]
+pub enum CreateBlueprintError {
+  #[msg("Metadata PDA does not match")]
+  MetadataPdaMismatch,
+
+  #[msg("Metadata account not found")]
+  MetadataAccountNotFound,
 }

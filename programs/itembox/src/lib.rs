@@ -15,7 +15,11 @@ pub mod itembox {
         init_handler(ctx, args)
     }
 
-    pub fn create_blueprint(ctx: Context<CreateBlueprint>, args: CreateBlueprintArgs) -> Result<()> {
+    pub fn create_blueprint<'a, 'b, 'c, 'info>(
+        ctx: Context<'a, 'b, 'c, 'info, 
+        CreateBlueprint<'info>>, 
+        args: CreateBlueprintArgs
+    ) -> Result<()> {
         create_blueprint_handler(ctx, args)
     }
 

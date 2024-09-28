@@ -28,7 +28,12 @@ import {
   getAssociatedTokenAddress,
   getOrCreateAssociatedTokenAccount,
   mintTo,
+  TOKEN_2022_PROGRAM_ID,
 } from '@solana/spl-token'
+
+const TOKEN_METADATA_PROGRAM_ID = new PublicKey(
+  'metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s'
+)
 
 describe('DeezQuest: Itembox Program', () => {
   setProvider(AnchorProvider.env())
@@ -37,6 +42,7 @@ describe('DeezQuest: Itembox Program', () => {
   const authority = loadKeypair('~/.config/solana/id.json')
   const treasuryKeypair = Keypair.generate()
   const swordBlueprint = Keypair.generate()
+  const refinedCopperBlueprint = Keypair.generate()
   const recipeSignerId = Keypair.generate()
   const token = Keypair.generate()
 
@@ -58,6 +64,11 @@ describe('DeezQuest: Itembox Program', () => {
 
   const [swordBlueprintPda] = PublicKey.findProgramAddressSync(
     [Buffer.from('blueprint'), swordBlueprint.publicKey.toBytes()],
+    program.programId
+  )
+
+  const [refinedCopperBlueprintPda] = PublicKey.findProgramAddressSync(
+    [Buffer.from('blueprint'), refinedCopperBlueprint.publicKey.toBytes()],
     program.programId
   )
 
@@ -156,8 +167,50 @@ describe('DeezQuest: Itembox Program', () => {
     expect(blueprint.uri).eq('https://example.com/metadata.json')
   })
 
-  xit('creates a fungible blueprint', async () => {
-    // todo
+  it('creates a fungible blueprint', async () => {
+    const blueprintName = 'Refined Copper'
+
+    // get token metadata of mint
+    const [metadataPda] = PublicKey.findProgramAddressSync(
+      [
+        Buffer.from('metadata'),
+        TOKEN_METADATA_PROGRAM_ID.toBytes(),
+        refinedCopperBlueprint.publicKey.toBytes(),
+      ],
+      TOKEN_METADATA_PROGRAM_ID
+    )
+
+    await program.methods
+      .createBlueprint({
+        mintAuthority: authority.publicKey,
+        treasury: treasuryKeypair.publicKey,
+        name: blueprintName,
+        nonFungible: false,
+        uri: 'https://example.com/metadata.json',
+      })
+      .accounts({
+        mint: refinedCopperBlueprint.publicKey,
+        owner: authority.publicKey,
+      })
+      .remainingAccounts([
+        {
+          pubkey: metadataPda,
+          isSigner: false,
+          isWritable: true,
+        },
+      ])
+      .signers([refinedCopperBlueprint])
+      .rpc()
+
+    await sleep(1000)
+
+    // const blueprint = await fetchCollection(
+    //   umi,
+    //   fromWeb3JsPublicKey(refinedCopperBlueprint.publicKey)
+    // )
+
+    // expect(blueprint.name).eq(blueprintName)
+    // expect(blueprint.uri).eq('https://example.com/metadata.json')
   })
 
   it('creates a recipe', async () => {
