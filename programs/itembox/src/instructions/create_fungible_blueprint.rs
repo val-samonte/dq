@@ -153,7 +153,7 @@ impl<'info> CreateFungibleBlueprint<'info> {
     let additional_seeds: &[&[&[u8]]] = &[&[b"main", &[bump]]];
 
     let cpi_ctx = CpiContext::new(self.token_program.to_account_info(), cpi_accounts)
-        .with_signer(additional_seeds);
+      .with_signer(additional_seeds);
 
     token_metadata_initialize(cpi_ctx, name, symbol, uri)?;
     Ok(())
