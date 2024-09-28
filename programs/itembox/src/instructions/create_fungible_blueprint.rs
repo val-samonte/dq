@@ -1,28 +1,30 @@
-// use mpl_core to create a master edition collection
+use anchor_lang::{prelude::*, solana_program::entrypoint::ProgramResult};
 
-use anchor_lang::prelude::*;
-use anchor_spl::token_2022::{self, InitializeMint2, Token2022};
-
-use crate::states::{Main, Blueprint};
-
-use mpl_core::{
-  instructions::CreateCollectionV2CpiBuilder, 
-  types::{Plugin, MasterEdition, PluginAuthority, PluginAuthorityPair}, ID as MPL_CORE_ID 
+use anchor_spl::token_interface::{
+  token_metadata_initialize, Mint,
+  Token2022, TokenMetadataInitialize,
 };
-use mpl_token_metadata::{instructions::CreateV1CpiBuilder,  ID as MPL_TOKEN_METADATA_ID};
+
+use crate::{
+    get_meta_list_size, 
+    update_account_lamports_to_minimum_balance, META_LIST_ACCOUNT_SEED,
+};
+
+use crate::states::{Blueprint, Main};
 
 #[derive(AnchorDeserialize, AnchorSerialize)]
-pub struct CreateBlueprintArgs {
+pub struct CreateFungibleBlueprintArgs {
   name: String,
   uri: String,
+  symbol: String,
   treasury: Pubkey,
   mint_authority: Pubkey,
-  non_fungible: bool,
 }
 
 #[derive(Accounts)]
-#[instruction(args: CreateBlueprintArgs)]
-pub struct CreateBlueprint<'info> {
+#[instruction(args: CreateFungibleBlueprintArgs)]
+pub struct CreateFungibleBlueprint<'info> {
+
   #[account(
     init, 
     payer = owner, 
@@ -48,37 +50,49 @@ pub struct CreateBlueprint<'info> {
   )]
   pub main: Box<Account<'info, Main>>,
 
-  #[account(mut)]
-  pub mint: Signer<'info>,
+  #[account(
+    init,
+    signer,
+    payer = owner,
+    mint::token_program = token_program,
+    mint::decimals = 0,
+    mint::authority = main,
+    mint::freeze_authority = main,
+    extensions::metadata_pointer::authority = main,
+    extensions::metadata_pointer::metadata_address = mint,
+    extensions::group_member_pointer::authority = main,
+    extensions::group_member_pointer::member_address = mint,
+    extensions::transfer_hook::authority = main,
+    extensions::transfer_hook::program_id = crate::ID,
+    extensions::close_authority::authority = main,
+    extensions::permanent_delegate::delegate = main,
+  )]
+  pub mint: Box<InterfaceAccount<'info, Mint>>,
 
   #[account(mut)]
   pub owner: Signer<'info>,
 
-  #[account(address = MPL_CORE_ID)]
-  /// CHECK: this account is checked by the address constraint
-  pub mpl_core_program: UncheckedAccount<'info>,
-
-  #[account(address = MPL_TOKEN_METADATA_ID)]
-  /// CHECK: this account is checked by the address constraint
-  pub mpl_token_metadata_program: UncheckedAccount<'info>,
-
   pub system_program: Program<'info, System>,
-  pub token_program_2022: Program<'info, Token2022>,
-  
-  /// CHECK: Instructions sysvar account
-  #[account(address = anchor_lang::solana_program::sysvar::instructions::ID)]
-  pub sysvar_instructions: UncheckedAccount<'info>,
+  /// CHECK: This account's data is a buffer of TLV data
+  #[account(
+    init,
+    space = get_meta_list_size(None),
+    seeds = [META_LIST_ACCOUNT_SEED, mint.key().as_ref()],
+    bump,
+    payer = owner,
+  )]
+  pub extra_metas_account: UncheckedAccount<'info>,
+  pub token_program: Program<'info, Token2022>,
 }
 
-pub fn create_blueprint_handler<'a, 'b, 'c, 'info>(
-  ctx: Context<'a, 'b, 'c, 'info, CreateBlueprint<'info>>, 
-  args: CreateBlueprintArgs
+pub fn create_fungible_blueprint_handler(
+  ctx: Context<CreateFungibleBlueprint>,
+  args: CreateFungibleBlueprintArgs
 ) -> Result<()> {
+
   let blueprint = &mut ctx.accounts.blueprint;
   let treasury = &mut ctx.accounts.treasury;
   let owner = &ctx.accounts.owner;
-  let main = &ctx.accounts.main;
-  let mint = &ctx.accounts.mint;
   let mint_fee = ctx.accounts.main.blueprint_mint_fee;
 
   // pay fee to treasury
@@ -99,94 +113,45 @@ pub fn create_blueprint_handler<'a, 'b, 'c, 'info>(
 
   blueprint.bump = ctx.bumps.blueprint;
   blueprint.mint = ctx.accounts.mint.key();
-  blueprint.non_fungible = args.non_fungible;
+  blueprint.non_fungible = false;
   blueprint.authority = ctx.accounts.owner.key();
   blueprint.treasury = args.treasury.key();
   blueprint.mint_authority = args.mint_authority.key();
   blueprint.counter = 0;
 
-  // let main_seed = &[&b"main"[..], &[main.bump]];
+  ctx.accounts.initialize_token_metadata(
+    args.name.clone(),
+    args.symbol.clone(),
+    args.uri.clone(),
+  )?;
 
-  if args.non_fungible {
-    // create core collection with master edition plugin
+  ctx.accounts.mint.reload()?;
 
-    let mut plugins: Vec<PluginAuthorityPair> = vec![];
+  update_account_lamports_to_minimum_balance(
+    ctx.accounts.mint.to_account_info(),
+    ctx.accounts.owner.to_account_info(),
+    ctx.accounts.system_program.to_account_info(),
+  )?;
 
-    plugins.push(
-      PluginAuthorityPair {
-        plugin: Plugin::MasterEdition(MasterEdition {
-          max_supply: None,
-          name: None,
-          uri: None
-        }),
-        authority: Some(PluginAuthority::Address { address: main.key() }),
-      }
-    );
-
-    CreateCollectionV2CpiBuilder::new(&ctx.accounts.mpl_core_program.to_account_info())
-      .collection(&mint.to_account_info())
-      .payer(&owner.to_account_info())
-      .update_authority(Some(&main.to_account_info()))
-      .system_program(&ctx.accounts.system_program.to_account_info())
-      .name(args.name)
-      .uri(args.uri)
-      .plugins(plugins)
-      .invoke()?;
-
-  } else {
-    // create SPL token mint and apply token metadata
-    let metadata_account = ctx.remaining_accounts.get(0);
-    if let Some(metadata) = metadata_account {
-
-      let (metadata_pda, _) = Pubkey::find_program_address(
-        &[
-          b"metadata",
-          MPL_TOKEN_METADATA_ID.as_ref(),
-          mint.key().as_ref(),
-        ],
-        &MPL_TOKEN_METADATA_ID
-      );
-      
-      if metadata_pda != metadata.key() {
-        return Err(CreateBlueprintError::MetadataPdaMismatch.into());
-      }
-
-      token_2022::initialize_mint2(
-        CpiContext::new(
-          ctx.accounts.token_program_2022.to_account_info(),
-          InitializeMint2 {
-            mint: mint.to_account_info(),
-          },
-        ),
-        0,
-        &main.key(),
-        Some(&main.key()),
-      )?;
-
-      CreateV1CpiBuilder::new(&ctx.accounts.mpl_token_metadata_program.to_account_info())
-        .metadata(&metadata.to_account_info())          
-        .mint(&mint.to_account_info(), true)
-        .authority(&main.to_account_info())
-        .payer(&owner.to_account_info())
-        .update_authority(&main.to_account_info(), true)
-        .system_program(&ctx.accounts.system_program.to_account_info())
-        .sysvar_instructions(&ctx.accounts.sysvar_instructions.to_account_info())
-        .name(args.name)               
-        .uri(args.uri)                 
-        .invoke()?;         
-    } else {
-      return Err(CreateBlueprintError::MetadataAccountNotFound.into());
-    }
-  }
-  
   Ok(())
 }
 
-#[error_code]
-pub enum CreateBlueprintError {
-  #[msg("Metadata PDA does not match")]
-  MetadataPdaMismatch,
-
-  #[msg("Metadata account not found")]
-  MetadataAccountNotFound,
+impl<'info> CreateFungibleBlueprint<'info> {
+  fn initialize_token_metadata(
+    &self,
+    name: String,
+    symbol: String,
+    uri: String,
+  ) -> ProgramResult {
+    let cpi_accounts = TokenMetadataInitialize {
+      token_program_id: self.token_program.to_account_info(),
+      mint: self.mint.to_account_info(),
+      metadata: self.mint.to_account_info(), // metadata account is the mint, since data is stored in mint
+      mint_authority: self.main.to_account_info(),
+      update_authority: self.main.to_account_info(),
+    };
+    let cpi_ctx = CpiContext::new(self.token_program.to_account_info(), cpi_accounts);
+    token_metadata_initialize(cpi_ctx, name, symbol, uri)?;
+    Ok(())
+  }
 }

@@ -1391,6 +1391,10 @@ dependencies = [
  "mpl-core",
  "mpl-token-metadata",
  "solana-program",
+ "spl-pod",
+ "spl-tlv-account-resolution",
+ "spl-transfer-hook-interface",
+ "spl-type-length-value",
 ]
 
 [[package]]

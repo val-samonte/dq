@@ -146,7 +146,6 @@ describe('DeezQuest: Itembox Program', () => {
         mintAuthority: authority.publicKey,
         treasury: treasuryKeypair.publicKey,
         name: blueprintName,
-        nonFungible: true,
         uri: 'https://example.com/metadata.json',
       })
       .accounts({

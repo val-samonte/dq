@@ -14,7 +14,6 @@ pub struct CreateNonFungibleBlueprintArgs {
   uri: String,
   treasury: Pubkey,
   mint_authority: Pubkey,
-  non_fungible: bool,
 }
 
 #[derive(Accounts)]
@@ -87,7 +86,7 @@ pub fn create_nonfungible_blueprint_handler(
 
   blueprint.bump = ctx.bumps.blueprint;
   blueprint.mint = ctx.accounts.collection.key();
-  blueprint.non_fungible = args.non_fungible;
+  blueprint.non_fungible = true;
   blueprint.authority = ctx.accounts.owner.key();
   blueprint.treasury = args.treasury.key();
   blueprint.mint_authority = args.mint_authority.key();
