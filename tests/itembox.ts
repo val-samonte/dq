@@ -142,7 +142,7 @@ describe('DeezQuest: Itembox Program', () => {
     const blueprintName = 'Copper Sword'
 
     await program.methods
-      .createBlueprint({
+      .createNonfungibleBlueprint({
         mintAuthority: authority.publicKey,
         treasury: treasuryKeypair.publicKey,
         name: blueprintName,
@@ -150,7 +150,7 @@ describe('DeezQuest: Itembox Program', () => {
         uri: 'https://example.com/metadata.json',
       })
       .accounts({
-        mint: swordBlueprint.publicKey,
+        collection: swordBlueprint.publicKey,
         owner: authority.publicKey,
       })
       .signers([swordBlueprint])
@@ -167,50 +167,10 @@ describe('DeezQuest: Itembox Program', () => {
     expect(blueprint.uri).eq('https://example.com/metadata.json')
   })
 
-  it('creates a fungible blueprint', async () => {
-    const blueprintName = 'Refined Copper'
-
-    // get token metadata of mint
-    const [metadataPda] = PublicKey.findProgramAddressSync(
-      [
-        Buffer.from('metadata'),
-        TOKEN_METADATA_PROGRAM_ID.toBytes(),
-        refinedCopperBlueprint.publicKey.toBytes(),
-      ],
-      TOKEN_METADATA_PROGRAM_ID
-    )
-
-    await program.methods
-      .createBlueprint({
-        mintAuthority: authority.publicKey,
-        treasury: treasuryKeypair.publicKey,
-        name: blueprintName,
-        nonFungible: false,
-        uri: 'https://example.com/metadata.json',
-      })
-      .accounts({
-        mint: refinedCopperBlueprint.publicKey,
-        owner: authority.publicKey,
-      })
-      .remainingAccounts([
-        {
-          pubkey: metadataPda,
-          isSigner: false,
-          isWritable: true,
-        },
-      ])
-      .signers([refinedCopperBlueprint])
-      .rpc()
-
-    await sleep(1000)
-
-    // const blueprint = await fetchCollection(
-    //   umi,
-    //   fromWeb3JsPublicKey(refinedCopperBlueprint.publicKey)
-    // )
-
-    // expect(blueprint.name).eq(blueprintName)
-    // expect(blueprint.uri).eq('https://example.com/metadata.json')
+  xit('creates a fungible blueprint', async () => {
+    // create mint with decimals of 0
+    // create token metadata of the mint, as fungible asset
+    // call create_fungible_blueprint - which will then pass all rights to main pda
   })
 
   it('creates a recipe', async () => {

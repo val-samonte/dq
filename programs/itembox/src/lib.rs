@@ -15,12 +15,11 @@ pub mod itembox {
         init_handler(ctx, args)
     }
 
-    pub fn create_blueprint<'a, 'b, 'c, 'info>(
-        ctx: Context<'a, 'b, 'c, 'info, 
-        CreateBlueprint<'info>>, 
-        args: CreateBlueprintArgs
+    pub fn create_nonfungible_blueprint(
+        ctx: Context<CreateNonFungibleBlueprint>, 
+        args: CreateNonFungibleBlueprintArgs
     ) -> Result<()> {
-        create_blueprint_handler(ctx, args)
+        create_nonfungible_blueprint_handler(ctx, args)
     }
 
     pub fn create_recipe(ctx: Context<CreateRecipe>, args: CreateRecipeArgs) -> Result<()> {
