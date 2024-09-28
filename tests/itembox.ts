@@ -57,6 +57,7 @@ describe('DeezQuest: Itembox Program', () => {
 
   let splTokenMintIngredient: PublicKey
   let ownerSplAta: PublicKey
+  let treasurySplAta: PublicKey
 
   const umi = createUmi(program.provider.connection.rpcEndpoint, 'confirmed')
   umi.use(mplCore())
@@ -128,6 +129,11 @@ describe('DeezQuest: Itembox Program', () => {
         authority.publicKey
       )
     ).address
+
+    treasurySplAta = await getAssociatedTokenAddress(
+      splTokenMintIngredient,
+      blueprintTreasuryKeypair.publicKey
+    )
 
     await mintTo(
       program.provider.connection,
@@ -232,7 +238,7 @@ describe('DeezQuest: Itembox Program', () => {
       {
         asset: splTokenMintIngredient,
         amount: new BN(10), // normalized amount
-        consumeMethod: 1,
+        consumeMethod: 2,
       },
     ]
 
@@ -296,6 +302,11 @@ describe('DeezQuest: Itembox Program', () => {
           isSigner: false,
           isWritable: true,
         },
+        {
+          pubkey: treasurySplAta,
+          isSigner: false,
+          isWritable: true,
+        },
       ])
       .signers([assetSigner])
       .rpc()
@@ -329,7 +340,7 @@ describe('DeezQuest: Itembox Program', () => {
   // Burn Token2022 Ingredient
   // Transfer Blueprint Non-Fungible Ingredient
   // Transfer Blueprint Fungible Ingredient
-  // Transfer SPL Ingredient
+  // ✅ Transfer SPL Ingredient
   // Transfer Token2022 Ingredient
   // Multiple ingredients
 })

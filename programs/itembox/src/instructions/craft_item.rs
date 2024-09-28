@@ -2,12 +2,22 @@ use std::{collections::HashMap, str::FromStr};
 
 use anchor_lang::prelude::*;
 use anchor_spl::{
-  associated_token::AssociatedToken, token::{
+  associated_token::{
+    self,
+    Create, 
+    AssociatedToken
+  }, 
+  token::{
     self, spl_token::{
       self,
       state::Mint
-    }, Burn, Token, TokenAccount, TransferChecked
-  }, token_2022::{
+    }, 
+    Burn, 
+    Token, 
+    TokenAccount, 
+    TransferChecked
+  }, 
+  token_2022::{
     self, 
     spl_token_2022::{
       self, 
@@ -38,9 +48,14 @@ pub struct CraftItem<'info> {
 
   #[account(
     mut, 
-    has_one = mint
+    has_one = mint,
+    has_one = treasury
   )]
   pub blueprint: Box<Account<'info, Blueprint>>,
+
+  #[account(mut)]
+  /// CHECK: has_one in the blueprint
+  pub treasury: UncheckedAccount<'info>,
 
   #[account(mut)]
   /// CHECK: has_one in the blueprint
@@ -81,7 +96,7 @@ pub fn craft_item_handler<'a, 'b, 'c, 'info>(
   ctx: Context<'a, 'b, 'c, 'info, CraftItem<'info>>
 ) -> Result<()> {
 
-  let owner = &mut ctx.accounts.owner;
+  let owner = &ctx.accounts.owner;
   let recipe = &ctx.accounts.recipe;
   let main = &ctx.accounts.main;
   let additional_seeds: &[&[&[u8]]] = &[&[b"main", &[main.bump]]];
@@ -187,6 +202,13 @@ pub fn craft_item_handler<'a, 'b, 'c, 'info>(
                         return Err(CraftItemError::InsufficientIngredientAmount.into());
                       }
 
+                      ctx.accounts.create_associated_token_account(
+                        &ctx.accounts.treasury,
+                        asset_account,
+                        receiver_ata_account_info,
+                        true
+                      )?;
+
                       token_2022::transfer_checked(
                         CpiContext::new(
                           ctx.accounts.token_program_2022.to_account_info(),
@@ -281,18 +303,14 @@ pub fn craft_item_handler<'a, 'b, 'c, 'info>(
               // TRANSFER
               // =====================
               2 => {
+
                 let receiver_ata_pubkey = get_associated_token_address(
-                  &ctx.accounts.blueprint.treasury.key(),
+                  &ctx.accounts.treasury.key(),
                   &token_program_id.key(),
                   &ingredient.asset.key()
                 );
 
                 if let Some(receiver_ata_account_info) = account_map.get(&receiver_ata_pubkey) {
-
-                  let receiver_ata_account = deserialize_ata(receiver_ata_account_info)?;
-                  if receiver_ata_account.amount < ingredient.amount {
-                    return Err(CraftItemError::InsufficientIngredientAmount.into());
-                  }
 
                   if ingredient.asset_type == 1 {
                     // =====================
@@ -301,6 +319,13 @@ pub fn craft_item_handler<'a, 'b, 'c, 'info>(
 
                     let mint_account = deserialize_mint(asset_account)?;
 
+                    ctx.accounts.create_associated_token_account(
+                      &ctx.accounts.treasury,
+                      asset_account,
+                      receiver_ata_account_info,
+                      false
+                    )?;                    
+                  
                     token::transfer_checked(
                       CpiContext::new(
                         ctx.accounts.token_program.to_account_info(),
@@ -311,7 +336,7 @@ pub fn craft_item_handler<'a, 'b, 'c, 'info>(
                           authority: owner.to_account_info(),
                         }
                       ),
-                      ingredient.amount,
+                      required_amount,
                       mint_account.decimals
                     )?;
 
@@ -321,6 +346,13 @@ pub fn craft_item_handler<'a, 'b, 'c, 'info>(
                     // =====================
 
                     let mint_account = deserialize_mint_2022(asset_account)?;
+
+                    ctx.accounts.create_associated_token_account(
+                      &ctx.accounts.treasury,
+                      asset_account,
+                      receiver_ata_account_info,
+                      true
+                    )?;
 
                     token_2022::transfer_checked(
                       CpiContext::new(
@@ -332,7 +364,7 @@ pub fn craft_item_handler<'a, 'b, 'c, 'info>(
                           authority: owner.to_account_info(),
                         }
                       ),
-                      ingredient.amount,
+                      required_amount,
                       mint_account.decimals
                     )?;
 
@@ -394,7 +426,7 @@ pub fn craft_item_handler<'a, 'b, 'c, 'info>(
   } else {
     if let Some(owner_ata) = &ctx.accounts.owner_ata {
      let amount = recipe.output_amount; // * 10u64.pow(mint_account.decimals as u32);
-      
+
       token_2022::mint_to(CpiContext::new(
         ctx.accounts.token_program_2022.to_account_info(),
         MintTo {
@@ -469,4 +501,38 @@ fn extract_name_and_uri(data: &AccountInfo) -> Result<(String, String)> {
       collection_account.base.name.to_string(),
       collection_account.base.uri.to_string(),
   ))
+}
+
+impl<'info> CraftItem<'info> {
+  fn create_associated_token_account(
+    &self,
+    owner: &AccountInfo<'info>,
+    mint: &AccountInfo<'info>,
+    ata: &AccountInfo<'info>,
+    token_extension: bool,
+  ) -> Result<()> {
+    if ata.data_is_empty() {
+      let token_program = if token_extension {
+        self.token_program_2022.to_account_info()
+      } else {
+        self.token_program.to_account_info()
+      };
+
+      let cpi_accounts = Create {
+        payer: self.owner.to_account_info(),
+        associated_token: ata.to_account_info(),
+        authority: owner.to_account_info(),
+        mint: mint.to_account_info(),
+        system_program: self.system_program.to_account_info(),
+        token_program: token_program.to_account_info(),
+      };
+
+      let cpi_program = self.associated_token_program.to_account_info();
+      let cpi_ctx = CpiContext::new(cpi_program, cpi_accounts);
+      
+      associated_token::create(cpi_ctx)?;
+    }
+
+    Ok(())
+  }
 }
