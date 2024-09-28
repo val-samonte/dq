@@ -379,25 +379,21 @@ pub fn craft_item_handler<'a, 'b, 'c, 'info>(
       }
     );
 
-    // pending issues:
-    // 1. cannot borrow data
+    let (name, uri) = extract_name_and_uri(&ctx.accounts.mint)?;
 
-    // if let Ok(collection_account) = Collection::from_bytes(&ctx.accounts.mint.data.borrow()) {
-      CreateV2CpiBuilder::new(&ctx.accounts.mpl_core_program.to_account_info())
-        .asset(&ctx.accounts.asset_signer.to_account_info())
-        .collection(Some(&ctx.accounts.mint.to_account_info()))
-        .payer(&owner.to_account_info())
-        .owner(Some(&owner.to_account_info()))
-        .authority(Some(&main.to_account_info()))
-        .update_authority(None)
-        .system_program(&ctx.accounts.system_program.to_account_info())
-        .plugins(plugins)
-        // .name(collection_account.base.name)
-        // .uri(collection_account.base.uri)
-        .name("test name".to_string())
-        .uri("test uri".to_string())
-        .invoke_signed(additional_seeds)?;
-    // }
+
+    CreateV2CpiBuilder::new(&ctx.accounts.mpl_core_program.to_account_info())
+      .asset(&ctx.accounts.asset_signer.to_account_info())
+      .collection(Some(&ctx.accounts.mint.to_account_info()))
+      .payer(&owner.to_account_info())
+      .owner(Some(&owner.to_account_info()))
+      .authority(Some(&main.to_account_info()))
+      .update_authority(None)
+      .system_program(&ctx.accounts.system_program.to_account_info())
+      .plugins(plugins)
+      .name(name)
+      .uri(uri)      
+      .invoke_signed(additional_seeds)?;
 
   } else {
     if let Some(owner_ata) = &ctx.accounts.owner_ata {
@@ -467,4 +463,14 @@ pub fn deserialize_mint(account_info: &AccountInfo) -> Result<Mint> {
 pub fn deserialize_mint_2022(account_info: &AccountInfo) -> Result<Mint2022> {
   let account_data = account_info.try_borrow_data()?;
   Mint2022::unpack(&account_data).map_err(|_| ProgramError::InvalidAccountData.into())
+}
+
+fn extract_name_and_uri(data: &AccountInfo) -> Result<(String, String)> {
+  let mint_data = data.try_borrow_data()?;
+  let collection_account = Collection::from_bytes(&mint_data)?;
+
+  Ok((
+      collection_account.base.name.to_string(),
+      collection_account.base.uri.to_string(),
+  ))
 }

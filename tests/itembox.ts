@@ -16,7 +16,11 @@ import {
 } from '@solana/web3.js'
 import { expect } from 'chai'
 import { createUmi } from '@metaplex-foundation/umi-bundle-defaults'
-import { fetchCollection, mplCore } from '@metaplex-foundation/mpl-core'
+import {
+  fetchAsset,
+  fetchCollection,
+  mplCore,
+} from '@metaplex-foundation/mpl-core'
 import {
   signerIdentity,
   createSignerFromKeypair,
@@ -254,7 +258,7 @@ describe('DeezQuest: Itembox Program', () => {
     })
   })
 
-  it('crafts an item', async () => {
+  it('crafts an non-fungible item', async () => {
     const assetSigner = Keypair.generate()
 
     await program.methods
@@ -269,7 +273,32 @@ describe('DeezQuest: Itembox Program', () => {
       })
       .signers([assetSigner])
       .rpc()
+
+    await sleep(1000)
+
+    const asset = await fetchAsset(
+      umi,
+      fromWeb3JsPublicKey(assetSigner.publicKey),
+      {
+        skipDerivePlugins: false,
+      }
+    )
+
+    expect(asset.name).eq('Copper Sword')
+    expect(asset.uri).eq('https://example.com/metadata.json')
+    expect(asset.owner.toString()).eq(authority.publicKey.toString())
   })
+
+  xit('crafts a fungible item', async () => {})
+
+  // Burn Blueprint Non-Fungible Ingredient
+  // Burn Blueprint Fungible Ingredient
+  // Burn SPL Ingredient
+  // Burn Token2022 Ingredient
+  // Transfer Blueprint Non-Fungible Ingredient
+  // Transfer Blueprint Fungible Ingredient
+  // Transfer SPL Ingredient
+  // Transfer Token2022 Ingredient
 })
 
 function sleep(ms: number) {
