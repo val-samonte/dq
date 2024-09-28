@@ -26,10 +26,14 @@ import {
   createMint,
   getAccount,
   getAssociatedTokenAddress,
+  getMetadataPointerState,
+  getMint,
   getOrCreateAssociatedTokenAccount,
+  getTokenMetadata,
   mintTo,
   TOKEN_2022_PROGRAM_ID,
 } from '@solana/spl-token'
+// import { StateWithExtensions, MintExtensionType } from '@solana/spl-token-extensions';
 
 const TOKEN_METADATA_PROGRAM_ID = new PublicKey(
   'metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s'
@@ -157,13 +161,13 @@ describe('DeezQuest: Itembox Program', () => {
 
     await sleep(1000)
 
-    const blueprint = await fetchCollection(
+    const blueprintMetadata = await fetchCollection(
       umi,
       fromWeb3JsPublicKey(swordBlueprint.publicKey)
     )
 
-    expect(blueprint.name).eq(blueprintName)
-    expect(blueprint.uri).eq('https://example.com/metadata.json')
+    expect(blueprintMetadata.name).eq(blueprintName)
+    expect(blueprintMetadata.uri).eq('https://example.com/metadata.json')
   })
 
   it('creates a fungible blueprint', async () => {
@@ -185,6 +189,27 @@ describe('DeezQuest: Itembox Program', () => {
       .rpc()
 
     await sleep(1000)
+
+    const mintInfo = await getMint(
+      program.provider.connection,
+      refinedCopperBlueprint.publicKey,
+      'confirmed',
+      TOKEN_2022_PROGRAM_ID
+    )
+
+    const metadataPointer = getMetadataPointerState(mintInfo)
+    expect(
+      metadataPointer.metadataAddress.equals(refinedCopperBlueprint.publicKey)
+    ).eq(true)
+
+    const metadata = await getTokenMetadata(
+      program.provider.connection,
+      metadataPointer.metadataAddress // Mint Account address
+    )
+
+    expect(metadata.name).eq(blueprintName)
+    expect(metadata.symbol).eq('DQT')
+    expect(metadata.uri).eq('https://example.com/metadata.json')
   })
 
   it('creates a recipe', async () => {
