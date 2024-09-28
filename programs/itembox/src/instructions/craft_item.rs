@@ -90,7 +90,7 @@ pub fn craft_item_handler<'a, 'b, 'c, 'info>(
   for account in ctx.remaining_accounts.iter() {
     account_map.insert(*account.key, account);
   }
-  /*
+  
   for ingredient in recipe.ingredients.iter() {
     if let Some(asset_account) = account_map.get(&ingredient.asset) {
       match ingredient.asset_type {
@@ -354,15 +354,12 @@ pub fn craft_item_handler<'a, 'b, 'c, 'info>(
           }
         }
       }
+    } else {
+      return Err(CraftItemError::MissingIngredientAccount.into());
     }
   }
-  */
 
-  // if everything is ok, mint the item
-  let blueprint = &mut ctx.accounts.blueprint;
-  // let owner_ata = &ctx.accounts.owner_ata;
-  // let mint = &ctx.accounts.mint;
-  
+  let blueprint = &mut ctx.accounts.blueprint;  
   blueprint.counter = blueprint.counter.checked_add(1).unwrap();
   
   if blueprint.non_fungible {  

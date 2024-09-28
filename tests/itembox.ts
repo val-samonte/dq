@@ -224,7 +224,7 @@ describe('DeezQuest: Itembox Program', () => {
       {
         asset: splTokenMintIngredient,
         amount: new BN(10 * 10 ** 9),
-        consumeMethod: 2,
+        consumeMethod: 1,
       },
     ]
 
@@ -271,6 +271,18 @@ describe('DeezQuest: Itembox Program', () => {
       .accountsPartial({
         ownerAta: null,
       })
+      .remainingAccounts([
+        {
+          pubkey: splTokenMintIngredient,
+          isSigner: false,
+          isWritable: true,
+        },
+        {
+          pubkey: ownerSplAta,
+          isSigner: false,
+          isWritable: true,
+        },
+      ])
       .signers([assetSigner])
       .rpc()
 
