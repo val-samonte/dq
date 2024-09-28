@@ -1,16 +1,14 @@
 use anchor_lang::{prelude::*, solana_program::entrypoint::ProgramResult};
-
 use anchor_spl::token_interface::{
   token_metadata_initialize, Mint,
   Token2022, TokenMetadataInitialize,
 };
 
 use crate::{
-    get_meta_list_size, 
-    update_account_lamports_to_minimum_balance, META_LIST_ACCOUNT_SEED,
+  get_meta_list_size, 
+  update_account_lamports_to_minimum_balance, META_LIST_ACCOUNT_SEED,
+  states::{Blueprint, Main}
 };
-
-use crate::states::{Blueprint, Main};
 
 #[derive(AnchorDeserialize, AnchorSerialize)]
 pub struct CreateFungibleBlueprintArgs {
@@ -42,6 +40,7 @@ pub struct CreateFungibleBlueprint<'info> {
   pub treasury: UncheckedAccount<'info>,
 
   #[account(
+    mut,
     seeds = [
       b"main"
     ],
@@ -150,7 +149,12 @@ impl<'info> CreateFungibleBlueprint<'info> {
       mint_authority: self.main.to_account_info(),
       update_authority: self.main.to_account_info(),
     };
-    let cpi_ctx = CpiContext::new(self.token_program.to_account_info(), cpi_accounts);
+    let bump = self.main.bump;
+    let additional_seeds: &[&[&[u8]]] = &[&[b"main", &[bump]]];
+
+    let cpi_ctx = CpiContext::new(self.token_program.to_account_info(), cpi_accounts)
+        .with_signer(additional_seeds);
+
     token_metadata_initialize(cpi_ctx, name, symbol, uri)?;
     Ok(())
   }

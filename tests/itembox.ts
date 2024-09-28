@@ -166,10 +166,25 @@ describe('DeezQuest: Itembox Program', () => {
     expect(blueprint.uri).eq('https://example.com/metadata.json')
   })
 
-  xit('creates a fungible blueprint', async () => {
-    // create mint with decimals of 0
-    // create token metadata of the mint, as fungible asset
-    // call create_fungible_blueprint - which will then pass all rights to main pda
+  it('creates a fungible blueprint', async () => {
+    const blueprintName = 'Refined Copper'
+
+    await program.methods
+      .createFungibleBlueprint({
+        mintAuthority: authority.publicKey,
+        treasury: treasuryKeypair.publicKey,
+        name: blueprintName,
+        uri: 'https://example.com/metadata.json',
+        symbol: 'DQT',
+      })
+      .accounts({
+        mint: refinedCopperBlueprint.publicKey,
+        owner: authority.publicKey,
+      })
+      .signers([refinedCopperBlueprint])
+      .rpc()
+
+    await sleep(1000)
   })
 
   it('creates a recipe', async () => {
