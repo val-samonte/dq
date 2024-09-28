@@ -53,6 +53,7 @@ describe('DeezQuest: Itembox Program', () => {
   const refinedCopperBlueprint = Keypair.generate()
   const recipeSignerId = Keypair.generate()
   const token = Keypair.generate()
+  const blueprintTreasuryKeypair = Keypair.generate()
 
   let splTokenMintIngredient: PublicKey
   let ownerSplAta: PublicKey
@@ -99,8 +100,15 @@ describe('DeezQuest: Itembox Program', () => {
         fromPubkey: authority.publicKey,
         toPubkey: treasuryKeypair.publicKey,
         lamports: 2 * LAMPORTS_PER_SOL,
+      }),
+      SystemProgram.transfer({
+        fromPubkey: authority.publicKey,
+        toPubkey: blueprintTreasuryKeypair.publicKey,
+        lamports: 2 * LAMPORTS_PER_SOL,
       })
     )
+
+    await program.provider.sendAndConfirm(tx)
 
     await program.provider.sendAndConfirm(tx)
 
@@ -152,7 +160,7 @@ describe('DeezQuest: Itembox Program', () => {
     await program.methods
       .createNonfungibleBlueprint({
         mintAuthority: authority.publicKey,
-        treasury: treasuryKeypair.publicKey,
+        treasury: blueprintTreasuryKeypair.publicKey,
         name: blueprintName,
         uri: 'https://example.com/metadata.json',
       })
@@ -180,7 +188,7 @@ describe('DeezQuest: Itembox Program', () => {
     await program.methods
       .createFungibleBlueprint({
         mintAuthority: authority.publicKey,
-        treasury: treasuryKeypair.publicKey,
+        treasury: blueprintTreasuryKeypair.publicKey,
         name: blueprintName,
         uri: 'https://example.com/metadata.json',
         symbol: 'DQT',
@@ -223,7 +231,7 @@ describe('DeezQuest: Itembox Program', () => {
     const ingredients = [
       {
         asset: splTokenMintIngredient,
-        amount: new BN(10 * 10 ** 9),
+        amount: new BN(10), // normalized amount
         consumeMethod: 1,
       },
     ]
@@ -261,6 +269,12 @@ describe('DeezQuest: Itembox Program', () => {
   it('crafts an non-fungible item', async () => {
     const assetSigner = Keypair.generate()
 
+    const tokenAccount = await getAccount(
+      program.provider.connection,
+      ownerSplAta
+    )
+    console.log(tokenAccount.amount)
+
     await program.methods
       .craftItem()
       .accounts({
@@ -288,6 +302,12 @@ describe('DeezQuest: Itembox Program', () => {
 
     await sleep(1000)
 
+    const tokenAccountPost = await getAccount(
+      program.provider.connection,
+      ownerSplAta
+    )
+    console.log(tokenAccountPost.amount)
+
     const asset = await fetchAsset(
       umi,
       fromWeb3JsPublicKey(assetSigner.publicKey),
@@ -305,12 +325,13 @@ describe('DeezQuest: Itembox Program', () => {
 
   // Burn Blueprint Non-Fungible Ingredient
   // Burn Blueprint Fungible Ingredient
-  // Burn SPL Ingredient
+  // ✅ Burn SPL Ingredient
   // Burn Token2022 Ingredient
   // Transfer Blueprint Non-Fungible Ingredient
   // Transfer Blueprint Fungible Ingredient
   // Transfer SPL Ingredient
   // Transfer Token2022 Ingredient
+  // Multiple ingredients
 })
 
 function sleep(ms: number) {

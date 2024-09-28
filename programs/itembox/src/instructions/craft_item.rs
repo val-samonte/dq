@@ -231,7 +231,10 @@ pub fn craft_item_handler<'a, 'b, 'c, 'info>(
 
           if let Some(ata_account_info) = account_map.get(&ata_pubkey) {
             let ata_account = deserialize_ata(ata_account_info)?;
-            if ata_account.amount < ingredient.amount {
+            let mint_account = deserialize_mint(asset_account)?;
+            let required_amount = ingredient.amount * 10u64.pow(mint_account.decimals as u32);
+            
+            if ata_account.amount < required_amount {
               return Err(CraftItemError::InsufficientIngredientAmount.into());
             }
 
@@ -245,8 +248,6 @@ pub fn craft_item_handler<'a, 'b, 'c, 'info>(
                   // SPL Token
                   // =====================
 
-                  let mint_account = deserialize_mint(asset_account)?;
-
                   token::burn(
                     CpiContext::new(
                       ctx.accounts.token_program.to_account_info(), 
@@ -256,14 +257,12 @@ pub fn craft_item_handler<'a, 'b, 'c, 'info>(
                         authority: owner.to_account_info(), 
                       },
                     ),
-                    ingredient.amount * 10u64.pow(mint_account.decimals as u32)
+                    required_amount
                   )?;
                 } else {
                   // =====================
                   // SPL Token Extensions
                   // =====================
-
-                  let mint_account = deserialize_mint_2022(asset_account)?;
 
                   token_2022::burn(
                     CpiContext::new(
@@ -274,7 +273,7 @@ pub fn craft_item_handler<'a, 'b, 'c, 'info>(
                         authority: owner.to_account_info(),
                       },
                     ),
-                    ingredient.amount * 10u64.pow(mint_account.decimals as u32)
+                    required_amount
                   )?;
                 }
               }
@@ -417,7 +416,7 @@ pub enum CraftItemError {
   #[msg("An account is missing from the remaining accounts")]
   MissingIngredientAccount,
 
-  #[msg("Insufficient ingredient amount")]
+  #[msg("Insufficient ingredient amount, make sure you are passing the decimal value")]
   InsufficientIngredientAmount,
 
   #[msg("Max supply reached")]
