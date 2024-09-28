@@ -2,30 +2,38 @@ use std::{collections::HashMap, str::FromStr};
 
 use anchor_lang::prelude::*;
 use anchor_spl::{
-  token::{
-    self, 
-    spl_token, 
-    Burn, 
-    Transfer,
-    Token,
-    TokenAccount
-  }, 
-  token_2022::{
+  associated_token::AssociatedToken, token::{
+    self, spl_token::{
+      self,
+      state::Mint
+    }, Burn, Token, TokenAccount, TransferChecked
+  }, token_2022::{
     self, 
     spl_token_2022::{
       self, 
-      state::Account as AssociatedTokenAccount
+      state::{
+        Account as AssociatedTokenAccount, Mint as Mint2022
+      },
+      // instruction::{
+      //   mint_to,
+      //   burn
+      // }
     }, 
     Burn as Burn2022, 
     MintTo, 
-    TransferChecked
-  },
-  token_interface::Token2022,
-  associated_token::AssociatedToken
+    TransferChecked as TransferChecked2022
+  }, token_interface::Token2022
 };
-use anchor_lang::solana_program::program_pack::Pack;
-use crate::states::{Blueprint, Main, Recipe};
+use anchor_lang::solana_program::{
+  // program::invoke_signed,
+  program_pack::Pack
+};
+use mpl_core::{
+  instructions::CreateV2CpiBuilder, 
+  types::{Plugin, Edition, PluginAuthority, PluginAuthorityPair}, ID as MPL_CORE_ID 
+};
 
+use crate::states::{Blueprint, Main, Recipe};
 
 #[derive(Accounts)]
 pub struct CraftItem<'info> {
@@ -40,9 +48,7 @@ pub struct CraftItem<'info> {
   )]
   pub blueprint: Box<Account<'info, Blueprint>>,
 
-  #[account(
-    mut
-  )]
+  #[account(mut)]
   /// CHECK: has_one in the blueprint
   pub mint: UncheckedAccount<'info>,
 
@@ -57,11 +63,18 @@ pub struct CraftItem<'info> {
   #[account(mut)]
   pub owner: Signer<'info>,
 
+  #[account(mut)]
+  pub asset_signer: Signer<'info>,
+
   #[account(
     seeds = [b"main"],
     bump = main.bump
   )]
   pub main: Box<Account<'info, Main>>,
+
+  #[account(address = MPL_CORE_ID)]
+  /// CHECK: this account is checked by the address constraint
+  pub mpl_core_program: UncheckedAccount<'info>,
 
   pub token_program: Program<'info, Token>,
   pub token_program_2022: Program<'info, Token2022>,
@@ -111,10 +124,17 @@ pub fn craft_item_handler<'a, 'b, 'c, 'info>(
             }
 
             match ingredient.consume_method {
-              // burn
-
+              // =====================
+              // BURN
+              // =====================
               1 => {
                 if ingredient.asset_type == 1 {
+                  // =====================
+                  // SPL Token
+                  // =====================
+
+                  let mint_account = deserialize_mint(asset_account)?;
+
                   token::burn(
                     CpiContext::new(
                       ctx.accounts.token_program.to_account_info(), 
@@ -124,9 +144,15 @@ pub fn craft_item_handler<'a, 'b, 'c, 'info>(
                         authority: ctx.accounts.owner.to_account_info(), 
                       },
                     ),
-                    ingredient.amount
+                    ingredient.amount * 10u64.pow(mint_account.decimals as u32)
                   )?;
                 } else {
+                  // =====================
+                  // SPL Token Extensions
+                  // =====================
+
+                  let mint_account = deserialize_mint_2022(asset_account)?;
+
                   token_2022::burn(
                     CpiContext::new(
                       ctx.accounts.token_program_2022.to_account_info(),
@@ -136,14 +162,14 @@ pub fn craft_item_handler<'a, 'b, 'c, 'info>(
                         authority: ctx.accounts.owner.to_account_info(),
                       },
                     ),
-                    ingredient.amount
+                    ingredient.amount * 10u64.pow(mint_account.decimals as u32)
                   )?;
                 }
               }
+              // =====================
+              // TRANSFER
+              // =====================
               2 => {
-                // transfer
-                // get the receiver's ata, the blueprint treasury is the receiver
-
                 let receiver_ata_pubkey = get_associated_token_address(
                   &ctx.accounts.blueprint.treasury.key(),
                   &token_program_id.key(),
@@ -162,16 +188,20 @@ pub fn craft_item_handler<'a, 'b, 'c, 'info>(
                     // SPL Token
                     // =====================
 
-                    token::transfer(
+                    let mint_account = deserialize_mint(asset_account)?;
+
+                    token::transfer_checked(
                       CpiContext::new(
                         ctx.accounts.token_program.to_account_info(),
-                        Transfer {
+                        TransferChecked {
+                          mint: asset_account.to_account_info(),
                           from: ata_account_info.to_account_info(),
                           to: receiver_ata_account_info.to_account_info(),
                           authority: ctx.accounts.owner.to_account_info(),
                         }
                       ),
-                      ingredient.amount
+                      ingredient.amount,
+                      mint_account.decimals
                     )?;
 
                   } else {
@@ -184,7 +214,7 @@ pub fn craft_item_handler<'a, 'b, 'c, 'info>(
                     token_2022::transfer_checked(
                       CpiContext::new(
                         ctx.accounts.token_program_2022.to_account_info(),
-                        TransferChecked {
+                        TransferChecked2022 {
                           mint: asset_account.to_account_info(),
                           from: ata_account_info.to_account_info(),
                           to: receiver_ata_account_info.to_account_info(),
@@ -200,8 +230,11 @@ pub fn craft_item_handler<'a, 'b, 'c, 'info>(
                   return Err(CraftItemError::MissingIngredientAccount.into());
                 }
               }
+              // =====================
+              // RETAIN 
+              // =====================
               _ => {
-                // retain - do nothing
+                // do nothing
               }
             }
           } else {
@@ -216,14 +249,41 @@ pub fn craft_item_handler<'a, 'b, 'c, 'info>(
   let blueprint = &mut ctx.accounts.blueprint;
   let owner_ata = &ctx.accounts.owner_ata;
   let mint = &ctx.accounts.mint;
+  let main = &ctx.accounts.main;
   
   blueprint.counter += 1;
 
   if blueprint.non_fungible {  
-    // create core collection with master edition plugin
+    // create core core asset with edition plugin
 
-    // Collection
+    let mut plugins: Vec<PluginAuthorityPair> = vec![];
+
+    plugins.push(
+      PluginAuthorityPair {
+        plugin: Plugin::Edition(Edition {
+          number: blueprint.counter,
+        }),
+        authority: Some(PluginAuthority::Address { address: main.key() }),
+      }
+    );
+
+    CreateV2CpiBuilder::new(&ctx.accounts.mpl_core_program.to_account_info())
+      .asset(&ctx.accounts.asset_signer.to_account_info())
+      .collection(Some(&mint.to_account_info()))
+      .payer(&ctx.accounts.owner.to_account_info())
+      .owner(Some(&ctx.accounts.owner.to_account_info()))
+      .authority(Some(&ctx.accounts.owner.to_account_info()))
+      .update_authority(None)
+      .system_program(&ctx.accounts.system_program.to_account_info())
+      .plugins(plugins)
+      .invoke()?;
+
   } else {
+    let mint_account = deserialize_mint_2022(mint)?;
+    let amount = 10u64.pow(mint_account.decimals as u32);
+    // let main_seed = &[&b"main"[..], &[main.bump]];
+    // let seeds = &[main_seed];
+
     // todo: invoke signed
     token_2022::mint_to(CpiContext::new(
       ctx.accounts.token_program_2022.to_account_info(),
@@ -231,8 +291,23 @@ pub fn craft_item_handler<'a, 'b, 'c, 'info>(
         mint: mint.to_account_info(),
         to: owner_ata.to_account_info(),
         authority: ctx.accounts.main.to_account_info(),
-      }
-    ), 1)?;
+      },
+    ), amount)?;
+
+    // let ix = mint_to(
+    //   ctx.program.key,
+    //   ctx.accounts.mint.key,
+    //   ctx.accounts.to.key,
+    //   ctx.accounts.authority.key,
+    //   &[],
+    //   amount,
+    // )?;
+    // anchor_lang::solana_program::program::invoke_signed(
+    //     &ix,
+    //     &[ctx.accounts.to, ctx.accounts.mint, ctx.accounts.authority],
+    //     ctx.signer_seeds,
+    // )
+    // .map_err(Into::into)
   }
 
   Ok(())
@@ -272,10 +347,12 @@ pub fn deserialize_ata(account_info: &AccountInfo) -> Result<AssociatedTokenAcco
   }
 }
 
-pub fn deserialize_mint_2022(account_info: &AccountInfo) -> Result<spl_token_2022::state::Mint> {
-  // Borrow the data from the AccountInfo and attempt to deserialize it
+pub fn deserialize_mint(account_info: &AccountInfo) -> Result<Mint> {
   let account_data = account_info.try_borrow_data()?;
+  Mint::unpack(&account_data).map_err(|_| ProgramError::InvalidAccountData.into())
+}
 
-  // Use the `unpack` method from SPL Token's Mint struct to deserialize the data
-  spl_token_2022::state::Mint::unpack(&account_data).map_err(|_| ProgramError::InvalidAccountData.into())
+pub fn deserialize_mint_2022(account_info: &AccountInfo) -> Result<Mint2022> {
+  let account_data = account_info.try_borrow_data()?;
+  Mint2022::unpack(&account_data).map_err(|_| ProgramError::InvalidAccountData.into())
 }

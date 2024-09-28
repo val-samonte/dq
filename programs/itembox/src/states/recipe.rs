@@ -8,6 +8,9 @@ pub struct Recipe {
   /// The blueprint to use to produce the item of this recipe. (32)
   pub blueprint: Pubkey,
 
+  /// The amount of items produced by this recipe. (8)
+  pub output_amount: u64,
+
   /// The list of ingredients for this recipe. (4 + dynamic)
   pub ingredients: Vec<Ingredient>,
 }
@@ -16,7 +19,7 @@ impl Recipe {
   pub fn len(ingredients_count: usize) -> usize {
     let ingredient_size = 32 + 1 + 8 + 1;
 
-    8 + 1 + 32 + 4 + (ingredient_size * ingredients_count)
+    8 + 1 + 32 + 8 + 4 + (ingredient_size * ingredients_count)
   }
 }
 

@@ -25,7 +25,7 @@ pub struct Blueprint {
   pub mint_authority: Pubkey,
 
   /// Number of editions printed, if mint is a Master Edition. (8)
-  pub counter: u64,
+  pub counter: u32,
 
   /// Unused reserved byte space for future additive changes. (128)
   pub _reserved: [u8; 128],
@@ -33,6 +33,6 @@ pub struct Blueprint {
 
 impl Blueprint {
   pub fn len() -> usize {
-    8 + 1 + 32 + 1 + 32 + 32 + 32 + 8 + 128
+    8 + 1 + 32 + 1 + 32 + 32 + 32 + 4 + 128
   }
 }

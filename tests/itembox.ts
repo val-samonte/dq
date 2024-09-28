@@ -174,6 +174,7 @@ describe('DeezQuest: Itembox Program', () => {
 
     await program.methods
       .createRecipe({
+        outputAmount: new BN(1),
         ingredients: ingredients.map(({ asset, ...ing }) => ing),
       })
       .accounts({

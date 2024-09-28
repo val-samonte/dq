@@ -5,7 +5,8 @@ use anchor_spl::{token::spl_token, token_2022::spl_token_2022};
 
 #[derive(AnchorDeserialize, AnchorSerialize)]
 pub struct CreateRecipeArgs {
-  ingredients: Vec<IngredientDefinition>
+  ingredients: Vec<IngredientDefinition>,
+  output_amount: u64,
 }
 
 #[derive(Accounts)]
@@ -43,7 +44,8 @@ pub fn create_recipe_handler(ctx: Context<CreateRecipe>, args: CreateRecipeArgs)
 
   recipe.bump = ctx.bumps.recipe;
   recipe.blueprint = ctx.accounts.blueprint.key();
-
+  recipe.output_amount = args.output_amount;
+  
   for (index, account_info) in remaining_accounts.iter().enumerate() {
 
     if account_info.key().eq(&recipe.blueprint) {
