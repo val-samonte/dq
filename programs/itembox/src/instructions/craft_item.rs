@@ -22,6 +22,7 @@ use anchor_spl::{
 };
 use anchor_lang::solana_program::program_pack::Pack;
 use mpl_core::{
+  Collection,
   instructions::{BurnV1CpiBuilder, CreateV2CpiBuilder, TransferV1CpiBuilder}, 
   types::{Edition, Plugin, PluginAuthority, PluginAuthorityPair}, ID as MPL_CORE_ID 
 };
@@ -51,7 +52,7 @@ pub struct CraftItem<'info> {
     associated_token::mint = mint,
     associated_token::authority = owner
   )]
-  pub owner_ata: Box<Account<'info, TokenAccount>>,
+  pub owner_ata: Option<Box<Account<'info, TokenAccount>>>,
 
   #[account(mut)]
   pub owner: Signer<'info>,
@@ -80,8 +81,8 @@ pub fn craft_item_handler<'a, 'b, 'c, 'info>(
   ctx: Context<'a, 'b, 'c, 'info, CraftItem<'info>>
 ) -> Result<()> {
 
-  let recipe = &ctx.accounts.recipe;
   let owner = &mut ctx.accounts.owner;
+  let recipe = &ctx.accounts.recipe;
   let main = &ctx.accounts.main;
   let additional_seeds: &[&[&[u8]]] = &[&[b"main", &[main.bump]]];
 
@@ -89,7 +90,7 @@ pub fn craft_item_handler<'a, 'b, 'c, 'info>(
   for account in ctx.remaining_accounts.iter() {
     account_map.insert(*account.key, account);
   }
-
+  /*
   for ingredient in recipe.ingredients.iter() {
     if let Some(asset_account) = account_map.get(&ingredient.asset) {
       match ingredient.asset_type {
@@ -355,14 +356,15 @@ pub fn craft_item_handler<'a, 'b, 'c, 'info>(
       }
     }
   }
+  */
 
   // if everything is ok, mint the item
   let blueprint = &mut ctx.accounts.blueprint;
-  let owner_ata = &ctx.accounts.owner_ata;
-  let mint = &ctx.accounts.mint;
+  // let owner_ata = &ctx.accounts.owner_ata;
+  // let mint = &ctx.accounts.mint;
   
   blueprint.counter = blueprint.counter.checked_add(1).unwrap();
-
+  
   if blueprint.non_fungible {  
     // create core asset with edition plugin
 
@@ -377,28 +379,41 @@ pub fn craft_item_handler<'a, 'b, 'c, 'info>(
       }
     );
 
-    CreateV2CpiBuilder::new(&ctx.accounts.mpl_core_program.to_account_info())
-      .asset(&ctx.accounts.asset_signer.to_account_info())
-      .collection(Some(&mint.to_account_info()))
-      .payer(&owner.to_account_info())
-      .owner(Some(&owner.to_account_info()))
-      .authority(Some(&owner.to_account_info()))
-      .update_authority(None)
-      .system_program(&ctx.accounts.system_program.to_account_info())
-      .plugins(plugins)
-      .invoke_signed(additional_seeds)?;
+    // pending issues:
+    // 1. cannot borrow data
+
+    // if let Ok(collection_account) = Collection::from_bytes(&ctx.accounts.mint.data.borrow()) {
+      CreateV2CpiBuilder::new(&ctx.accounts.mpl_core_program.to_account_info())
+        .asset(&ctx.accounts.asset_signer.to_account_info())
+        .collection(Some(&ctx.accounts.mint.to_account_info()))
+        .payer(&owner.to_account_info())
+        .owner(Some(&owner.to_account_info()))
+        .authority(Some(&main.to_account_info()))
+        .update_authority(None)
+        .system_program(&ctx.accounts.system_program.to_account_info())
+        .plugins(plugins)
+        // .name(collection_account.base.name)
+        // .uri(collection_account.base.uri)
+        .name("test name".to_string())
+        .uri("test uri".to_string())
+        .invoke_signed(additional_seeds)?;
+    // }
 
   } else {
-    let amount = recipe.output_amount; //* 10u64.pow(mint_account.decimals as u32);
-    
-    token_2022::mint_to(CpiContext::new(
-      ctx.accounts.token_program_2022.to_account_info(),
-      MintTo {
-        mint: mint.to_account_info(),
-        to: owner_ata.to_account_info(),
-        authority: ctx.accounts.main.to_account_info(),
-      },
-    ).with_signer(additional_seeds), amount)?;
+    if let Some(owner_ata) = &ctx.accounts.owner_ata {
+     let amount = recipe.output_amount; // * 10u64.pow(mint_account.decimals as u32);
+      
+      token_2022::mint_to(CpiContext::new(
+        ctx.accounts.token_program_2022.to_account_info(),
+        MintTo {
+          mint: ctx.accounts.mint.to_account_info(),
+          to: owner_ata.to_account_info(),
+          authority: ctx.accounts.main.to_account_info(),
+        },
+      ).with_signer(additional_seeds), amount)?;
+    } else {
+      return Err(CraftItemError::MissingOwnerAtaAccount.into());
+    }
   }
 
   Ok(())
@@ -414,6 +429,9 @@ pub enum CraftItemError {
 
   #[msg("Max supply reached")]
   MaxSupplyReached,
+
+  #[msg("Missing owner associated token account")]
+  MissingOwnerAtaAccount,
 }
 
 // had to manually do this due to ata lib issues

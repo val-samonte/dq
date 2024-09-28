@@ -253,6 +253,23 @@ describe('DeezQuest: Itembox Program', () => {
       expect(recipeData.ingredients[i].consumeMethod).eq(ing.consumeMethod)
     })
   })
+
+  it('crafts an item', async () => {
+    const assetSigner = Keypair.generate()
+
+    await program.methods
+      .craftItem()
+      .accounts({
+        recipe: recipePda,
+        assetSigner: assetSigner.publicKey,
+        owner: authority.publicKey,
+      })
+      .accountsPartial({
+        ownerAta: null,
+      })
+      .signers([assetSigner])
+      .rpc()
+  })
 })
 
 function sleep(ms: number) {
