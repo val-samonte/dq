@@ -14,7 +14,7 @@ import {
   SystemProgram,
   Transaction,
 } from '@solana/web3.js'
-import { expect } from 'chai'
+import { assert, expect } from 'chai'
 import { createUmi } from '@metaplex-foundation/umi-bundle-defaults'
 import {
   fetchAsset,
@@ -230,6 +230,10 @@ describe('DeezQuest: Itembox Program', () => {
     expect(metadata.uri).eq('https://example.com/metadata.json')
   })
 
+  xit('mints a blueprint', async () => {
+    // todo: mint Refined Copper x1000
+  })
+
   it('creates a recipe', async () => {
     // todo:
     // 1. add blueprint ingredient
@@ -240,6 +244,11 @@ describe('DeezQuest: Itembox Program', () => {
         amount: new BN(10), // normalized amount
         consumeMethod: 2,
       },
+      // {
+      //   asset: refinedCopperBlueprintPda,
+      //   amount: new BN(10), // normalized amount
+      //   consumeMethod: 1,
+      // },
     ]
 
     await program.methods

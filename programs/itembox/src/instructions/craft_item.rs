@@ -8,36 +8,34 @@ use anchor_spl::{
     AssociatedToken
   }, 
   token::{
-    self, spl_token::{
+    self, 
+    spl_token::{
       self,
-      state::Mint
     }, 
     Burn, 
     Token, 
-    TokenAccount, 
     TransferChecked
   }, 
   token_2022::{
     self, 
     spl_token_2022::{
-      self, 
-      state::{
-        Account as AssociatedTokenAccount, Mint as Mint2022
-      },
+      self,
     }, 
     Burn as Burn2022, 
     MintTo, 
     TransferChecked as TransferChecked2022
-  }, token_interface::Token2022
+  }, 
+  token_interface::{
+    Token2022,
+    TokenAccount
+  }
 };
-use anchor_lang::solana_program::program_pack::Pack;
 use mpl_core::{
-  Collection,
   instructions::{BurnV1CpiBuilder, CreateV2CpiBuilder, TransferV1CpiBuilder}, 
   types::{Edition, Plugin, PluginAuthority, PluginAuthorityPair}, ID as MPL_CORE_ID 
 };
 
-use crate::states::{Blueprint, Main, Recipe};
+use crate::{deserialize_ata, deserialize_mint, deserialize_mint_2022, extract_name_and_uri, states::{Blueprint, Main, Recipe}};
 
 #[derive(Accounts)]
 pub struct CraftItem<'info> {
@@ -67,7 +65,7 @@ pub struct CraftItem<'info> {
     associated_token::mint = mint,
     associated_token::authority = owner
   )]
-  pub owner_ata: Option<Box<Account<'info, TokenAccount>>>,
+  pub owner_ata: Option<Box<InterfaceAccount<'info, TokenAccount>>>,
 
   #[account(mut)]
   pub owner: Signer<'info>,
@@ -85,8 +83,8 @@ pub struct CraftItem<'info> {
   /// CHECK: this account is checked by the address constraint
   pub mpl_core_program: UncheckedAccount<'info>,
 
-  pub token_program: Program<'info, Token>,
-  pub token_program_2022: Program<'info, Token2022>,
+  pub token_program: Program<'info, Token2022>,
+  pub token_program_old: Program<'info, Token>,
   pub associated_token_program: Program<'info, AssociatedToken>,
   pub rent: Sysvar<'info, Rent>,
   pub system_program: Program<'info, System>,
@@ -109,17 +107,20 @@ pub fn craft_item_handler<'a, 'b, 'c, 'info>(
   for ingredient in recipe.ingredients.iter() {
     if let Some(asset_account) = account_map.get(&ingredient.asset) {
       match ingredient.asset_type {
+        // =============================
+        // Blueprint Ingredient
+        // =============================
         0 => {
           if let Ok(blueprint_account) = Blueprint::try_from_slice(&asset_account.data.borrow()) {
-            // =====================
+            // =============================
             // Metaplex Core Asset
-            // =====================
+            // =============================
             if blueprint_account.non_fungible {
               if let Some(core_collection) = account_map.get(&blueprint_account.mint) {
                 match ingredient.consume_method {
-                  // =====================
+                  // =============================
                   // BURN
-                  // =====================
+                  // =============================
                   1 => {
                     BurnV1CpiBuilder::new(&ctx.accounts.mpl_core_program.to_account_info())
                       .asset(&asset_account.to_account_info())
@@ -129,9 +130,9 @@ pub fn craft_item_handler<'a, 'b, 'c, 'info>(
                       .system_program(Some(&ctx.accounts.system_program.to_account_info()))
                       .invoke_signed(additional_seeds)?;
                   }
-                  // =====================
+                  // =============================
                   // TRANSFER
-                  // =====================
+                  // =============================
                   2 => {
                     if let Some(treasury_account) = account_map.get(&ctx.accounts.blueprint.treasury) {
                       TransferV1CpiBuilder::new(&ctx.accounts.mpl_core_program.to_account_info())
@@ -146,9 +147,9 @@ pub fn craft_item_handler<'a, 'b, 'c, 'info>(
                       return Err(CraftItemError::MissingIngredientAccount.into());
                     }
                   }
-                  // =====================
+                  // =============================
                   // RETAIN 
-                  // =====================
+                  // =============================
                   _ => {
                     // do nothing
                   }
@@ -156,9 +157,9 @@ pub fn craft_item_handler<'a, 'b, 'c, 'info>(
               } else {
                 return Err(CraftItemError::MissingIngredientAccount.into());
               }
-            // =====================
+            // =============================
             // SPL Token Extensions
-            // =====================
+            // =============================
             } else {
               let mint_account = deserialize_mint_2022(asset_account)?;
 
@@ -171,13 +172,13 @@ pub fn craft_item_handler<'a, 'b, 'c, 'info>(
               if let Some(ata_account_info) = account_map.get(&ata_pubkey) {
 
                 match ingredient.consume_method {
-                  // =====================
+                  // =============================
                   // BURN
-                  // =====================
+                  // =============================
                   1 => {
                     token_2022::burn(
                       CpiContext::new(
-                        ctx.accounts.token_program_2022.to_account_info(),
+                        ctx.accounts.token_program.to_account_info(),
                         Burn2022 {
                           mint: asset_account.to_account_info(),
                           from: ata_account_info.to_account_info(),
@@ -211,7 +212,7 @@ pub fn craft_item_handler<'a, 'b, 'c, 'info>(
 
                       token_2022::transfer_checked(
                         CpiContext::new(
-                          ctx.accounts.token_program_2022.to_account_info(),
+                          ctx.accounts.token_program.to_account_info(),
                           TransferChecked2022 {
                             mint: asset_account.to_account_info(),
                             from: ata_account_info.to_account_info(),
@@ -238,6 +239,9 @@ pub fn craft_item_handler<'a, 'b, 'c, 'info>(
             return Err(CraftItemError::MissingIngredientAccount.into());
           }
         }
+        // =============================
+        // SPL / Token2022 Ingredient
+        // =============================
         _ => {
           let token_program_id = if ingredient.asset_type == 1 {
             spl_token::id()
@@ -261,18 +265,18 @@ pub fn craft_item_handler<'a, 'b, 'c, 'info>(
             }
 
             match ingredient.consume_method {
-              // =====================
+              // =============================
               // BURN
-              // =====================
+              // =============================
               1 => {
                 if ingredient.asset_type == 1 {
-                  // =====================
+                  // =============================
                   // SPL Token
-                  // =====================
+                  // =============================
 
                   token::burn(
                     CpiContext::new(
-                      ctx.accounts.token_program.to_account_info(), 
+                      ctx.accounts.token_program_old.to_account_info(), 
                       Burn {
                         mint: asset_account.to_account_info(),    
                         from: ata_account_info.to_account_info(), 
@@ -282,13 +286,13 @@ pub fn craft_item_handler<'a, 'b, 'c, 'info>(
                     required_amount
                   )?;
                 } else {
-                  // =====================
+                  // =============================
                   // SPL Token Extensions
-                  // =====================
+                  // =============================
 
                   token_2022::burn(
                     CpiContext::new(
-                      ctx.accounts.token_program_2022.to_account_info(),
+                      ctx.accounts.token_program.to_account_info(),
                       Burn2022 {
                         mint: asset_account.to_account_info(),
                         from: ata_account_info.to_account_info(),
@@ -299,9 +303,9 @@ pub fn craft_item_handler<'a, 'b, 'c, 'info>(
                   )?;
                 }
               }
-              // =====================
+              // =============================
               // TRANSFER
-              // =====================
+              // =============================
               2 => {
 
                 let receiver_ata_pubkey = get_associated_token_address(
@@ -313,9 +317,9 @@ pub fn craft_item_handler<'a, 'b, 'c, 'info>(
                 if let Some(receiver_ata_account_info) = account_map.get(&receiver_ata_pubkey) {
 
                   if ingredient.asset_type == 1 {
-                    // =====================
+                    // =============================
                     // SPL Token
-                    // =====================
+                    // =============================
 
                     let mint_account = deserialize_mint(asset_account)?;
 
@@ -328,7 +332,7 @@ pub fn craft_item_handler<'a, 'b, 'c, 'info>(
                   
                     token::transfer_checked(
                       CpiContext::new(
-                        ctx.accounts.token_program.to_account_info(),
+                        ctx.accounts.token_program_old.to_account_info(),
                         TransferChecked {
                           mint: asset_account.to_account_info(),
                           from: ata_account_info.to_account_info(),
@@ -341,9 +345,9 @@ pub fn craft_item_handler<'a, 'b, 'c, 'info>(
                     )?;
 
                   } else {
-                    // =====================
+                    // =============================
                     // SPL Token Extensions
-                    // =====================
+                    // =============================
 
                     let mint_account = deserialize_mint_2022(asset_account)?;
 
@@ -356,7 +360,7 @@ pub fn craft_item_handler<'a, 'b, 'c, 'info>(
 
                     token_2022::transfer_checked(
                       CpiContext::new(
-                        ctx.accounts.token_program_2022.to_account_info(),
+                        ctx.accounts.token_program.to_account_info(),
                         TransferChecked2022 {
                           mint: asset_account.to_account_info(),
                           from: ata_account_info.to_account_info(),
@@ -373,9 +377,9 @@ pub fn craft_item_handler<'a, 'b, 'c, 'info>(
                   return Err(CraftItemError::MissingIngredientAccount.into());
                 }
               }
-              // =====================
+              // =============================
               // RETAIN 
-              // =====================
+              // =============================
               _ => {
                 // do nothing
               }
@@ -389,6 +393,7 @@ pub fn craft_item_handler<'a, 'b, 'c, 'info>(
       return Err(CraftItemError::MissingIngredientAccount.into());
     }
   }
+  
 
   let blueprint = &mut ctx.accounts.blueprint;  
   blueprint.counter = blueprint.counter.checked_add(1).unwrap();
@@ -409,7 +414,6 @@ pub fn craft_item_handler<'a, 'b, 'c, 'info>(
 
     let (name, uri) = extract_name_and_uri(&ctx.accounts.mint)?;
 
-
     CreateV2CpiBuilder::new(&ctx.accounts.mpl_core_program.to_account_info())
       .asset(&ctx.accounts.asset_signer.to_account_info())
       .collection(Some(&ctx.accounts.mint.to_account_info()))
@@ -428,7 +432,7 @@ pub fn craft_item_handler<'a, 'b, 'c, 'info>(
      let amount = recipe.output_amount; // * 10u64.pow(mint_account.decimals as u32);
 
       token_2022::mint_to(CpiContext::new(
-        ctx.accounts.token_program_2022.to_account_info(),
+        ctx.accounts.token_program.to_account_info(),
         MintTo {
           mint: ctx.accounts.mint.to_account_info(),
           to: owner_ata.to_account_info(),
@@ -474,35 +478,6 @@ pub fn get_associated_token_address(
   ).0
 }
 
-pub fn deserialize_ata(account_info: &AccountInfo) -> Result<AssociatedTokenAccount> {
-  let account_data = account_info.try_borrow_data()?;
-
-  match AssociatedTokenAccount::unpack(&account_data) {
-      Ok(token_account) => Ok(token_account),
-      Err(_) => Err(ProgramError::InvalidAccountData.into()),
-  }
-}
-
-pub fn deserialize_mint(account_info: &AccountInfo) -> Result<Mint> {
-  let account_data = account_info.try_borrow_data()?;
-  Mint::unpack(&account_data).map_err(|_| ProgramError::InvalidAccountData.into())
-}
-
-pub fn deserialize_mint_2022(account_info: &AccountInfo) -> Result<Mint2022> {
-  let account_data = account_info.try_borrow_data()?;
-  Mint2022::unpack(&account_data).map_err(|_| ProgramError::InvalidAccountData.into())
-}
-
-fn extract_name_and_uri(data: &AccountInfo) -> Result<(String, String)> {
-  let mint_data = data.try_borrow_data()?;
-  let collection_account = Collection::from_bytes(&mint_data)?;
-
-  Ok((
-      collection_account.base.name.to_string(),
-      collection_account.base.uri.to_string(),
-  ))
-}
-
 impl<'info> CraftItem<'info> {
   fn create_associated_token_account(
     &self,
@@ -513,9 +488,9 @@ impl<'info> CraftItem<'info> {
   ) -> Result<()> {
     if ata.data_is_empty() {
       let token_program = if token_extension {
-        self.token_program_2022.to_account_info()
-      } else {
         self.token_program.to_account_info()
+      } else {
+        self.token_program_old.to_account_info()
       };
 
       let cpi_accounts = Create {
@@ -535,4 +510,6 @@ impl<'info> CraftItem<'info> {
 
     Ok(())
   }
+
+
 }
