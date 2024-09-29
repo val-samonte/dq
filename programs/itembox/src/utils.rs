@@ -78,8 +78,8 @@ pub fn deserialize_ata(account_info: &AccountInfo) -> Result<AssociatedTokenAcco
   let account_data = account_info.try_borrow_data()?;
 
   match AssociatedTokenAccount::unpack(&account_data) {
-      Ok(token_account) => Ok(token_account),
-      Err(_) => Err(ProgramError::InvalidAccountData.into()),
+    Ok(token_account) => Ok(token_account),
+    Err(_) => Err(ProgramError::InvalidAccountData.into()),
   }
 }
 

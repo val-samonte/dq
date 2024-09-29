@@ -38,4 +38,8 @@ pub mod itembox {
     pub fn craft_item<'a,'b,'c,'info>(ctx: Context<'a,'b,'c,'info, CraftItem<'info>>) -> Result<()> {
         craft_item_handler(ctx)
     }
+
+    pub fn mint_item(ctx: Context<MintItem>, args: MintItemArgs) -> Result<()> {
+        mint_item_handler(ctx, args)
+    }
 }

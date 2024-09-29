@@ -62,6 +62,7 @@ pub struct CraftItem<'info> {
   #[account(
     init_if_needed,
     payer = owner,
+    associated_token::token_program = token_program,
     associated_token::mint = mint,
     associated_token::authority = owner
   )]
@@ -429,16 +430,18 @@ pub fn craft_item_handler<'a, 'b, 'c, 'info>(
 
   } else {
     if let Some(owner_ata) = &ctx.accounts.owner_ata {
-     let amount = recipe.output_amount; // * 10u64.pow(mint_account.decimals as u32);
-
-      token_2022::mint_to(CpiContext::new(
-        ctx.accounts.token_program.to_account_info(),
-        MintTo {
-          mint: ctx.accounts.mint.to_account_info(),
-          to: owner_ata.to_account_info(),
-          authority: ctx.accounts.main.to_account_info(),
-        },
-      ).with_signer(additional_seeds), amount)?;
+      token_2022::mint_to(
+        CpiContext::new(
+          ctx.accounts.token_program.to_account_info(),
+          MintTo {
+            mint: ctx.accounts.mint.to_account_info(),
+            to: owner_ata.to_account_info(),
+            authority: ctx.accounts.main.to_account_info(),
+          },
+        ).with_signer(additional_seeds), 
+        // note: output amount is always an integer
+        recipe.output_amount
+      )?;
     } else {
       return Err(CraftItemError::MissingOwnerAtaAccount.into());
     }

@@ -49,15 +49,18 @@ describe('DeezQuest: Itembox Program', () => {
   const program = workspace.Itembox as Program<Itembox>
   const authority = loadKeypair('~/.config/solana/id.json')
   const treasuryKeypair = Keypair.generate()
-  const swordBlueprint = Keypair.generate()
-  const refinedCopperBlueprint = Keypair.generate()
+  const blueprintTreasuryKeypair = Keypair.generate()
+  const sword = Keypair.generate()
+  const refinedCopper = Keypair.generate()
+  const hilt = Keypair.generate()
+  const copperBlock = Keypair.generate()
   const recipeSignerId = Keypair.generate()
   const token = Keypair.generate()
-  const blueprintTreasuryKeypair = Keypair.generate()
 
   let splTokenMintIngredient: PublicKey
   let ownerSplAta: PublicKey
   let treasurySplAta: PublicKey
+  let refinedCopperAta: PublicKey
 
   const umi = createUmi(program.provider.connection.rpcEndpoint, 'confirmed')
   umi.use(mplCore())
@@ -73,12 +76,22 @@ describe('DeezQuest: Itembox Program', () => {
   )
 
   const [swordBlueprintPda] = PublicKey.findProgramAddressSync(
-    [Buffer.from('blueprint'), swordBlueprint.publicKey.toBytes()],
+    [Buffer.from('blueprint'), sword.publicKey.toBytes()],
     program.programId
   )
 
   const [refinedCopperBlueprintPda] = PublicKey.findProgramAddressSync(
-    [Buffer.from('blueprint'), refinedCopperBlueprint.publicKey.toBytes()],
+    [Buffer.from('blueprint'), refinedCopper.publicKey.toBytes()],
+    program.programId
+  )
+
+  const [hiltBlueprintPda] = PublicKey.findProgramAddressSync(
+    [Buffer.from('blueprint'), hilt.publicKey.toBytes()],
+    program.programId
+  )
+
+  const [copperBlockBlueprintPda] = PublicKey.findProgramAddressSync(
+    [Buffer.from('blueprint'), copperBlock.publicKey.toBytes()],
     program.programId
   )
 
@@ -92,7 +105,7 @@ describe('DeezQuest: Itembox Program', () => {
   )
   console.log('Itembox Program ID', program.programId.toBase58())
   console.log('Itembox Main Pda', mainPda.toBase58())
-  console.log('Blueprint Collection ID', swordBlueprint.publicKey.toBase58())
+  console.log('Blueprint Collection ID', sword.publicKey.toBase58())
 
   before(async () => {
     // fund treasury
@@ -135,6 +148,13 @@ describe('DeezQuest: Itembox Program', () => {
       blueprintTreasuryKeypair.publicKey
     )
 
+    refinedCopperAta = await getAssociatedTokenAddress(
+      refinedCopper.publicKey,
+      authority.publicKey,
+      false,
+      TOKEN_2022_PROGRAM_ID
+    )
+
     await mintTo(
       program.provider.connection,
       authority,
@@ -171,17 +191,45 @@ describe('DeezQuest: Itembox Program', () => {
         uri: 'https://example.com/metadata.json',
       })
       .accounts({
-        collection: swordBlueprint.publicKey,
+        collection: sword.publicKey,
         owner: authority.publicKey,
       })
-      .signers([swordBlueprint])
+      .signers([sword])
       .rpc()
 
     await sleep(1000)
 
     const blueprintMetadata = await fetchCollection(
       umi,
-      fromWeb3JsPublicKey(swordBlueprint.publicKey)
+      fromWeb3JsPublicKey(sword.publicKey)
+    )
+
+    expect(blueprintMetadata.name).eq(blueprintName)
+    expect(blueprintMetadata.uri).eq('https://example.com/metadata.json')
+  })
+
+  it('creates a non-fungible blueprint (resource)', async () => {
+    const blueprintName = 'Hilt'
+
+    await program.methods
+      .createNonfungibleBlueprint({
+        mintAuthority: authority.publicKey,
+        treasury: blueprintTreasuryKeypair.publicKey,
+        name: blueprintName,
+        uri: 'https://example.com/metadata.json',
+      })
+      .accounts({
+        collection: hilt.publicKey,
+        owner: authority.publicKey,
+      })
+      .signers([hilt])
+      .rpc()
+
+    await sleep(1000)
+
+    const blueprintMetadata = await fetchCollection(
+      umi,
+      fromWeb3JsPublicKey(hilt.publicKey)
     )
 
     expect(blueprintMetadata.name).eq(blueprintName)
@@ -189,7 +237,7 @@ describe('DeezQuest: Itembox Program', () => {
   })
 
   it('creates a fungible blueprint', async () => {
-    const blueprintName = 'Refined Copper'
+    const blueprintName = 'Copper Block'
 
     await program.methods
       .createFungibleBlueprint({
@@ -200,25 +248,25 @@ describe('DeezQuest: Itembox Program', () => {
         symbol: 'DQT',
       })
       .accounts({
-        mint: refinedCopperBlueprint.publicKey,
+        mint: copperBlock.publicKey,
         owner: authority.publicKey,
       })
-      .signers([refinedCopperBlueprint])
+      .signers([copperBlock])
       .rpc()
 
     await sleep(1000)
 
     const mintInfo = await getMint(
       program.provider.connection,
-      refinedCopperBlueprint.publicKey,
+      copperBlock.publicKey,
       'confirmed',
       TOKEN_2022_PROGRAM_ID
     )
 
     const metadataPointer = getMetadataPointerState(mintInfo)
-    expect(
-      metadataPointer.metadataAddress.equals(refinedCopperBlueprint.publicKey)
-    ).eq(true)
+    expect(metadataPointer.metadataAddress.equals(copperBlock.publicKey)).eq(
+      true
+    )
 
     const metadata = await getTokenMetadata(
       program.provider.connection,
@@ -230,14 +278,107 @@ describe('DeezQuest: Itembox Program', () => {
     expect(metadata.uri).eq('https://example.com/metadata.json')
   })
 
-  xit('mints a blueprint', async () => {
-    // todo: mint Refined Copper x1000
+  it('creates a fungible blueprint (resource)', async () => {
+    const blueprintName = 'Refined Copper'
+
+    await program.methods
+      .createFungibleBlueprint({
+        mintAuthority: authority.publicKey,
+        treasury: blueprintTreasuryKeypair.publicKey,
+        name: blueprintName,
+        uri: 'https://example.com/metadata.json',
+        symbol: 'DQT',
+      })
+      .accounts({
+        mint: refinedCopper.publicKey,
+        owner: authority.publicKey,
+      })
+      .signers([refinedCopper])
+      .rpc()
+
+    await sleep(1000)
+
+    const mintInfo = await getMint(
+      program.provider.connection,
+      refinedCopper.publicKey,
+      'confirmed',
+      TOKEN_2022_PROGRAM_ID
+    )
+
+    const metadataPointer = getMetadataPointerState(mintInfo)
+    expect(metadataPointer.metadataAddress.equals(refinedCopper.publicKey)).eq(
+      true
+    )
+
+    const metadata = await getTokenMetadata(
+      program.provider.connection,
+      metadataPointer.metadataAddress // Mint Account address
+    )
+
+    expect(metadata.name).eq(blueprintName)
+    expect(metadata.symbol).eq('DQT')
+    expect(metadata.uri).eq('https://example.com/metadata.json')
+  })
+
+  it('mints a non-fungible blueprint', async () => {
+    const assetSigner = Keypair.generate()
+
+    await program.methods
+      .mintItem({
+        amount: new BN(1),
+      })
+      .accounts({
+        assetSigner: assetSigner.publicKey,
+        blueprint: hiltBlueprintPda,
+        receiver: authority.publicKey,
+      })
+      .signers([assetSigner])
+      .rpc()
+
+    await sleep(1000)
+
+    const asset = await fetchAsset(
+      umi,
+      fromWeb3JsPublicKey(assetSigner.publicKey),
+      {
+        skipDerivePlugins: false,
+      }
+    )
+
+    expect(asset.name).eq('Hilt')
+    expect(asset.uri).eq('https://example.com/metadata.json')
+    expect(asset.owner.toString()).eq(authority.publicKey.toString())
+  })
+
+  it('mints a fungible blueprint', async () => {
+    const amount = new BN(1000)
+    const assetSigner = Keypair.generate()
+
+    await program.methods
+      .mintItem({
+        amount,
+      })
+      .accounts({
+        assetSigner: assetSigner.publicKey,
+        blueprint: refinedCopperBlueprintPda,
+        receiver: authority.publicKey,
+      })
+      .signers([assetSigner])
+      .rpc()
+
+    await sleep(1000)
+
+    const tokenAccount = await getAccount(
+      program.provider.connection,
+      refinedCopperAta,
+      'confirmed',
+      TOKEN_2022_PROGRAM_ID
+    )
+
+    expect(tokenAccount.amount.toString()).eq(amount.toString())
   })
 
   it('creates a recipe', async () => {
-    // todo:
-    // 1. add blueprint ingredient
-    // 2. add token2022 ingredient
     const ingredients = [
       {
         asset: splTokenMintIngredient,

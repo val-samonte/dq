@@ -15,7 +15,7 @@ use mpl_core::{
   types::{Edition, Plugin, PluginAuthority, PluginAuthorityPair}, ID as MPL_CORE_ID 
 };
 
-use crate::{deserialize_mint_2022, extract_name_and_uri, states::{Blueprint, Main}};
+use crate::{extract_name_and_uri, states::{Blueprint, Main}};
 
 #[derive(AnchorDeserialize, AnchorSerialize)]
 pub struct MintItemArgs {
@@ -39,6 +39,7 @@ pub struct MintItem<'info> {
   #[account(
     init_if_needed,
     payer = mint_authority,
+    associated_token::token_program = token_program,
     associated_token::mint = mint,
     associated_token::authority = receiver
   )]
@@ -111,17 +112,18 @@ pub fn mint_item_handler(ctx: Context<MintItem>, args: MintItemArgs) -> Result<(
 
   } else {
     if let Some(receiver_ata) = &ctx.accounts.receiver_ata {
-      let mint_account = deserialize_mint_2022(&ctx.accounts.mint).unwrap();
-      let amount = args.amount * 10u64.pow(mint_account.decimals as u32);
-
-      token_2022::mint_to(CpiContext::new(
-        ctx.accounts.token_program.to_account_info(),
-        MintTo {
-          mint: ctx.accounts.mint.to_account_info(),
-          to: receiver_ata.to_account_info(),
-          authority: ctx.accounts.main.to_account_info(),
-        },
-      ).with_signer(additional_seeds), amount)?;
+      token_2022::mint_to(
+        CpiContext::new(
+          ctx.accounts.token_program.to_account_info(),
+          MintTo {
+            mint: ctx.accounts.mint.to_account_info(),
+            to: receiver_ata.to_account_info(),
+            authority: ctx.accounts.main.to_account_info(),
+          },
+        ).with_signer(additional_seeds), 
+        // note: output amount is always an integer
+        args.amount
+      )?;
     } else {
       return Err(MintItemError::MissingOwnerAtaAccount.into());
     }
