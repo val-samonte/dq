@@ -82,6 +82,7 @@ pub fn mint_item_handler(ctx: Context<MintItem>, args: MintItemArgs) -> Result<(
   blueprint.counter = blueprint.counter.checked_add(1).unwrap();
   
   if blueprint.non_fungible {  
+    
     // create core asset with edition plugin
 
     let mut plugins: Vec<PluginAuthorityPair> = vec![];

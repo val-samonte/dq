@@ -234,6 +234,9 @@ describe('DeezQuest: Itembox Program', () => {
 
     expect(blueprintMetadata.name).eq(blueprintName)
     expect(blueprintMetadata.uri).eq('https://example.com/metadata.json')
+
+    const hiltData = await program.account.blueprint.fetch(hiltBlueprintPda)
+    console.log('Hilt mint address', hiltData.mint.toBase58())
   })
 
   it('creates a fungible blueprint', async () => {
@@ -328,9 +331,12 @@ describe('DeezQuest: Itembox Program', () => {
         amount: new BN(1),
       })
       .accounts({
-        assetSigner: assetSigner.publicKey,
         blueprint: hiltBlueprintPda,
+        assetSigner: assetSigner.publicKey,
         receiver: authority.publicKey,
+      })
+      .accountsPartial({
+        receiverAta: null,
       })
       .signers([assetSigner])
       .rpc()
@@ -378,18 +384,23 @@ describe('DeezQuest: Itembox Program', () => {
     expect(tokenAccount.amount.toString()).eq(amount.toString())
   })
 
-  it('creates a recipe', async () => {
+  it('creates a recipe for a non-fungible item', async () => {
     const ingredients = [
       {
         asset: splTokenMintIngredient,
-        amount: new BN(10), // normalized amount
+        amount: new BN(10),
         consumeMethod: 2,
       },
       // {
       //   asset: refinedCopperBlueprintPda,
-      //   amount: new BN(10), // normalized amount
+      //   amount: new BN(10),
       //   consumeMethod: 1,
       // },
+      // {
+      //   asset: hiltBlueprintPda,
+      //   amount: new BN(1),
+      //   consumeMethod: 1,
+      // }
     ]
 
     await program.methods
@@ -442,18 +453,41 @@ describe('DeezQuest: Itembox Program', () => {
         ownerAta: null,
       })
       .remainingAccounts([
+        // SPL Token (transfer)
         {
+          // mint
           pubkey: splTokenMintIngredient,
           isSigner: false,
           isWritable: true,
         },
         {
+          // sender
           pubkey: ownerSplAta,
           isSigner: false,
           isWritable: true,
         },
         {
+          // receiver
           pubkey: treasurySplAta,
+          isSigner: false,
+          isWritable: true,
+        },
+        // Refined Copper (Blueprint Fungible) (burn)
+        {
+          // blueprint
+          pubkey: refinedCopperBlueprintPda,
+          isSigner: false,
+          isWritable: true,
+        },
+        {
+          // mint
+          pubkey: refinedCopper.publicKey,
+          isSigner: false,
+          isWritable: true,
+        },
+        {
+          // sender
+          pubkey: refinedCopperAta,
           isSigner: false,
           isWritable: true,
         },
