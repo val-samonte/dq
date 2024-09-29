@@ -75,8 +75,8 @@ pub fn get_meta_list_size(approve_account: Option<Pubkey>) -> usize {
 }
 
 pub fn deserialize_ata(account_info: &AccountInfo) -> Result<AssociatedTokenAccount> {
-  let account_data = account_info.try_borrow_data()?;
-
+  let account_data = &account_info.try_borrow_data()?[0..AssociatedTokenAccount::LEN];
+  
   match AssociatedTokenAccount::unpack(&account_data) {
     Ok(token_account) => Ok(token_account),
     Err(_) => Err(ProgramError::InvalidAccountData.into()),

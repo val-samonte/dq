@@ -59,12 +59,12 @@ pub struct CreateFungibleBlueprint<'info> {
     mint::freeze_authority = main,
     extensions::metadata_pointer::authority = main,
     extensions::metadata_pointer::metadata_address = mint,
-    extensions::group_member_pointer::authority = main,
-    extensions::group_member_pointer::member_address = mint,
-    extensions::transfer_hook::authority = main,
-    extensions::transfer_hook::program_id = crate::ID,
-    extensions::close_authority::authority = main,
-    extensions::permanent_delegate::delegate = main,
+    // extensions::group_member_pointer::authority = main,
+    // extensions::group_member_pointer::member_address = mint,
+    // extensions::transfer_hook::authority = main,
+    // extensions::transfer_hook::program_id = crate::ID,
+    // extensions::close_authority::authority = main,
+    // extensions::permanent_delegate::delegate = main,
   )]
   pub mint: Box<InterfaceAccount<'info, Mint>>,
 

@@ -171,6 +171,13 @@ pub fn craft_item_handler<'a, 'b, 'c, 'info>(
               );
             
               if let Some(ata_account_info) = account_map.get(&ata_pubkey) {
+                let required_amount = ingredient.amount * 10u64.pow(mint_account.decimals as u32);
+
+                let ata_account = deserialize_ata(ata_account_info)?;
+
+                if ata_account.amount < required_amount {
+                  return Err(CraftItemError::InsufficientIngredientAmount.into());
+                }
               
                 match ingredient.consume_method {
                   // =============================
@@ -187,12 +194,14 @@ pub fn craft_item_handler<'a, 'b, 'c, 'info>(
                           authority: owner.to_account_info(),
                         },
                       ),
-                      ingredient.amount * 10u64.pow(mint_account.decimals as u32)
+                      required_amount
                     )?;
               
                   }
+                  // =============================
+                  // TRANSFER
+                  // =============================
                   2 => {
-              
                     let receiver_ata_pubkey = get_associated_token_address(
                       &ctx.accounts.blueprint.treasury.key(),
                       &spl_token_2022::id().key(),
@@ -200,16 +209,16 @@ pub fn craft_item_handler<'a, 'b, 'c, 'info>(
                     );
               
                     if let Some(receiver_ata_account_info) = account_map.get(&receiver_ata_pubkey) {
-                      let receiver_ata_account = deserialize_ata(receiver_ata_account_info)?;
-                      if receiver_ata_account.amount < ingredient.amount {
-                        return Err(CraftItemError::InsufficientIngredientAmount.into());
-                      }
+
                       ctx.accounts.create_associated_token_account(
                         &ctx.accounts.treasury,
                         asset,
                         receiver_ata_account_info,
                         true
                       )?;
+
+                      // let receiver_ata_account = deserialize_ata(receiver_ata_account_info)?;
+                      
                       token_2022::transfer_checked(
                         CpiContext::new(
                           ctx.accounts.token_program.to_account_info(),
@@ -220,15 +229,19 @@ pub fn craft_item_handler<'a, 'b, 'c, 'info>(
                             authority: owner.to_account_info(),
                           }
                         ),
-                        ingredient.amount,
+                        required_amount,
                         mint_account.decimals
                       )?;
+                      
                     } else {
                       return Err(CraftItemError::MissingReceiverTokenAccount.into());
                     }
                   }
+                  // =============================
+                  // RETAIN 
+                  // =============================
                   _ => {
-                    // todo: check if amount is correct
+                    // do nothing. balance is checked before this.
                   }
                 }
               } else {

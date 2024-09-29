@@ -408,13 +408,13 @@ describe('DeezQuest: Itembox Program', () => {
         name: 'Refined Copper',
         asset: refinedCopperBlueprintPda,
         amount: new BN(10),
-        consumeMethod: 2,
+        consumeMethod: 1,
       },
-      // {
-      //   asset: hiltBlueprintPda,
-      //   amount: new BN(1),
-      //   consumeMethod: 1,
-      // }
+      {
+        asset: hiltBlueprintPda,
+        amount: new BN(1),
+        consumeMethod: 1,
+      },
     ]
 
     // const modifyComputeUnits = ComputeBudgetProgram.setComputeUnitLimit({
@@ -469,12 +469,6 @@ describe('DeezQuest: Itembox Program', () => {
   it('crafts an non-fungible item', async () => {
     const assetSigner = Keypair.generate()
 
-    const tokenAccount = await getAccount(
-      program.provider.connection,
-      ownerSplAta
-    )
-    console.log(tokenAccount.amount)
-
     // const modifyComputeUnits = ComputeBudgetProgram.setComputeUnitLimit({
     //   units: 1000000,
     // })
@@ -484,6 +478,10 @@ describe('DeezQuest: Itembox Program', () => {
     // })
 
     console.log('Refined Copper Sender', refinedCopperAta.toBase58())
+    console.log(
+      'Blueprint Treasury',
+      blueprintTreasuryKeypair.publicKey.toBase58()
+    )
 
     const ix = await program.methods
       .craftItem()
@@ -540,6 +538,19 @@ describe('DeezQuest: Itembox Program', () => {
           isSigner: false,
           isWritable: true,
         },
+        // Hilt
+        {
+          // blueprint
+          pubkey: hiltBlueprintPda,
+          isSigner: false,
+          isWritable: true,
+        },
+        {
+          // collection
+          pubkey: hilt.publicKey,
+          isSigner: false,
+          isWritable: true,
+        },
       ])
       .instruction()
     // .signers([assetSigner])
@@ -588,10 +599,10 @@ describe('DeezQuest: Itembox Program', () => {
   // ✅ Burn SPL Ingredient
   // Burn Token2022 Ingredient
   // Transfer Blueprint Non-Fungible Ingredient
-  // Transfer Blueprint Fungible Ingredient
+  // ✅ Transfer Blueprint Fungible Ingredient
   // ✅ Transfer SPL Ingredient
   // Transfer Token2022 Ingredient
-  // Multiple ingredients
+  // ✅ Multiple ingredients
 })
 
 function sleep(ms: number) {
