@@ -145,7 +145,7 @@ pub fn craft_item_handler<'a, 'b, 'c, 'info>(
                         .system_program(Some(&ctx.accounts.system_program.to_account_info()))
                         .invoke_signed(additional_seeds)?;
                     } else {
-                      return Err(CraftItemError::MissingIngredientAccount.into());
+                      return Err(CraftItemError::MissingReceiverTokenAccount.into());
                     }
                   }
                   // =============================
@@ -156,7 +156,7 @@ pub fn craft_item_handler<'a, 'b, 'c, 'info>(
                   }
                 }
               } else {
-                return Err(CraftItemError::MissingIngredientAccount.into());
+                return Err(CraftItemError::MissingBlueprintNonFungibleAccount.into());
               }
             // =============================
             // SPL Token Extensions
@@ -225,7 +225,7 @@ pub fn craft_item_handler<'a, 'b, 'c, 'info>(
                         mint_account.decimals
                       )?;
                     } else {
-                      return Err(CraftItemError::MissingIngredientAccount.into());
+                      return Err(CraftItemError::MissingReceiverTokenAccount.into());
                     }
                   }
                   _ => {
@@ -233,11 +233,11 @@ pub fn craft_item_handler<'a, 'b, 'c, 'info>(
                   }
                 }
               } else {
-                return Err(CraftItemError::MissingIngredientAccount.into());
+                return Err(CraftItemError::MissingSenderTokenAccount.into());
               }
             }
           } else {
-            return Err(CraftItemError::MissingIngredientAccount.into());
+            return Err(CraftItemError::CorruptedBlueprintAccount.into());
           }
         }
         // =============================
@@ -375,7 +375,7 @@ pub fn craft_item_handler<'a, 'b, 'c, 'info>(
 
                   }
                 } else {
-                  return Err(CraftItemError::MissingIngredientAccount.into());
+                  return Err(CraftItemError::MissingReceiverTokenAccount.into());
                 }
               }
               // =============================
@@ -386,12 +386,22 @@ pub fn craft_item_handler<'a, 'b, 'c, 'info>(
               }
             }
           } else {
-            return Err(CraftItemError::MissingIngredientAccount.into());
+            return Err(CraftItemError::MissingSenderTokenAccount.into());
           }
         }
       }
     } else {
-      return Err(CraftItemError::MissingIngredientAccount.into());
+      match ingredient.asset_type {
+        1 => {
+          return Err(CraftItemError::MissingSplMintAccount.into());
+        }
+        2 => {
+          return Err(CraftItemError::MissingToken2022MintAccount.into());
+        }
+        _ => {
+          return Err(CraftItemError::MissingBlueprintAccount.into());
+        }
+      }
     }
   }
   
@@ -452,8 +462,29 @@ pub fn craft_item_handler<'a, 'b, 'c, 'info>(
 
 #[error_code]
 pub enum CraftItemError {
-  #[msg("An account is missing from the remaining accounts")]
-  MissingIngredientAccount,
+  #[msg("The Blueprint account is corrupted")]
+  CorruptedBlueprintAccount,
+
+  #[msg("Missing Blueprint PDA account from the remaining accounts")]
+  MissingBlueprintAccount,
+
+  #[msg("Missing Blueprint Non-Fungible (Core Collection) account from the remaining accounts")]
+  MissingBlueprintNonFungibleAccount,
+
+  #[msg("Missing Blueprint Fungible (Token2022) account from the remaining accounts")]
+  MissingBlueprintFungibleAccount,
+
+  #[msg("Missing SPL Mint account from the remaining accounts")]
+  MissingSplMintAccount,
+
+  #[msg("Missing Token2022 Mint account from the remaining accounts")]
+  MissingToken2022MintAccount,
+
+  #[msg("Missing sender associated token account from the remaining accounts")]
+  MissingSenderTokenAccount,
+
+  #[msg("Missing receiver associated token account from the remaining accounts")]
+  MissingReceiverTokenAccount,
 
   #[msg("Insufficient ingredient amount, make sure you are passing the decimal value")]
   InsufficientIngredientAmount,

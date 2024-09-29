@@ -391,11 +391,11 @@ describe('DeezQuest: Itembox Program', () => {
         amount: new BN(10),
         consumeMethod: 2,
       },
-      // {
-      //   asset: refinedCopperBlueprintPda,
-      //   amount: new BN(10),
-      //   consumeMethod: 1,
-      // },
+      {
+        asset: refinedCopperBlueprintPda,
+        amount: new BN(10),
+        consumeMethod: 1,
+      },
       // {
       //   asset: hiltBlueprintPda,
       //   amount: new BN(1),
