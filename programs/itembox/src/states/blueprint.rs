@@ -36,4 +36,12 @@ impl Blueprint {
   pub fn len() -> usize {
     8 + 1 + 32 + 1 + 32 + 32 + 32 + 4 + 128
   }
+
+  pub fn from_account_info(account_info: &AccountInfo) -> Result<Self> {
+    // Borrow data from the account_info and skip the first 8 bytes (the discriminator)
+    let borrowed_data = &account_info.try_borrow_data()?[8..];
+
+    // Attempt to deserialize the remaining data into Blueprint struct
+    Blueprint::try_from_slice(borrowed_data).map_err(|_| ProgramError::InvalidAccountData.into())
+  }
 }

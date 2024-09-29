@@ -62,6 +62,7 @@ describe('DeezQuest: Itembox Program', () => {
   let ownerSplAta: PublicKey
   let treasurySplAta: PublicKey
   let refinedCopperAta: PublicKey
+  let treasuryCopperAta: PublicKey
 
   const umi = createUmi(program.provider.connection.rpcEndpoint, 'confirmed')
   umi.use(mplCore())
@@ -152,6 +153,13 @@ describe('DeezQuest: Itembox Program', () => {
     refinedCopperAta = await getAssociatedTokenAddress(
       refinedCopper.publicKey,
       authority.publicKey,
+      false,
+      TOKEN_2022_PROGRAM_ID
+    )
+
+    treasuryCopperAta = await getAssociatedTokenAddress(
+      refinedCopper.publicKey,
+      blueprintTreasuryKeypair.publicKey,
       false,
       TOKEN_2022_PROGRAM_ID
     )
@@ -384,7 +392,7 @@ describe('DeezQuest: Itembox Program', () => {
       TOKEN_2022_PROGRAM_ID
     )
 
-    expect(tokenAccount.amount.toString()).eq(amount.toString())
+    expect(tokenAccount.amount).eq(1000n)
   })
 
   it('creates a recipe for a non-fungible item', async () => {
@@ -400,7 +408,7 @@ describe('DeezQuest: Itembox Program', () => {
         name: 'Refined Copper',
         asset: refinedCopperBlueprintPda,
         amount: new BN(10),
-        consumeMethod: 1,
+        consumeMethod: 2,
       },
       // {
       //   asset: hiltBlueprintPda,
@@ -409,13 +417,13 @@ describe('DeezQuest: Itembox Program', () => {
       // }
     ]
 
-    const modifyComputeUnits = ComputeBudgetProgram.setComputeUnitLimit({
-      units: 1000000,
-    })
+    // const modifyComputeUnits = ComputeBudgetProgram.setComputeUnitLimit({
+    //   units: 1000000,
+    // })
 
-    const addPriorityFee = ComputeBudgetProgram.setComputeUnitPrice({
-      microLamports: 1,
-    })
+    // const addPriorityFee = ComputeBudgetProgram.setComputeUnitPrice({
+    //   microLamports: 1,
+    // })
 
     const ix = await program.methods
       .createRecipe({
@@ -441,21 +449,21 @@ describe('DeezQuest: Itembox Program', () => {
       .instruction()
 
     const tx = new Transaction()
-      .add(modifyComputeUnits)
-      .add(addPriorityFee)
+      // .add(modifyComputeUnits)
+      // .add(addPriorityFee)
       .add(ix)
 
     await program.provider.sendAndConfirm(tx, [recipeSignerId])
 
-    // const recipeData = await program.account.recipe.fetch(recipePda)
+    const recipeData = await program.account.recipe.fetch(recipePda)
 
-    // expect(recipeData.blueprint.equals(swordBlueprintPda)).eq(true)
+    expect(recipeData.blueprint.equals(swordBlueprintPda)).eq(true)
 
-    // ingredients.forEach((ing, i) => {
-    //   expect(recipeData.ingredients[i].asset.equals(ing.asset)).eq(true)
-    //   expect(recipeData.ingredients[i].amount.eq(ing.amount)).eq(true)
-    //   expect(recipeData.ingredients[i].consumeMethod).eq(ing.consumeMethod)
-    // })
+    ingredients.forEach((ing, i) => {
+      expect(recipeData.ingredients[i].asset.equals(ing.asset)).eq(true)
+      expect(recipeData.ingredients[i].amount.eq(ing.amount)).eq(true)
+      expect(recipeData.ingredients[i].consumeMethod).eq(ing.consumeMethod)
+    })
   })
 
   it('crafts an non-fungible item', async () => {
@@ -467,13 +475,15 @@ describe('DeezQuest: Itembox Program', () => {
     )
     console.log(tokenAccount.amount)
 
-    const modifyComputeUnits = ComputeBudgetProgram.setComputeUnitLimit({
-      units: 1000000,
-    })
+    // const modifyComputeUnits = ComputeBudgetProgram.setComputeUnitLimit({
+    //   units: 1000000,
+    // })
 
-    const addPriorityFee = ComputeBudgetProgram.setComputeUnitPrice({
-      microLamports: 1,
-    })
+    // const addPriorityFee = ComputeBudgetProgram.setComputeUnitPrice({
+    //   microLamports: 1,
+    // })
+
+    console.log('Refined Copper Sender', refinedCopperAta.toBase58())
 
     const ix = await program.methods
       .craftItem()
@@ -524,14 +534,20 @@ describe('DeezQuest: Itembox Program', () => {
           isSigner: false,
           isWritable: true,
         },
+        {
+          // receiver
+          pubkey: treasuryCopperAta,
+          isSigner: false,
+          isWritable: true,
+        },
       ])
       .instruction()
     // .signers([assetSigner])
     // .rpc()
 
     const tx = new Transaction()
-      .add(modifyComputeUnits)
-      .add(addPriorityFee)
+      // .add(modifyComputeUnits)
+      // .add(addPriorityFee)
       .add(ix)
 
     await program.provider.sendAndConfirm(tx, [assetSigner])
@@ -542,7 +558,13 @@ describe('DeezQuest: Itembox Program', () => {
       program.provider.connection,
       ownerSplAta
     )
-    console.log(tokenAccountPost.amount)
+
+    const copperTokenAccountPost = await getAccount(
+      program.provider.connection,
+      refinedCopperAta,
+      'confirmed',
+      TOKEN_2022_PROGRAM_ID
+    )
 
     const asset = await fetchAsset(
       umi,
@@ -552,6 +574,8 @@ describe('DeezQuest: Itembox Program', () => {
       }
     )
 
+    expect(tokenAccountPost.amount).eq(990000000000n)
+    expect(copperTokenAccountPost.amount).eq(990n)
     expect(asset.name).eq('Copper Sword')
     expect(asset.uri).eq('https://example.com/metadata.json')
     expect(asset.owner.toString()).eq(authority.publicKey.toString())
@@ -560,7 +584,7 @@ describe('DeezQuest: Itembox Program', () => {
   xit('crafts a fungible item', async () => {})
 
   // Burn Blueprint Non-Fungible Ingredient
-  // Burn Blueprint Fungible Ingredient
+  // ✅ Burn Blueprint Fungible Ingredient
   // ✅ Burn SPL Ingredient
   // Burn Token2022 Ingredient
   // Transfer Blueprint Non-Fungible Ingredient

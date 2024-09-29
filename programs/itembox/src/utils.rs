@@ -20,7 +20,6 @@ use anchor_spl::{token::spl_token::state::Mint, token_interface::spl_token_2022:
   state::Account as AssociatedTokenAccount,
 }};
 use mpl_core::Collection;
-use solana_program::msg;
 use spl_tlv_account_resolution::{account::ExtraAccountMeta, state::ExtraAccountMetaList};
 use spl_type_length_value::variable_len_pack::VariableLenPack;
 
@@ -87,11 +86,6 @@ pub fn deserialize_ata(account_info: &AccountInfo) -> Result<AssociatedTokenAcco
 pub fn deserialize_mint(account_info: &AccountInfo) -> Result<Mint> {
   let account_data = account_info.try_borrow_data()?;
   Mint::unpack(&account_data).map_err(|_| ProgramError::InvalidAccountData.into())
-}
-
-pub fn deserialize_mint_2022(account_info: &AccountInfo) -> Result<Mint2022> {
-  let account_data = account_info.try_borrow_data()?;
-  Mint2022::unpack(&account_data).map_err(|_| ProgramError::InvalidAccountData.into())
 }
 
 pub fn extract_name_and_uri(data: &AccountInfo) -> Result<(String, String)> {

@@ -112,8 +112,7 @@ pub fn craft_item_handler<'a, 'b, 'c, 'info>(
         // Blueprint Ingredient
         // =============================
         0 => {
-          let borrowed_data = &asset_account.data.borrow()[8..]; // remove discriminator
-          let blueprint_account = Blueprint::try_from_slice(&borrowed_data)?;
+          let blueprint_account = Blueprint::from_account_info(&asset_account)?;
           
           if let Some(asset) = account_map.get(&blueprint_account.mint) {
             // =============================
@@ -125,7 +124,6 @@ pub fn craft_item_handler<'a, 'b, 'c, 'info>(
                   // BURN
                   // =============================
                   1 => {
-                    msg!("BURN");
                     BurnV1CpiBuilder::new(&ctx.accounts.mpl_core_program.to_account_info())
                       .asset(&asset_account.to_account_info())
                       .collection(Some(&asset.to_account_info()))
@@ -138,7 +136,6 @@ pub fn craft_item_handler<'a, 'b, 'c, 'info>(
                   // TRANSFER
                   // =============================
                   2 => {
-                    msg!("TRANSFER");
                     if let Some(treasury_account) = account_map.get(&ctx.accounts.blueprint.treasury) {
                       TransferV1CpiBuilder::new(&ctx.accounts.mpl_core_program.to_account_info())
                         .asset(&asset_account.to_account_info())
@@ -170,34 +167,38 @@ pub fn craft_item_handler<'a, 'b, 'c, 'info>(
               let ata_pubkey = get_associated_token_address(
                 &owner.key(), 
                 &spl_token_2022::id().key(), 
-                &ingredient.asset.key()
+                &asset.key()
               );
-
+            
               if let Some(ata_account_info) = account_map.get(&ata_pubkey) {
+              
                 match ingredient.consume_method {
                   // =============================
                   // BURN
                   // =============================
                   1 => {
+              
                     token_2022::burn(
                       CpiContext::new(
                         ctx.accounts.token_program.to_account_info(),
                         Burn2022 {
-                          mint: asset_account.to_account_info(),
+                          mint: asset.to_account_info(),
                           from: ata_account_info.to_account_info(),
                           authority: owner.to_account_info(),
                         },
                       ),
                       ingredient.amount * 10u64.pow(mint_account.decimals as u32)
                     )?;
+              
                   }
                   2 => {
+              
                     let receiver_ata_pubkey = get_associated_token_address(
                       &ctx.accounts.blueprint.treasury.key(),
                       &spl_token_2022::id().key(),
-                      &ingredient.asset.key()
+                      &asset.key()
                     );
-    
+              
                     if let Some(receiver_ata_account_info) = account_map.get(&receiver_ata_pubkey) {
                       let receiver_ata_account = deserialize_ata(receiver_ata_account_info)?;
                       if receiver_ata_account.amount < ingredient.amount {
@@ -205,7 +206,7 @@ pub fn craft_item_handler<'a, 'b, 'c, 'info>(
                       }
                       ctx.accounts.create_associated_token_account(
                         &ctx.accounts.treasury,
-                        asset_account,
+                        asset,
                         receiver_ata_account_info,
                         true
                       )?;
@@ -213,7 +214,7 @@ pub fn craft_item_handler<'a, 'b, 'c, 'info>(
                         CpiContext::new(
                           ctx.accounts.token_program.to_account_info(),
                           TransferChecked2022 {
-                            mint: asset_account.to_account_info(),
+                            mint: asset.to_account_info(),
                             from: ata_account_info.to_account_info(),
                             to: receiver_ata_account_info.to_account_info(),
                             authority: owner.to_account_info(),
