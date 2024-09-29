@@ -1,6 +1,7 @@
 use anchor_lang::prelude::*;
 
 #[account]
+#[derive(Debug)]
 pub struct Blueprint {
   /// Bump nonce of the PDA. (1)
   pub bump: u8,
@@ -27,7 +28,7 @@ pub struct Blueprint {
   /// Number of editions printed, if mint is a Master Edition. (8)
   pub counter: u32,
 
-  /// Unused reserved byte space for future additive changes. (128)
+  // Unused reserved byte space for future additive changes. (128)
   pub _reserved: [u8; 128],
 }
 

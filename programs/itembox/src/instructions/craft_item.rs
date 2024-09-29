@@ -112,20 +112,23 @@ pub fn craft_item_handler<'a, 'b, 'c, 'info>(
         // Blueprint Ingredient
         // =============================
         0 => {
-          if let Ok(blueprint_account) = Blueprint::try_from_slice(&asset_account.data.borrow()) {
+          let borrowed_data = &asset_account.data.borrow()[8..]; // remove discriminator
+          let blueprint_account = Blueprint::try_from_slice(&borrowed_data)?;
+          
+          if let Some(asset) = account_map.get(&blueprint_account.mint) {
             // =============================
             // Metaplex Core Asset
             // =============================
             if blueprint_account.non_fungible {
-              if let Some(core_collection) = account_map.get(&blueprint_account.mint) {
                 match ingredient.consume_method {
                   // =============================
                   // BURN
                   // =============================
                   1 => {
+                    msg!("BURN");
                     BurnV1CpiBuilder::new(&ctx.accounts.mpl_core_program.to_account_info())
                       .asset(&asset_account.to_account_info())
-                      .collection(Some(&core_collection.to_account_info()))
+                      .collection(Some(&asset.to_account_info()))
                       .payer(&owner.to_account_info())
                       .authority(Some(&owner.to_account_info()))
                       .system_program(Some(&ctx.accounts.system_program.to_account_info()))
@@ -135,10 +138,11 @@ pub fn craft_item_handler<'a, 'b, 'c, 'info>(
                   // TRANSFER
                   // =============================
                   2 => {
+                    msg!("TRANSFER");
                     if let Some(treasury_account) = account_map.get(&ctx.accounts.blueprint.treasury) {
                       TransferV1CpiBuilder::new(&ctx.accounts.mpl_core_program.to_account_info())
                         .asset(&asset_account.to_account_info())
-                        .collection(Some(&core_collection.to_account_info()))
+                        .collection(Some(&asset.to_account_info()))
                         .payer(&owner.to_account_info())
                         .authority(Some(&owner.to_account_info()))
                         .new_owner(&treasury_account.to_account_info())
@@ -152,26 +156,24 @@ pub fn craft_item_handler<'a, 'b, 'c, 'info>(
                   // RETAIN 
                   // =============================
                   _ => {
-                    // do nothing
+                    // todo: check if the blueprint is owned by the owner
                   }
                 }
-              } else {
-                return Err(CraftItemError::MissingBlueprintNonFungibleAccount.into());
-              }
+              
             // =============================
             // SPL Token Extensions
             // =============================
             } else {
-              let mint_account = deserialize_mint_2022(asset_account)?;
+
+              let mint_account = deserialize_mint_2022(asset)?;
 
               let ata_pubkey = get_associated_token_address(
                 &owner.key(), 
                 &spl_token_2022::id().key(), 
                 &ingredient.asset.key()
               );
-    
-              if let Some(ata_account_info) = account_map.get(&ata_pubkey) {
 
+              if let Some(ata_account_info) = account_map.get(&ata_pubkey) {
                 match ingredient.consume_method {
                   // =============================
                   // BURN
@@ -190,7 +192,6 @@ pub fn craft_item_handler<'a, 'b, 'c, 'info>(
                     )?;
                   }
                   2 => {
-
                     let receiver_ata_pubkey = get_associated_token_address(
                       &ctx.accounts.blueprint.treasury.key(),
                       &spl_token_2022::id().key(),
@@ -198,19 +199,16 @@ pub fn craft_item_handler<'a, 'b, 'c, 'info>(
                     );
     
                     if let Some(receiver_ata_account_info) = account_map.get(&receiver_ata_pubkey) {
-    
                       let receiver_ata_account = deserialize_ata(receiver_ata_account_info)?;
                       if receiver_ata_account.amount < ingredient.amount {
                         return Err(CraftItemError::InsufficientIngredientAmount.into());
                       }
-
                       ctx.accounts.create_associated_token_account(
                         &ctx.accounts.treasury,
                         asset_account,
                         receiver_ata_account_info,
                         true
                       )?;
-
                       token_2022::transfer_checked(
                         CpiContext::new(
                           ctx.accounts.token_program.to_account_info(),
@@ -229,15 +227,20 @@ pub fn craft_item_handler<'a, 'b, 'c, 'info>(
                     }
                   }
                   _ => {
-                    // do nothing
+                    // todo: check if amount is correct
                   }
                 }
               } else {
                 return Err(CraftItemError::MissingSenderTokenAccount.into());
               }
             }
+
           } else {
-            return Err(CraftItemError::CorruptedBlueprintAccount.into());
+            if blueprint_account.non_fungible {
+              return Err(CraftItemError::MissingBlueprintNonFungibleAccount.into());
+            } else {
+              return Err(CraftItemError::MissingBlueprintFungibleAccount.into());
+            }
           }
         }
         // =============================
@@ -382,7 +385,7 @@ pub fn craft_item_handler<'a, 'b, 'c, 'info>(
               // RETAIN 
               // =============================
               _ => {
-                // do nothing
+                // check if amount is correct
               }
             }
           } else {
@@ -462,8 +465,6 @@ pub fn craft_item_handler<'a, 'b, 'c, 'info>(
 
 #[error_code]
 pub enum CraftItemError {
-  #[msg("The Blueprint account is corrupted")]
-  CorruptedBlueprintAccount,
 
   #[msg("Missing Blueprint PDA account from the remaining accounts")]
   MissingBlueprintAccount,
