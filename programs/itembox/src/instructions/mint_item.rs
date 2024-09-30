@@ -82,7 +82,11 @@ pub fn mint_item_handler(ctx: Context<MintItem>, args: MintItemArgs) -> Result<(
   blueprint.counter = blueprint.counter.checked_add(1).unwrap();
   
   if blueprint.non_fungible {  
-    
+
+    if args.amount > 1 {
+      return Err(MintItemError::CannotMintMoreThanOneNonFungibleItem.into());
+    }
+
     // create core asset with edition plugin
 
     let mut plugins: Vec<PluginAuthorityPair> = vec![];
@@ -140,4 +144,7 @@ pub enum MintItemError {
 
   #[msg("Missing owner associated token account")]
   MissingOwnerAtaAccount,
+
+  #[msg("Cannot mint more than one non-fungible item")]
+  CannotMintMoreThanOneNonFungibleItem,
 }

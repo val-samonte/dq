@@ -118,7 +118,7 @@ pub fn craft_item_handler<'a, 'b, 'c, 'info>(
         // =============================
         // Blueprint Ingredient
         // =============================
-        0 => {
+        0 | 1 => {
           let blueprint_account = Blueprint::from_account_info(&asset_account)?;
           
           if let Some(asset) = account_map.get(&blueprint_account.mint) {
@@ -275,7 +275,7 @@ pub fn craft_item_handler<'a, 'b, 'c, 'info>(
         // SPL / Token2022 Ingredient
         // =============================
         _ => {
-          let token_program_id = if ingredient.asset_type == 1 {
+          let token_program_id = if ingredient.asset_type == 2 {
             spl_token::id()
           } else {
             spl_token_2022::id()
@@ -301,7 +301,7 @@ pub fn craft_item_handler<'a, 'b, 'c, 'info>(
               // BURN
               // =============================
               1 => {
-                if ingredient.asset_type == 1 {
+                if ingredient.asset_type == 2 {
                   // =============================
                   // SPL Token
                   // =============================
@@ -317,7 +317,7 @@ pub fn craft_item_handler<'a, 'b, 'c, 'info>(
                     ),
                     required_amount
                   )?;
-                  
+
                 } else {
                   // =============================
                   // SPL Token Extensions
@@ -350,7 +350,7 @@ pub fn craft_item_handler<'a, 'b, 'c, 'info>(
 
                 if let Some(receiver_ata_account_info) = account_map.get(&receiver_ata_pubkey) {
 
-                  if ingredient.asset_type == 1 {
+                  if ingredient.asset_type == 2 {
                     // =============================
                     // SPL Token
                     // =============================

@@ -29,7 +29,7 @@ pub struct Ingredient {
   /// A blueprint or the mint address of the SPL token. (32)
   pub asset: Pubkey,
 
-  /// Blueprint [0], SPL [1], Token Extensions [2]. (1)
+  /// Blueprint NF [0], Blueprint F [1], SPL [2], Token Extensions [3]. (1)
   pub asset_type: u8,
 
   /// Amount needed, only applicable to fungible assets. (8)

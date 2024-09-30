@@ -55,11 +55,12 @@ pub fn create_recipe_handler(ctx: Context<CreateRecipe>, args: CreateRecipeArgs)
     if let Some(ingredient) = args.ingredients.get(index) {
       // TODO: SECURITY RISK, we cannot rely with this comparison
       if account_info.owner.eq(&crate::id()) {
+        let blueprint_account = Blueprint::from_account_info(&account_info)?;
         
         recipe.ingredients.push(Ingredient {
           amount: ingredient.amount,
           asset: account_info.key(),
-          asset_type: 0,
+          asset_type: if blueprint_account.non_fungible { 0 } else { 1 },
           consume_method: ingredient.consume_method
         });
 
@@ -68,7 +69,7 @@ pub fn create_recipe_handler(ctx: Context<CreateRecipe>, args: CreateRecipeArgs)
         recipe.ingredients.push(Ingredient {
           amount: ingredient.amount,
           asset: account_info.key(),
-          asset_type: 1,
+          asset_type: 2,
           consume_method: ingredient.consume_method
         });
 
@@ -77,7 +78,7 @@ pub fn create_recipe_handler(ctx: Context<CreateRecipe>, args: CreateRecipeArgs)
         recipe.ingredients.push(Ingredient {
           amount: ingredient.amount,
           asset: account_info.key(),
-          asset_type: 2,
+          asset_type: 3,
           consume_method: ingredient.consume_method
         });
 
