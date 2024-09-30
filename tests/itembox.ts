@@ -73,6 +73,7 @@ describe('DeezQuest: Itembox Program', () => {
   const commonUri = 'https://example.com/metadata.json'
 
   let splTokenMintIngredient: PublicKey
+  let ownerSplAta: PublicKey
   let copperSwordBlueprint: PublicKey
   let hiltBlueprint: PublicKey
   let refinedCopperBlueprint: PublicKey
@@ -111,6 +112,24 @@ describe('DeezQuest: Itembox Program', () => {
       authority.publicKey,
       authority.publicKey,
       9
+    )
+
+    ownerSplAta = (
+      await getOrCreateAssociatedTokenAccount(
+        program.provider.connection,
+        authority,
+        splTokenMintIngredient,
+        authority.publicKey
+      )
+    ).address
+
+    await mintTo(
+      program.provider.connection,
+      authority,
+      splTokenMintIngredient,
+      ownerSplAta,
+      authority,
+      1000 * 10 ** 9
     )
   })
 
@@ -301,7 +320,7 @@ describe('DeezQuest: Itembox Program', () => {
 
     const { recipe } = await sdk.createRecipe(copperSwordBlueprint, ingredients)
 
-    await sleep(1000)
+    await sleep(500)
 
     const data = await program.account.recipe.fetch(recipe)
     expect(data.blueprint.equals(copperSwordBlueprint)).eq(true)
@@ -332,9 +351,13 @@ describe('DeezQuest: Itembox Program', () => {
       },
     ]
 
-    const { recipe } = await sdk.createRecipe(copperBlockBlueprint, ingredients)
+    const { recipe } = await sdk.createRecipe(
+      copperBlockBlueprint,
+      ingredients,
+      10
+    )
 
-    await sleep(1000)
+    await sleep(500)
 
     const data = await program.account.recipe.fetch(recipe)
     expect(data.blueprint.equals(copperBlockBlueprint)).eq(true)
@@ -351,33 +374,68 @@ describe('DeezQuest: Itembox Program', () => {
     console.log('Copper Block Recipe', copperBlockRecipe.toBase58())
   })
 
-  xit('crafts an non-fungible item', async () => {
-    // await sleep(1000)
-    // const tokenAccountPost = await getAccount(
-    //   program.provider.connection,
-    //   ownerSplAta
-    // )
-    // const copperTokenAccountPost = await getAccount(
-    //   program.provider.connection,
-    //   refinedCopperAta,
-    //   'confirmed',
-    //   TOKEN_2022_PROGRAM_ID
-    // )
-    // const asset = await fetchAsset(
-    //   umi,
-    //   fromWeb3JsPublicKey(assetSigner.publicKey),
-    //   {
-    //     skipDerivePlugins: false,
-    //   }
-    // )
-    // expect(tokenAccountPost.amount).eq(990000000000n)
-    // expect(copperTokenAccountPost.amount).eq(990n)
-    // expect(asset.name).eq('Copper Sword')
-    // expect(asset.uri).eq('https://example.com/metadata.json')
-    // expect(asset.owner.toString()).eq(authority.publicKey.toString())
+  it('crafts an non-fungible item', async () => {
+    const hiltBlueprintData = await program.account.blueprint.fetch(
+      hiltBlueprint
+    )
+    const { asset } = await sdk.craftItem(copperSwordRecipe, [
+      {
+        collection: hiltBlueprintData.mint,
+        item: hilt,
+      },
+    ])
+
+    await sleep(500)
+
+    const data = await fetchAsset(umi, fromWeb3JsPublicKey(asset), {
+      skipDerivePlugins: false,
+    })
+
+    expect(data.name).eq('Copper Sword')
+    expect(data.uri).eq(commonUri)
+    expect(data.owner.toString()).eq(authority.publicKey.toString())
+
+    const splTokenAccount = await getAccount(
+      program.provider.connection,
+      ownerSplAta
+    )
+
+    const refinedCopperData = await program.account.blueprint.fetch(
+      refinedCopperBlueprint
+    )
+
+    const refinedCopperAta = getAssociatedTokenAddressSync(
+      refinedCopperData.mint,
+      program.provider.publicKey,
+      true,
+      TOKEN_2022_PROGRAM_ID
+    )
+
+    const refinedCopperTokenAccount = await getAccount(
+      program.provider.connection,
+      refinedCopperAta,
+      'confirmed',
+      TOKEN_2022_PROGRAM_ID
+    )
+
+    expect(splTokenAccount.amount).eq(990000000000n)
+    expect(refinedCopperTokenAccount.amount).eq(990n)
   })
 
-  xit('crafts a fungible item', async () => {})
+  it('crafts a fungible item', async () => {
+    const { asset } = await sdk.craftItem(copperBlockRecipe, [])
+
+    await sleep(500)
+
+    const copperBlockTokenAccount = await getAccount(
+      program.provider.connection,
+      asset,
+      'confirmed',
+      TOKEN_2022_PROGRAM_ID
+    )
+
+    expect(copperBlockTokenAccount.amount).eq(10n)
+  })
 
   // ✅ Burn Blueprint Non-Fungible Ingredient
   // ✅ Burn Blueprint Fungible Ingredient

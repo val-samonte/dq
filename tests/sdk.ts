@@ -121,8 +121,13 @@ export class ItemboxSDK {
       .signers([recipeSigner])
       .rpc()
 
+    const [pda] = PublicKey.findProgramAddressSync(
+      [Buffer.from('recipe'), recipeSigner.publicKey.toBytes()],
+      this.program.programId
+    )
+
     return {
-      recipe: recipeSigner.publicKey,
+      recipe: pda,
       signature,
     }
   }
@@ -243,8 +248,8 @@ export class ItemboxSDK {
           }
 
           // include the item address
-          const itemEntry = nonFungibleIngredients.find(
-            (i) => i.collection === collection
+          const itemEntry = nonFungibleIngredients.find((i) =>
+            i.collection.equals(collection)
           )
           if (itemEntry) {
             addToList(itemEntry.item)
@@ -255,7 +260,7 @@ export class ItemboxSDK {
           }
 
           // if transfer: add treasury
-          if (ingredient.consumeMethod === 3) {
+          if (ingredient.consumeMethod === 2) {
             addToList(blueprintData.treasury)
           }
           break
@@ -283,7 +288,7 @@ export class ItemboxSDK {
           addToList(ownerAta)
 
           // if transfer: add treasury's ata of the mint, token2022
-          if (ingredient.consumeMethod === 3) {
+          if (ingredient.consumeMethod === 2) {
             const receiverAta = getAssociatedTokenAddressSync(
               mint,
               blueprintData.treasury,
@@ -309,7 +314,7 @@ export class ItemboxSDK {
           addToList(ownerAta)
 
           // if transfer: add treasury's ata
-          if (ingredient.consumeMethod === 3) {
+          if (ingredient.consumeMethod === 2) {
             const receiverAta = getAssociatedTokenAddressSync(
               mint,
               blueprintData.treasury,
@@ -335,7 +340,7 @@ export class ItemboxSDK {
           addToList(ownerAta)
 
           // if transfer: add treasury's ata of the mint, token2022
-          if (ingredient.consumeMethod === 3) {
+          if (ingredient.consumeMethod === 2) {
             const receiverAta = getAssociatedTokenAddressSync(
               mint,
               blueprintData.treasury,
@@ -359,6 +364,7 @@ export class ItemboxSDK {
         owner: this.program.provider.publicKey,
       })
       .remainingAccounts(remainingAccounts)
+      .signers([assetSigner])
 
     let asset: PublicKey
     if (blueprintData.nonFungible) {
