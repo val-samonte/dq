@@ -51,10 +51,11 @@ describe('DeezQuest: Itembox Program', () => {
   const authority = loadKeypair('~/.config/solana/id.json')
   const treasuryKeypair = Keypair.generate()
   const blueprintTreasuryKeypair = Keypair.generate()
-  const sword = Keypair.generate()
-  const refinedCopper = Keypair.generate()
+  const swordBP = Keypair.generate()
+  const refinedCopperBP = Keypair.generate()
+  const hiltBP = Keypair.generate()
   const hilt = Keypair.generate()
-  const copperBlock = Keypair.generate()
+  const copperBlockBP = Keypair.generate()
   const recipeSignerId = Keypair.generate()
   const token = Keypair.generate()
 
@@ -78,22 +79,22 @@ describe('DeezQuest: Itembox Program', () => {
   )
 
   const [swordBlueprintPda] = PublicKey.findProgramAddressSync(
-    [Buffer.from('blueprint'), sword.publicKey.toBytes()],
+    [Buffer.from('blueprint'), swordBP.publicKey.toBytes()],
     program.programId
   )
 
   const [refinedCopperBlueprintPda] = PublicKey.findProgramAddressSync(
-    [Buffer.from('blueprint'), refinedCopper.publicKey.toBytes()],
+    [Buffer.from('blueprint'), refinedCopperBP.publicKey.toBytes()],
     program.programId
   )
 
   const [hiltBlueprintPda] = PublicKey.findProgramAddressSync(
-    [Buffer.from('blueprint'), hilt.publicKey.toBytes()],
+    [Buffer.from('blueprint'), hiltBP.publicKey.toBytes()],
     program.programId
   )
 
   const [copperBlockBlueprintPda] = PublicKey.findProgramAddressSync(
-    [Buffer.from('blueprint'), copperBlock.publicKey.toBytes()],
+    [Buffer.from('blueprint'), copperBlockBP.publicKey.toBytes()],
     program.programId
   )
 
@@ -107,7 +108,7 @@ describe('DeezQuest: Itembox Program', () => {
   )
   console.log('Itembox Program ID', program.programId.toBase58())
   console.log('Itembox Main Pda', mainPda.toBase58())
-  console.log('Blueprint Collection ID', sword.publicKey.toBase58())
+  console.log('Blueprint Collection ID', swordBP.publicKey.toBase58())
 
   before(async () => {
     // fund treasury
@@ -151,14 +152,14 @@ describe('DeezQuest: Itembox Program', () => {
     )
 
     refinedCopperAta = await getAssociatedTokenAddress(
-      refinedCopper.publicKey,
+      refinedCopperBP.publicKey,
       authority.publicKey,
       false,
       TOKEN_2022_PROGRAM_ID
     )
 
     treasuryCopperAta = await getAssociatedTokenAddress(
-      refinedCopper.publicKey,
+      refinedCopperBP.publicKey,
       blueprintTreasuryKeypair.publicKey,
       false,
       TOKEN_2022_PROGRAM_ID
@@ -200,17 +201,17 @@ describe('DeezQuest: Itembox Program', () => {
         uri: 'https://example.com/metadata.json',
       })
       .accounts({
-        collection: sword.publicKey,
+        collection: swordBP.publicKey,
         owner: authority.publicKey,
       })
-      .signers([sword])
+      .signers([swordBP])
       .rpc()
 
     await sleep(1000)
 
     const blueprintMetadata = await fetchCollection(
       umi,
-      fromWeb3JsPublicKey(sword.publicKey)
+      fromWeb3JsPublicKey(swordBP.publicKey)
     )
 
     expect(blueprintMetadata.name).eq(blueprintName)
@@ -228,17 +229,17 @@ describe('DeezQuest: Itembox Program', () => {
         uri: 'https://example.com/metadata.json',
       })
       .accounts({
-        collection: hilt.publicKey,
+        collection: hiltBP.publicKey,
         owner: authority.publicKey,
       })
-      .signers([hilt])
+      .signers([hiltBP])
       .rpc()
 
     await sleep(1000)
 
     const blueprintMetadata = await fetchCollection(
       umi,
-      fromWeb3JsPublicKey(hilt.publicKey)
+      fromWeb3JsPublicKey(hiltBP.publicKey)
     )
 
     expect(blueprintMetadata.name).eq(blueprintName)
@@ -260,23 +261,23 @@ describe('DeezQuest: Itembox Program', () => {
         symbol: 'DQT',
       })
       .accounts({
-        mint: copperBlock.publicKey,
+        mint: copperBlockBP.publicKey,
         owner: authority.publicKey,
       })
-      .signers([copperBlock])
+      .signers([copperBlockBP])
       .rpc()
 
     await sleep(1000)
 
     const mintInfo = await getMint(
       program.provider.connection,
-      copperBlock.publicKey,
+      copperBlockBP.publicKey,
       'confirmed',
       TOKEN_2022_PROGRAM_ID
     )
 
     const metadataPointer = getMetadataPointerState(mintInfo)
-    expect(metadataPointer.metadataAddress.equals(copperBlock.publicKey)).eq(
+    expect(metadataPointer.metadataAddress.equals(copperBlockBP.publicKey)).eq(
       true
     )
 
@@ -302,27 +303,27 @@ describe('DeezQuest: Itembox Program', () => {
         symbol: 'DQT',
       })
       .accounts({
-        mint: refinedCopper.publicKey,
+        mint: refinedCopperBP.publicKey,
         owner: authority.publicKey,
       })
-      .signers([refinedCopper])
+      .signers([refinedCopperBP])
       .rpc()
 
     await sleep(1000)
 
     const mintInfo = await getMint(
       program.provider.connection,
-      refinedCopper.publicKey,
+      refinedCopperBP.publicKey,
       'confirmed',
       TOKEN_2022_PROGRAM_ID
     )
 
-    console.log('Refined copper: ', refinedCopper.publicKey.toBase58())
+    console.log('Refined copper: ', refinedCopperBP.publicKey.toBase58())
 
     const metadataPointer = getMetadataPointerState(mintInfo)
-    expect(metadataPointer.metadataAddress.equals(refinedCopper.publicKey)).eq(
-      true
-    )
+    expect(
+      metadataPointer.metadataAddress.equals(refinedCopperBP.publicKey)
+    ).eq(true)
 
     const metadata = await getTokenMetadata(
       program.provider.connection,
@@ -335,32 +336,26 @@ describe('DeezQuest: Itembox Program', () => {
   })
 
   it('mints a non-fungible blueprint', async () => {
-    const assetSigner = Keypair.generate()
-
     await program.methods
       .mintItem({
         amount: new BN(1),
       })
       .accounts({
         blueprint: hiltBlueprintPda,
-        assetSigner: assetSigner.publicKey,
+        assetSigner: hilt.publicKey,
         receiver: authority.publicKey,
       })
       .accountsPartial({
         receiverAta: null,
       })
-      .signers([assetSigner])
+      .signers([hilt])
       .rpc()
 
     await sleep(1000)
 
-    const asset = await fetchAsset(
-      umi,
-      fromWeb3JsPublicKey(assetSigner.publicKey),
-      {
-        skipDerivePlugins: false,
-      }
-    )
+    const asset = await fetchAsset(umi, fromWeb3JsPublicKey(hilt.publicKey), {
+      skipDerivePlugins: false,
+    })
 
     expect(asset.name).eq('Hilt')
     expect(asset.uri).eq('https://example.com/metadata.json')
@@ -368,8 +363,8 @@ describe('DeezQuest: Itembox Program', () => {
   })
 
   it('mints a fungible blueprint', async () => {
-    const amount = new BN(1000)
     const assetSigner = Keypair.generate()
+    const amount = new BN(1000)
 
     await program.methods
       .mintItem({
@@ -399,13 +394,11 @@ describe('DeezQuest: Itembox Program', () => {
     console.log('Recipe id', recipeSignerId.publicKey.toBase58())
     const ingredients = [
       {
-        name: 'SPL Token',
         asset: splTokenMintIngredient,
         amount: new BN(10),
         consumeMethod: 2,
       },
       {
-        name: 'Refined Copper',
         asset: refinedCopperBlueprintPda,
         amount: new BN(10),
         consumeMethod: 1,
@@ -413,7 +406,7 @@ describe('DeezQuest: Itembox Program', () => {
       {
         asset: hiltBlueprintPda,
         amount: new BN(1),
-        consumeMethod: 1,
+        consumeMethod: 2,
       },
     ]
 
@@ -436,7 +429,6 @@ describe('DeezQuest: Itembox Program', () => {
       })
       .remainingAccounts(
         ingredients.map((ing) => {
-          console.log(ing.name, ing.asset.toBase58())
           return {
             pubkey: ing.asset,
             isSigner: false,
@@ -484,7 +476,14 @@ describe('DeezQuest: Itembox Program', () => {
     )
 
     const ix = await program.methods
-      .craftItem()
+      .craftItem({
+        itemsRef: [
+          {
+            collection: hiltBP.publicKey,
+            item: hilt.publicKey,
+          },
+        ],
+      })
       .accounts({
         recipe: recipePda,
         assetSigner: assetSigner.publicKey,
@@ -522,7 +521,7 @@ describe('DeezQuest: Itembox Program', () => {
         },
         {
           // mint
-          pubkey: refinedCopper.publicKey,
+          pubkey: refinedCopperBP.publicKey,
           isSigner: false,
           isWritable: true,
         },
@@ -547,7 +546,19 @@ describe('DeezQuest: Itembox Program', () => {
         },
         {
           // collection
+          pubkey: hiltBP.publicKey,
+          isSigner: false,
+          isWritable: true,
+        },
+        {
+          // item
           pubkey: hilt.publicKey,
+          isSigner: false,
+          isWritable: true,
+        },
+        {
+          // receiver
+          pubkey: blueprintTreasuryKeypair.publicKey,
           isSigner: false,
           isWritable: true,
         },
@@ -594,11 +605,11 @@ describe('DeezQuest: Itembox Program', () => {
 
   xit('crafts a fungible item', async () => {})
 
-  // Burn Blueprint Non-Fungible Ingredient
+  // ✅ Burn Blueprint Non-Fungible Ingredient
   // ✅ Burn Blueprint Fungible Ingredient
   // ✅ Burn SPL Ingredient
   // Burn Token2022 Ingredient
-  // Transfer Blueprint Non-Fungible Ingredient
+  // ✅ Transfer Blueprint Non-Fungible Ingredient
   // ✅ Transfer Blueprint Fungible Ingredient
   // ✅ Transfer SPL Ingredient
   // Transfer Token2022 Ingredient

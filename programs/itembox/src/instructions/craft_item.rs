@@ -37,7 +37,13 @@ use mpl_core::{
 
 use crate::{deserialize_ata, deserialize_mint, deserialize_mint_2022, extract_name_and_uri, states::{Blueprint, Main, Recipe}};
 
+#[derive(AnchorSerialize, AnchorDeserialize, Clone)]
+pub struct CraftItemArgs {
+  items_ref: Vec<ItemRef>,
+}
+
 #[derive(Accounts)]
+#[instruction(args: CraftItemArgs)]
 pub struct CraftItem<'info> {
   #[account(
     has_one = blueprint
@@ -92,7 +98,8 @@ pub struct CraftItem<'info> {
 }
 
 pub fn craft_item_handler<'a, 'b, 'c, 'info>(
-  ctx: Context<'a, 'b, 'c, 'info, CraftItem<'info>>
+  ctx: Context<'a, 'b, 'c, 'info, CraftItem<'info>>,
+  args: CraftItemArgs
 ) -> Result<()> {
 
   let owner = &ctx.accounts.owner;
@@ -119,44 +126,51 @@ pub fn craft_item_handler<'a, 'b, 'c, 'info>(
             // Metaplex Core Asset
             // =============================
             if blueprint_account.non_fungible {
-                match ingredient.consume_method {
-                  // =============================
-                  // BURN
-                  // =============================
-                  1 => {
-                    BurnV1CpiBuilder::new(&ctx.accounts.mpl_core_program.to_account_info())
-                      .asset(&asset_account.to_account_info())
-                      .collection(Some(&asset.to_account_info()))
-                      .payer(&owner.to_account_info())
-                      .authority(Some(&owner.to_account_info()))
-                      .system_program(Some(&ctx.accounts.system_program.to_account_info()))
-                      .invoke_signed(additional_seeds)?;
-                  }
-                  // =============================
-                  // TRANSFER
-                  // =============================
-                  2 => {
-                    if let Some(treasury_account) = account_map.get(&ctx.accounts.blueprint.treasury) {
-                      TransferV1CpiBuilder::new(&ctx.accounts.mpl_core_program.to_account_info())
-                        .asset(&asset_account.to_account_info())
+              if let Some(item) = get_item_ref(&args.items_ref, &blueprint_account.mint.key()) {
+                if let Some(item_account) = account_map.get(&item) {
+                  match ingredient.consume_method {
+                    // =============================
+                    // BURN
+                    // =============================
+                    1 => {
+                      BurnV1CpiBuilder::new(&ctx.accounts.mpl_core_program.to_account_info())
+                        .asset(&item_account.to_account_info())
                         .collection(Some(&asset.to_account_info()))
                         .payer(&owner.to_account_info())
                         .authority(Some(&owner.to_account_info()))
-                        .new_owner(&treasury_account.to_account_info())
                         .system_program(Some(&ctx.accounts.system_program.to_account_info()))
-                        .invoke_signed(additional_seeds)?;
-                    } else {
-                      return Err(CraftItemError::MissingReceiverTokenAccount.into());
+                        .invoke()?;
+                    }
+                    // =============================
+                    // TRANSFER
+                    // =============================
+                    2 => {
+                      if let Some(treasury_account) = account_map.get(&ctx.accounts.blueprint.treasury) {
+                        TransferV1CpiBuilder::new(&ctx.accounts.mpl_core_program.to_account_info())
+                          .asset(&item_account.to_account_info())
+                          .collection(Some(&asset.to_account_info()))
+                          .payer(&owner.to_account_info())
+                          .authority(Some(&owner.to_account_info()))
+                          .new_owner(&treasury_account.to_account_info())
+                          .system_program(Some(&ctx.accounts.system_program.to_account_info()))
+                          .invoke()?;
+                      } else {
+                        return Err(CraftItemError::MissingReceiverTokenAccount.into());
+                      }
+                    }
+                    // =============================
+                    // RETAIN 
+                    // =============================
+                    _ => {
+                      // todo: check if the blueprint is owned by the owner
                     }
                   }
-                  // =============================
-                  // RETAIN 
-                  // =============================
-                  _ => {
-                    // todo: check if the blueprint is owned by the owner
-                  }
+                } else {
+                  return Err(CraftItemError::MissingNonFungibleItemAccount.into());
                 }
-              
+              } else {
+                return Err(CraftItemError::MissingNonFungibleItemRef.into());
+              }
             // =============================
             // SPL Token Extensions
             // =============================
@@ -303,6 +317,7 @@ pub fn craft_item_handler<'a, 'b, 'c, 'info>(
                     ),
                     required_amount
                   )?;
+                  
                 } else {
                   // =============================
                   // SPL Token Extensions
@@ -319,6 +334,7 @@ pub fn craft_item_handler<'a, 'b, 'c, 'info>(
                     ),
                     required_amount
                   )?;
+
                 }
               }
               // =============================
@@ -483,6 +499,12 @@ pub enum CraftItemError {
   #[msg("Missing Blueprint PDA account from the remaining accounts")]
   MissingBlueprintAccount,
 
+  #[msg("A Non-Fungible Item address is not provided as args in items_ref")]
+  MissingNonFungibleItemRef,
+
+  #[msg("Missing Non-Fungible Item account from the remaining accounts")]
+  MissingNonFungibleItemAccount,
+
   #[msg("Missing Blueprint Non-Fungible (Core Collection) account from the remaining accounts")]
   MissingBlueprintNonFungibleAccount,
 
@@ -527,6 +549,20 @@ pub fn get_associated_token_address(
   ).0
 }
 
+pub fn get_item_ref(
+  items_ref: &Vec<ItemRef>,
+  collection: &Pubkey,
+) -> Option<Pubkey> {
+  
+  for entry in items_ref {
+    if entry.collection.key() == collection.key() {
+      return Some(entry.item);
+    }
+  }
+  
+  None
+}
+
 impl<'info> CraftItem<'info> {
   fn create_associated_token_account(
     &self,
@@ -561,4 +597,10 @@ impl<'info> CraftItem<'info> {
   }
 
 
+}
+
+#[derive(AnchorSerialize, AnchorDeserialize, Clone)]
+pub struct ItemRef {
+  pub collection: Pubkey,
+  pub item: Pubkey,
 }

@@ -37,8 +37,8 @@ pub mod itembox {
         create_recipe_handler(ctx, args)
     }
 
-    pub fn craft_item<'a,'b,'c,'info>(ctx: Context<'a,'b,'c,'info, CraftItem<'info>>) -> Result<()> {
-        craft_item_handler(ctx)
+    pub fn craft_item<'a,'b,'c,'info>(ctx: Context<'a,'b,'c,'info, CraftItem<'info>>, args: CraftItemArgs) -> Result<()> {
+        craft_item_handler(ctx, args)
     }
 
     pub fn mint_item(ctx: Context<MintItem>, args: MintItemArgs) -> Result<()> {
