@@ -1,16 +1,21 @@
 import cn from 'classnames'
 import { Nav } from './Nav'
 import {
+  ArrowUDownLeft,
   Check,
   CheckCircle,
   CheckSquare,
   CircleNotch,
+  FilePlus,
+  HouseLine,
+  PauseCircle,
   Play,
   RadioButton,
+  Signature,
   Smiley,
   Square,
 } from '@phosphor-icons/react'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
 import { CenterWrapper } from './CenterWrapper'
 import { useUserWallet } from '../atoms/userWalletAtom'
 import { PublicKey } from '@solana/web3.js'
@@ -18,6 +23,7 @@ import { trimAddress } from '../utils/trimAddress'
 import { atomWithStorage } from 'jotai/utils'
 import { useAtom } from 'jotai'
 import { base64ToFile } from '../utils/base64ToFile'
+import { Link } from 'react-router-dom'
 
 interface BlueprintFormState {
   name: string
@@ -32,7 +38,7 @@ interface BlueprintFormState {
   blueprintAddress: string
 }
 
-const formDefault: BlueprintFormState = {
+const defaultForm: BlueprintFormState = {
   name: '',
   description: '',
   file: '',
@@ -47,8 +53,12 @@ const formDefault: BlueprintFormState = {
 
 const blueprintFormAtom = atomWithStorage<BlueprintFormState>(
   'itembox_blueprint_form',
-  formDefault
+  defaultForm
 )
+
+function sleep(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms))
+}
 
 function BlueprintForm() {
   const wallet = useUserWallet()
@@ -64,27 +74,7 @@ function BlueprintForm() {
   const [mintAuthority, setMintAuthority] = useState(state.mintAuthority)
   const [treasury, setTreasury] = useState(state.treasury)
   const [busy, setBusy] = useState(false)
-  const [message, setMessage] = useState('')
-
-  useEffect(() => {
-    if (wallet?.publicKey) {
-      const userAddress = wallet.publicKey.toBase58()
-      setMintAuthority((v) => v || userAddress)
-      setTreasury((v) => v || userAddress)
-    }
-  }, [wallet])
-
-  useEffect(() => {
-    if (selectedFile) {
-      const reader = new FileReader()
-      reader.onloadend = () => {
-        setSelectedImage(reader.result as string)
-      }
-      reader.readAsDataURL(selectedFile)
-    } else {
-      setSelectedImage(null)
-    }
-  }, [selectedFile])
+  const [complete, setComplete] = useState(false)
 
   const trimmedMintAuthority = useMemo(() => {
     try {
@@ -110,10 +100,54 @@ function BlueprintForm() {
     return 4
   }, [state])
 
+  const message = useMemo(() => {
+    if (step === 0) return ''
+    if (!busy) return 'Interrupted'
+    if (step === 1) return 'Uploading Image'
+    if (step === 2) return 'Uploading Metadata'
+    if (step === 3) return 'Creating Blueprint'
+  }, [step, busy])
+
+  useEffect(() => {
+    if (wallet?.publicKey) {
+      const userAddress = wallet.publicKey.toBase58()
+      setMintAuthority((v) => v || userAddress)
+      setTreasury((v) => v || userAddress)
+    }
+  }, [wallet])
+
+  useEffect(() => {
+    if (selectedFile) {
+      const reader = new FileReader()
+      reader.onloadend = () => {
+        setSelectedImage(reader.result as string)
+      }
+      reader.readAsDataURL(selectedFile)
+    } else {
+      setSelectedImage(null)
+    }
+  }, [selectedFile])
+
+  useEffect(() => {
+    if (!complete) {
+      setName(state.name)
+      setDescription(state.description)
+      setSelectedFile(state.file ? base64ToFile(state.file, name) : null)
+      setSelectedImage(state.file)
+      setNonfungible(state.nonFungible)
+      setMintAuthority((s) => state.mintAuthority || s)
+      setTreasury((s) => state.treasury || s)
+    }
+  }, [state, complete])
+
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
     if (file && file.type.startsWith('image/')) {
       setSelectedFile(file)
+    }
+
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ''
     }
   }
 
@@ -141,6 +175,31 @@ function BlueprintForm() {
     }
 
     setBusy(true)
+
+    await sleep(5000)
+
+    setState((s) => ({ ...s, image: 'yes' }))
+
+    await sleep(5000)
+
+    setBusy(false)
+    return
+
+    setState((s) => ({ ...s, metadata: 'yes' }))
+
+    await sleep(5000)
+
+    setState((s) => ({ ...s, blueprintAddress: 'yes' }))
+
+    setBusy(false)
+
+    setComplete(true)
+
+    setState((s) => ({
+      ...defaultForm,
+      mintAuthority: s.mintAuthority,
+      treasury: s.treasury,
+    }))
   }
 
   return (
@@ -284,33 +343,113 @@ function BlueprintForm() {
       </div>
       <div className='flex flex-col items-center justify-between gap-10'>
         <div className='flex-none flex gap-2 text-gray-400 items-center'>
-          <CheckCircle size={32} className='opacity-100' />
-          <CircleNotch size={32} className='opacity-10 animate-spin' />
-          <span>Uploading Metadata</span>
-          <RadioButton size={32} className='opacity-10' />
+          {[1, 2, 3].map((i) => {
+            if (step < i) {
+              return <RadioButton key={i} size={32} className='opacity-10' />
+            }
+            if (step === i) {
+              return (
+                <Fragment key={i}>
+                  {busy ? (
+                    <CircleNotch
+                      size={32}
+                      className='opacity-50 animate-spin'
+                    />
+                  ) : (
+                    <PauseCircle size={32} className='opacity-50' />
+                  )}
+                  {message}
+                </Fragment>
+              )
+            }
+            return <CheckCircle key={i} size={32} className='opacity-100' />
+          })}
         </div>
-        <div className='flex-none mx-auto'>
-          <button
-            onClick={onSubmit}
-            className={cn(
-              'w-full',
-              'flex items-center gap-3',
-              'rounded pr-6 pl-4 py-3 text-lg',
-              'bg-gradient-to-t',
-              busy ? 'opacity-50 cursor-wait' : 'opacity-100 cursor-pointer',
-              'border-2 border-amber-300/50',
-              'from-amber-800 to-yellow-800'
+        {complete ? (
+          <div className='flex-none mx-auto flex items-center gap-5 portrait:flex-col'>
+            {wallet?.publicKey && (
+              <Link
+                to={`/users/${wallet.publicKey.toBase58()}`}
+                className={cn(
+                  'w-fit',
+                  'flex items-center gap-3',
+                  'rounded pr-6 pl-4 py-3 text-lg',
+                  'border-2 border-transparent',
+                  'bg-gray-600/50'
+                )}
+              >
+                <HouseLine size={28} />
+                Go Home
+              </Link>
             )}
-            disabled={busy}
-          >
-            <Play size={24} />
-            {state.processing
-              ? busy
-                ? 'Please Sign'
-                : 'Resume Process'
-              : 'Start Process'}
-          </button>
-        </div>
+            <button
+              onClick={() => {
+                setBusy(false)
+                setComplete(false)
+              }}
+              className={cn(
+                'w-fit',
+                'flex items-center gap-3',
+                'rounded pr-6 pl-4 py-3 text-lg',
+                'border-2 border-transparent',
+                'bg-gray-600/50'
+              )}
+            >
+              <FilePlus size={24} />
+              Create Another
+            </button>
+          </div>
+        ) : (
+          <div className='flex-none mx-auto flex items-center gap-5 portrait:flex-col'>
+            {state.processing && !busy && (
+              <button
+                onClick={() => {
+                  setBusy(false)
+                  setState((s) => ({
+                    ...defaultForm,
+                    mintAuthority: s.mintAuthority,
+                    treasury: s.treasury,
+                  }))
+                  setComplete(false)
+                }}
+                className={cn(
+                  'w-fit',
+                  'flex items-center gap-3',
+                  'rounded pr-6 pl-4 py-3 text-lg',
+                  'border-2 border-transparent',
+                  'bg-gray-600/50'
+                )}
+              >
+                <ArrowUDownLeft size={24} />
+                Start Over
+              </button>
+            )}
+            <button
+              onClick={onSubmit}
+              className={cn(
+                'w-fit',
+                'flex items-center gap-3',
+                'rounded pr-6 pl-4 py-3 text-lg',
+                'bg-gradient-to-t',
+                busy ? 'opacity-50 cursor-wait' : 'opacity-100 cursor-pointer',
+                'border-2 border-amber-300/50',
+                'from-amber-800 to-yellow-800'
+              )}
+              disabled={busy}
+            >
+              {state.processing && busy ? (
+                <Signature size={24} />
+              ) : (
+                <Play size={24} />
+              )}
+              {state.processing
+                ? busy
+                  ? 'Please Sign'
+                  : 'Resume Process'
+                : 'Start Process'}
+            </button>
+          </div>
+        )}
       </div>
     </>
   )
