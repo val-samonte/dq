@@ -1,6 +1,7 @@
 import cn from 'classnames'
 import { Nav } from './Nav'
 import {
+  Check,
   CheckCircle,
   CheckSquare,
   CircleNotch,
@@ -9,13 +10,44 @@ import {
   Smiley,
   Square,
 } from '@phosphor-icons/react'
-import { useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { CenterWrapper } from './CenterWrapper'
 import { useUserWallet } from '../atoms/userWalletAtom'
+import { PublicKey } from '@solana/web3.js'
+import { trimAddress } from '../utils/trimAddress'
 
 function BlueprintForm() {
+  const wallet = useUserWallet()
   const [nonFungible, setNonfungible] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const [name, setName] = useState('')
+  const [description, setDescription] = useState('')
+  const [mintAuthority, setMintAuthority] = useState('')
+  const [treasury, setTreasury] = useState('')
+
+  useEffect(() => {
+    if (wallet?.publicKey) {
+      const userAddress = wallet.publicKey.toBase58()
+      setMintAuthority((v) => v || userAddress)
+      setTreasury((v) => v || userAddress)
+    }
+  }, [wallet])
+
+  const trimmedMintAuthority = useMemo(() => {
+    try {
+      const parsed = new PublicKey(mintAuthority)
+      return `(${trimAddress(parsed.toBase58())})`
+    } catch (e) {}
+    return ''
+  }, [mintAuthority])
+
+  const trimmedTreasury = useMemo(() => {
+    try {
+      const parsed = new PublicKey(treasury)
+      return `(${trimAddress(parsed.toBase58())})`
+    } catch (e) {}
+    return ''
+  }, [treasury])
 
   return (
     <>
@@ -24,7 +56,7 @@ function BlueprintForm() {
       </h2>
       <div
         className={cn(
-          'rounded-lg bg-gray-800/10 drop-shadow-md',
+          'rounded-lg bg-gray-800 drop-shadow-lg shadow-md',
           '',
           'flex flex-col md:flex-row overflow-hidden'
         )}
@@ -61,6 +93,8 @@ function BlueprintForm() {
                 Asset Name
               </label>
               <input
+                value={name}
+                onChange={(e) => setName(e.target.value)}
                 className={cn(
                   'flex items-center gap-3',
                   'rounded px-6 py-3 text-lg',
@@ -75,6 +109,8 @@ function BlueprintForm() {
                 Asset Description
               </label>
               <textarea
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
                 className={cn(
                   'flex items-center gap-3',
                   'rounded px-6 py-3 text-lg',
@@ -93,10 +129,18 @@ function BlueprintForm() {
               </button>
             </div>
             <div className='flex flex-col gap-2'>
-              <label className='px-1 text-xs uppercase tracking-wider opacity-50'>
-                Mint Authority Address
+              <label className='px-1 text-xs tracking-wider opacity-50 flex items-center justify-between'>
+                <span className='uppercase'>Mint Authority</span>
+                {trimmedMintAuthority && (
+                  <span className='flex items-center gap-1'>
+                    {trimmedMintAuthority} <Check size={12} />
+                  </span>
+                )}
               </label>
               <input
+                value={mintAuthority}
+                onChange={(e) => setMintAuthority(e.target.value)}
+                onFocus={(e) => e.target.select()}
                 className={cn(
                   'flex items-center gap-3',
                   'rounded px-6 py-3 text-lg',
@@ -107,10 +151,18 @@ function BlueprintForm() {
               />
             </div>
             <div className='flex flex-col gap-2'>
-              <label className='px-1 text-xs uppercase tracking-wider opacity-50'>
-                Treasury Address
+              <label className='px-1 text-xs tracking-wider opacity-50 flex items-center justify-between'>
+                <span className='uppercase'>Treasury</span>
+                {trimmedTreasury && (
+                  <span className='flex items-center gap-1'>
+                    {trimmedTreasury} <Check size={12} />
+                  </span>
+                )}
               </label>
               <input
+                value={treasury}
+                onChange={(e) => setTreasury(e.target.value)}
+                onFocus={(e) => e.target.select()}
                 className={cn(
                   'flex items-center gap-3',
                   'rounded px-6 py-3 text-lg',

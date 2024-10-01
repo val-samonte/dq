@@ -10,7 +10,7 @@ export function Nav() {
   const { setVisible } = useWalletModal()
 
   return (
-    <div className={cn('bg-slate-800 w-full h-16 sticky top-0 z-10 flex-none')}>
+    <div className={cn('bg-gray-700 w-full h-16 sticky top-0 z-10 flex-none')}>
       <div
         className={cn(
           'px-2 gap-2 md:px-5',

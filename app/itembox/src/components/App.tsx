@@ -8,7 +8,7 @@ function App() {
   return (
     <div className='absolute inset-0 h-full flex flex-col overflow-y-auto overflow-x-hidden'>
       <div>
-        <div className='h-screen flex flex-col flex-none bg-gradient-to-r from-gray-900 to-gray-800'>
+        <div className='h-screen flex flex-col flex-none bg-gradient-to-r from-gray-800 to-gray-700'>
           <div className='h-full w-full max-w-7xl mx-auto relative'>
             <button className='absolute left-0 top-5 md:top-[10vh]'>
               <img
