@@ -13,9 +13,8 @@ import {
   PublicKey,
   SystemProgram,
   Transaction,
-  ComputeBudgetProgram,
 } from '@solana/web3.js'
-import { assert, expect } from 'chai'
+import { expect } from 'chai'
 import { createUmi } from '@metaplex-foundation/umi-bundle-defaults'
 import {
   fetchAsset,
@@ -30,7 +29,6 @@ import { fromWeb3JsPublicKey } from '@metaplex-foundation/umi-web3js-adapters'
 import {
   createMint,
   getAccount,
-  getAssociatedTokenAddress,
   getAssociatedTokenAddressSync,
   getMetadataPointerState,
   getMint,
@@ -39,7 +37,6 @@ import {
   mintTo,
   TOKEN_2022_PROGRAM_ID,
 } from '@solana/spl-token'
-import { IDL } from '@coral-xyz/anchor/dist/cjs/native/system'
 import { Ingredient, ItemboxSDK } from './sdk'
 // import { StateWithExtensions, MintExtensionType } from '@solana/spl-token-extensions';
 
