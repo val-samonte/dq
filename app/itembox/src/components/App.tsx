@@ -31,7 +31,7 @@ function App() {
                     'flex items-center gap-3',
                     'rounded pr-6 pl-4 py-3 text-lg',
                     'border-2 border-amber-300/50',
-                    'bg-gradient-to-t from-purple-800 to-fuchsia-800'
+                    'bg-gradient-to-t from-amber-800 to-yellow-800'
                   )}
                 >
                   <FilePlus size={24} />
@@ -44,7 +44,7 @@ function App() {
                     'rounded pr-6 pl-4 py-3 text-lg',
                     // 'border-2 border-white/10',
                     // 'bg-gradient-to-t from-purple-800 to-fuchsia-800'
-                    'bg-gray-600/20'
+                    'bg-gray-600/50'
                   )}
                 >
                   <Compass size={24} />

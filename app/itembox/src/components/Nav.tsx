@@ -45,7 +45,7 @@ export function Nav() {
                   'w-fit',
                   'flex items-center gap-3',
                   'rounded pr-4 pl-4 py-3 text-lg',
-                  'bg-gray-600/20'
+                  'bg-gray-600/50'
                 )}
               >
                 <HouseLine size={28} />
@@ -58,7 +58,7 @@ export function Nav() {
                   'w-fit',
                   'flex items-center gap-3',
                   'rounded pr-4 pl-4 py-3 text-lg',
-                  'bg-gray-600/20'
+                  'bg-gray-600/50'
                 )}
               >
                 <FilePlus size={28} />
@@ -79,7 +79,7 @@ export function Nav() {
               'w-fit',
               'flex items-center gap-3',
               'rounded pr-4 md:pr-6 pl-4 py-3 text-lg',
-              'bg-gray-600/20'
+              'bg-gray-600/50'
             )}
           >
             <Wallet size={28} />

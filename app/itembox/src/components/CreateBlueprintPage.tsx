@@ -20,6 +20,8 @@ function BlueprintForm() {
   const wallet = useUserWallet()
   const [nonFungible, setNonfungible] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const [selectedFile, setSelectedFile] = useState<File | null>(null)
+  const [selectedImage, setSelectedImage] = useState<string | null>(null)
   const [name, setName] = useState('')
   const [description, setDescription] = useState('')
   const [mintAuthority, setMintAuthority] = useState('')
@@ -32,6 +34,18 @@ function BlueprintForm() {
       setTreasury((v) => v || userAddress)
     }
   }, [wallet])
+
+  useEffect(() => {
+    if (selectedFile) {
+      const reader = new FileReader()
+      reader.onloadend = () => {
+        setSelectedImage(reader.result as string)
+      }
+      reader.readAsDataURL(selectedFile)
+    } else {
+      setSelectedImage(null)
+    }
+  }, [selectedFile])
 
   const trimmedMintAuthority = useMemo(() => {
     try {
@@ -49,6 +63,17 @@ function BlueprintForm() {
     return ''
   }, [treasury])
 
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (file && file.type.startsWith('image/')) {
+      setSelectedFile(file)
+    }
+  }
+
+  const onSubmit = () => {
+    // todo: resume
+  }
+
   return (
     <>
       <h2 className='text-3xl tracking-wider text-center pt-5'>
@@ -56,7 +81,7 @@ function BlueprintForm() {
       </h2>
       <div
         className={cn(
-          'rounded-lg bg-gray-700 border border-gray-400/5',
+          'rounded-lg bg-gray-700',
           '',
           'flex flex-col md:flex-row overflow-hidden'
         )}
@@ -64,24 +89,26 @@ function BlueprintForm() {
         <div className='flex-none'>
           <div className='min-h-80 w-80 landscape:min-h-96 landscape:w-96 h-full bg-black/20 flex items-center justify-center'>
             <button
-              className='w-full aspect-square'
+              className='w-full aspect-square p-5'
               onClick={() => {
                 fileInputRef.current?.click()
               }}
             >
-              Select Image
+              {selectedImage ? (
+                <img
+                  src={selectedImage}
+                  alt='Selected Image'
+                  className='w-full aspect-square object-contain'
+                />
+              ) : (
+                'Select Image'
+              )}
             </button>
             <input
               type='file'
               ref={fileInputRef}
               accept='image/jpeg, image/png, image/webp'
-              onChange={(event) => {
-                if (event?.target?.files) {
-                  if (event?.target?.files?.length > 0) {
-                    console.log('File selected:', event.target.files[0].name)
-                  }
-                }
-              }}
+              onChange={handleFileChange}
               className='hidden'
             />
           </div>
@@ -188,12 +215,13 @@ function BlueprintForm() {
         </div>
         <div className='flex-none mx-auto'>
           <button
+            onClick={onSubmit}
             className={cn(
               'w-full',
               'flex items-center gap-3',
               'rounded pr-6 pl-4 py-3 text-lg',
               'border-2 border-amber-300/50',
-              'bg-gradient-to-t from-purple-800 to-fuchsia-800'
+              'bg-gradient-to-t from-amber-800 to-yellow-800'
             )}
           >
             <Play size={24} />
