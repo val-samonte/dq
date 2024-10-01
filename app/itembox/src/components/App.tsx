@@ -1,6 +1,7 @@
-import { Compass, FilePlus, GithubLogo, Wallet } from '@phosphor-icons/react'
+import { Compass, FilePlus, GithubLogo } from '@phosphor-icons/react'
 import cn from 'classnames'
 import { BlueprintCard } from './BlueprintCard'
+import { Nav } from './Nav'
 
 function App() {
   return (
@@ -51,43 +52,14 @@ function App() {
             </div>
           </div>
         </div>
-        <div className={cn('bg-slate-800 w-full h-16 sticky top-0 z-10')}>
-          <div className='px-5 w-full h-full max-w-7xl mx-auto flex items-center justify-between gap-5'>
-            <div className='flex-auto'>
-              <input
-                className={cn(
-                  'flex items-center gap-3',
-                  'rounded px-6 py-3 text-lg',
-                  // 'border-2 border-white/10',
-                  'bg-black/20 w-full'
-                )}
-                type='text'
-                placeholder='Search by address, author or Blueprints'
-              />
-            </div>
-            <div className='flex-none'>
-              <button
-                className={cn(
-                  'w-fit',
-                  'flex items-center gap-3',
-                  'rounded pr-4 md:pr-6 pl-4 py-3 text-lg',
-                  // 'border-2 border-white/10',
-                  'bg-gray-600/20'
-                )}
-              >
-                <Wallet size={24} />
-                <span className='hidden md:inline'>Connect Wallet</span>
-              </button>
-            </div>
-          </div>
-        </div>
+        <Nav />
         <div className='w-full min-h-screen max-w-7xl mx-auto'>
           <div className='py-32 px-5 text-center flex items-center justify-center'>
             <h2 className='text-3xl font-bold tracking-wider'>
               Explore Blueprints
             </h2>
           </div>
-          <div className='grid grid-cols-4 gap-5 px-5'>
+          <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-5 px-5'>
             <BlueprintCard />
             <BlueprintCard />
             <BlueprintCard />
