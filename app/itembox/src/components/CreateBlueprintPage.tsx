@@ -56,7 +56,7 @@ function BlueprintForm() {
       </h2>
       <div
         className={cn(
-          'rounded-lg bg-gray-800 drop-shadow-lg shadow-md',
+          'rounded-lg bg-gray-700 border border-gray-400/5',
           '',
           'flex flex-col md:flex-row overflow-hidden'
         )}
@@ -89,15 +89,16 @@ function BlueprintForm() {
         <div className='flex-none'>
           <div className='min-w-80 landscape:min-w-96 w-full flex flex-col gap-5 p-5'>
             <div className='flex flex-col gap-2'>
-              <label className='px-1 text-xs uppercase tracking-wider opacity-50'>
-                Asset Name
+              <label className='px-1 text-xs uppercase tracking-wider opacity-50 flex items-center justify-between'>
+                <span>Asset Name</span>
+                <span className='tabular-nums'>({name.length}/32)</span>
               </label>
               <input
                 value={name}
-                onChange={(e) => setName(e.target.value)}
+                onChange={(e) => setName(e.target.value.substring(0, 60))}
                 className={cn(
                   'flex items-center gap-3',
-                  'rounded px-6 py-3 text-lg',
+                  'rounded px-4 py-3 text-lg',
                   'bg-black/20 w-full'
                 )}
                 type='text'
@@ -105,15 +106,18 @@ function BlueprintForm() {
               />
             </div>
             <div className='flex flex-col gap-2'>
-              <label className='px-1 text-xs uppercase tracking-wider opacity-50'>
-                Asset Description
+              <label className='px-1 text-xs uppercase tracking-wider opacity-50 flex items-center justify-between'>
+                <span>Asset Description</span>
+                <span className='tabular-nums'>({description.length}/256)</span>
               </label>
               <textarea
                 value={description}
-                onChange={(e) => setDescription(e.target.value)}
+                onChange={(e) =>
+                  setDescription(e.target.value.substring(0, 256))
+                }
                 className={cn(
                   'flex items-center gap-3',
-                  'rounded px-6 py-3 text-lg',
+                  'rounded px-4 py-3 text-lg',
                   'bg-black/20 w-full'
                 )}
                 placeholder='Description'
@@ -143,7 +147,7 @@ function BlueprintForm() {
                 onFocus={(e) => e.target.select()}
                 className={cn(
                   'flex items-center gap-3',
-                  'rounded px-6 py-3 text-lg',
+                  'rounded px-4 py-3 text-lg',
                   'bg-black/20 w-full'
                 )}
                 type='text'
@@ -165,7 +169,7 @@ function BlueprintForm() {
                 onFocus={(e) => e.target.select()}
                 className={cn(
                   'flex items-center gap-3',
-                  'rounded px-6 py-3 text-lg',
+                  'rounded px-4 py-3 text-lg',
                   'bg-black/20 w-full'
                 )}
                 type='text'
@@ -176,7 +180,7 @@ function BlueprintForm() {
         </div>
       </div>
       <div className='flex flex-col items-center justify-between gap-10'>
-        <div className='flex-none flex gap-2 text-slate-400 items-center'>
+        <div className='flex-none flex gap-2 text-gray-400 items-center'>
           <CheckCircle size={32} className='opacity-100' />
           <CircleNotch size={32} className='opacity-10 animate-spin' />
           <span>Uploading Metadata</span>

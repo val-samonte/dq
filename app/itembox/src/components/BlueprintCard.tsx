@@ -1,6 +1,6 @@
 export function BlueprintCard() {
   return (
-    <div className='overflow-hidden rounded-lg flex flex-col bg-gray-800 drop-shadow-lg shadow-md'>
+    <div className='overflow-hidden rounded-lg flex flex-col bg-gray-700 border border-gray-400/5'>
       <div className='bg-black/20 w-full aspect-square flex items-center justify-center p-5'>
         <img src='/Copperdagger.png' alt='' className='object-contain h-full' />
       </div>
