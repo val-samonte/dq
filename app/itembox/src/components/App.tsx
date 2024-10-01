@@ -2,6 +2,7 @@ import { Compass, FilePlus, GithubLogo } from '@phosphor-icons/react'
 import cn from 'classnames'
 import { BlueprintCard } from './BlueprintCard'
 import { Nav } from './Nav'
+import { Link } from 'react-router-dom'
 
 function App() {
   return (
@@ -19,11 +20,12 @@ function App() {
             <div className='h-full w-full p-5 flex flex-col justify-center gap-10 pt-[20vh]'>
               <h2 className='text-3xl md:text-4xl w-full max-w-2xl'>
                 <span className='font-bold tracking-wider'>Itembox</span> makes
-                game assets interoperable, allowing developers to easily share
-                and integrate assets from each other&apos;s games
+                game assets more interoperable, allowing developers to easily
+                share and integrate assets from each other&apos;s games
               </h2>
               <div className='flex gap-5 portrait:flex-col'>
-                <button
+                <Link
+                  to={'/blueprints'}
                   className={cn(
                     'w-fit',
                     'flex items-center gap-3',
@@ -34,7 +36,7 @@ function App() {
                 >
                   <FilePlus size={24} />
                   Get Started
-                </button>
+                </Link>
                 <button
                   className={cn(
                     'w-fit',
@@ -55,9 +57,7 @@ function App() {
         <Nav />
         <div className='w-full min-h-screen max-w-7xl mx-auto'>
           <div className='py-32 px-5 text-center flex items-center justify-center'>
-            <h2 className='text-3xl font-bold tracking-wider'>
-              Explore Blueprints
-            </h2>
+            <h2 className='text-3xl tracking-wider'>Explore Blueprints</h2>
           </div>
           <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-5 px-5'>
             <BlueprintCard />
