@@ -21,9 +21,11 @@ import { useUserWallet } from '../atoms/userWalletAtom'
 import { PublicKey } from '@solana/web3.js'
 import { trimAddress } from '../utils/trimAddress'
 import { atomWithStorage } from 'jotai/utils'
-import { useAtom } from 'jotai'
+import { useAtom, useAtomValue } from 'jotai'
 import { base64ToFile } from '../utils/base64ToFile'
 import { Link } from 'react-router-dom'
+import { createGenericFileFromBrowserFile } from '@metaplex-foundation/umi'
+import { umiAtom } from '../atoms/umiAtom'
 
 interface BlueprintFormState {
   name: string
@@ -56,12 +58,9 @@ const blueprintFormAtom = atomWithStorage<BlueprintFormState>(
   defaultForm
 )
 
-function sleep(ms: number) {
-  return new Promise((resolve) => setTimeout(resolve, ms))
-}
-
 function BlueprintForm() {
   const wallet = useUserWallet()
+  const umi = useAtomValue(umiAtom)
   const [state, setState] = useAtom(blueprintFormAtom)
   const [name, setName] = useState(state.name)
   const [description, setDescription] = useState(state.description)
@@ -176,20 +175,42 @@ function BlueprintForm() {
 
     setBusy(true)
 
-    await sleep(5000)
+    if (!state.image) {
+      try {
+        const file = selectedFile ?? base64ToFile(state.file, name)
+        const umiImageFile = await createGenericFileFromBrowserFile(file)
+        const [imgUri] = await umi.uploader.upload([umiImageFile])
 
-    setState((s) => ({ ...s, image: 'yes' }))
+        setState((s) => ({ ...s, image: imgUri }))
+      } catch (e) {
+        console.error(e)
+        setBusy(false)
+        return
+      }
+    }
 
-    await sleep(5000)
+    if (!state.metadata) {
+      try {
+        const uri = await umi.uploader.uploadJson({
+          name,
+          description: description,
+          image: state.image,
+        })
 
-    setBusy(false)
-    return
+        setState((s) => ({ ...s, metadata: uri }))
+      } catch (e) {
+        console.error(e)
+        setBusy(false)
+        return
+      }
+    }
 
-    setState((s) => ({ ...s, metadata: 'yes' }))
+    if (!state.blueprintAddress) {
+      setBusy(false)
+      return
+    }
 
-    await sleep(5000)
-
-    setState((s) => ({ ...s, blueprintAddress: 'yes' }))
+    // setState((s) => ({ ...s, blueprintAddress: 'yes' }))
 
     setBusy(false)
 
