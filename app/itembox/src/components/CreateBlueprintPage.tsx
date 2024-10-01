@@ -26,6 +26,7 @@ import { base64ToFile } from '../utils/base64ToFile'
 import { Link } from 'react-router-dom'
 import { createGenericFileFromBrowserFile } from '@metaplex-foundation/umi'
 import { umiAtom } from '../atoms/umiAtom'
+import { itemboxSdkAtom } from '../atoms/itemboxSdkAtom'
 
 interface BlueprintFormState {
   name: string
@@ -61,6 +62,7 @@ const blueprintFormAtom = atomWithStorage<BlueprintFormState>(
 function BlueprintForm() {
   const wallet = useUserWallet()
   const umi = useAtomValue(umiAtom)
+  const itembox = useAtomValue(itemboxSdkAtom)
   const [state, setState] = useAtom(blueprintFormAtom)
   const [name, setName] = useState(state.name)
   const [description, setDescription] = useState(state.description)
@@ -151,6 +153,7 @@ function BlueprintForm() {
   }
 
   const onSubmit = async () => {
+    if (!itembox) return
     if (!selectedFile) return
     if (!selectedImage) return
     if (!name) return
@@ -175,12 +178,20 @@ function BlueprintForm() {
 
     setBusy(true)
 
+    let image = ''
+    let metadata = ''
+
     if (!state.image) {
       try {
         const file = selectedFile ?? base64ToFile(state.file, name)
         const umiImageFile = await createGenericFileFromBrowserFile(file)
         const [imgUri] = await umi.uploader.upload([umiImageFile])
 
+        if (!imgUri) {
+          throw Error('Missing image uri ' + imgUri)
+        }
+
+        image = imgUri
         setState((s) => ({ ...s, image: imgUri }))
       } catch (e) {
         console.error(e)
@@ -194,9 +205,10 @@ function BlueprintForm() {
         const uri = await umi.uploader.uploadJson({
           name,
           description: description,
-          image: state.image,
+          image: state.image || image,
         })
 
+        metadata = uri
         setState((s) => ({ ...s, metadata: uri }))
       } catch (e) {
         console.error(e)
@@ -206,16 +218,29 @@ function BlueprintForm() {
     }
 
     if (!state.blueprintAddress) {
-      setBusy(false)
-      return
+      try {
+        const result = await itembox.createBlueprint(
+          state.nonFungible,
+          state.name,
+          state.metadata || metadata,
+          new PublicKey(state.treasury),
+          new PublicKey(state.mintAuthority)
+        )
+
+        setState((s) => ({
+          ...s,
+          blueprintAddress: result.blueprint.toBase58(),
+        }))
+        console.log(result)
+      } catch (e) {
+        console.error(e)
+        setBusy(false)
+        return
+      }
     }
 
-    // setState((s) => ({ ...s, blueprintAddress: 'yes' }))
-
     setBusy(false)
-
     setComplete(true)
-
     setState((s) => ({
       ...defaultForm,
       mintAuthority: s.mintAuthority,
