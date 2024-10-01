@@ -3,8 +3,11 @@ import cn from 'classnames'
 import { BlueprintCard } from './BlueprintCard'
 import { Nav } from './Nav'
 import { Link } from 'react-router-dom'
+import { useRef } from 'react'
 
 function App() {
+  const dummy = useRef<HTMLDivElement>(null)
+
   return (
     <div className='absolute inset-0 h-full flex flex-col overflow-y-auto overflow-x-hidden'>
       <div>
@@ -42,10 +45,14 @@ function App() {
                     'w-fit',
                     'flex items-center gap-3',
                     'rounded pr-6 pl-4 py-3 text-lg',
-                    // 'border-2 border-white/10',
-                    // 'bg-gradient-to-t from-purple-800 to-fuchsia-800'
                     'bg-gray-600/50'
                   )}
+                  onClick={() => {
+                    if (dummy.current) {
+                      console.log(dummy.current)
+                      dummy.current.scrollIntoView({ behavior: 'smooth' })
+                    }
+                  }}
                 >
                   <Compass size={24} />
                   Explore Blueprints
@@ -54,6 +61,7 @@ function App() {
             </div>
           </div>
         </div>
+        <div ref={dummy} />
         <Nav />
         <div className='w-full min-h-screen max-w-7xl mx-auto'>
           <div className='py-32 px-5 text-center flex items-center justify-center'>
@@ -71,9 +79,13 @@ function App() {
         </div>
         <footer className='w-full max-w-7xl mx-auto'>
           <div className='py-32 px-5 text-center flex items-center justify-center'>
-            <button>
+            <a
+              href='https://github.com/val-samonte/dq'
+              target='_blank'
+              rel='noreferrer noopener'
+            >
               <GithubLogo size={32} />
-            </button>
+            </a>
           </div>
         </footer>
       </div>

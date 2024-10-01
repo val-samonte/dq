@@ -15,17 +15,56 @@ import { CenterWrapper } from './CenterWrapper'
 import { useUserWallet } from '../atoms/userWalletAtom'
 import { PublicKey } from '@solana/web3.js'
 import { trimAddress } from '../utils/trimAddress'
+import { atomWithStorage } from 'jotai/utils'
+import { useAtom } from 'jotai'
+import { base64ToFile } from '../utils/base64ToFile'
+
+interface BlueprintFormState {
+  name: string
+  description: string
+  file: string
+  nonFungible: boolean
+  mintAuthority: string
+  treasury: string
+  processing: boolean
+  image: string
+  metadata: string
+  blueprintAddress: string
+}
+
+const formDefault: BlueprintFormState = {
+  name: '',
+  description: '',
+  file: '',
+  nonFungible: true,
+  mintAuthority: '',
+  treasury: '',
+  processing: false,
+  image: '',
+  metadata: '',
+  blueprintAddress: '',
+}
+
+const blueprintFormAtom = atomWithStorage<BlueprintFormState>(
+  'itembox_blueprint_form',
+  formDefault
+)
 
 function BlueprintForm() {
   const wallet = useUserWallet()
-  const [nonFungible, setNonfungible] = useState(false)
+  const [state, setState] = useAtom(blueprintFormAtom)
+  const [name, setName] = useState(state.name)
+  const [description, setDescription] = useState(state.description)
   const fileInputRef = useRef<HTMLInputElement>(null)
-  const [selectedFile, setSelectedFile] = useState<File | null>(null)
-  const [selectedImage, setSelectedImage] = useState<string | null>(null)
-  const [name, setName] = useState('')
-  const [description, setDescription] = useState('')
-  const [mintAuthority, setMintAuthority] = useState('')
-  const [treasury, setTreasury] = useState('')
+  const [selectedFile, setSelectedFile] = useState<File | null>(
+    state.file ? base64ToFile(state.file, name) : null
+  )
+  const [selectedImage, setSelectedImage] = useState<string | null>(state.file)
+  const [nonFungible, setNonfungible] = useState(state.nonFungible)
+  const [mintAuthority, setMintAuthority] = useState(state.mintAuthority)
+  const [treasury, setTreasury] = useState(state.treasury)
+  const [busy, setBusy] = useState(false)
+  const [message, setMessage] = useState('')
 
   useEffect(() => {
     if (wallet?.publicKey) {
@@ -63,6 +102,14 @@ function BlueprintForm() {
     return ''
   }, [treasury])
 
+  const step = useMemo(() => {
+    if (!state.processing) return 0
+    if (!state.image) return 1
+    if (!state.metadata) return 2
+    if (!state.blueprintAddress) return 3
+    return 4
+  }, [state])
+
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
     if (file && file.type.startsWith('image/')) {
@@ -70,8 +117,30 @@ function BlueprintForm() {
     }
   }
 
-  const onSubmit = () => {
-    // todo: resume
+  const onSubmit = async () => {
+    if (!selectedFile) return
+    if (!selectedImage) return
+    if (!name) return
+    if (!description) return
+    if (!trimmedMintAuthority) return
+    if (!trimmedTreasury) return
+
+    if (!state.processing) {
+      setState({
+        name,
+        description,
+        file: selectedImage,
+        nonFungible: true,
+        mintAuthority: state.mintAuthority,
+        treasury: state.treasury,
+        processing: true,
+        image: '',
+        metadata: '',
+        blueprintAddress: '',
+      })
+    }
+
+    setBusy(true)
   }
 
   return (
@@ -93,6 +162,7 @@ function BlueprintForm() {
               onClick={() => {
                 fileInputRef.current?.click()
               }}
+              disabled={state.processing}
             >
               {selectedImage ? (
                 <img
@@ -110,6 +180,7 @@ function BlueprintForm() {
               accept='image/jpeg, image/png, image/webp'
               onChange={handleFileChange}
               className='hidden'
+              disabled={state.processing}
             />
           </div>
         </div>
@@ -130,6 +201,7 @@ function BlueprintForm() {
                 )}
                 type='text'
                 placeholder='Name'
+                disabled={state.processing}
               />
             </div>
             <div className='flex flex-col gap-2'>
@@ -148,12 +220,14 @@ function BlueprintForm() {
                   'bg-black/20 w-full'
                 )}
                 placeholder='Description'
+                disabled={state.processing}
               />
             </div>
             <div>
               <button
                 className='flex items-center gap-3 pr-3'
                 onClick={() => setNonfungible((c) => !c)}
+                disabled={state.processing}
               >
                 {nonFungible ? <CheckSquare size={24} /> : <Square size={24} />}
                 <span>Non-Fungible</span>
@@ -179,6 +253,7 @@ function BlueprintForm() {
                 )}
                 type='text'
                 placeholder='Mint Authority'
+                disabled={state.processing}
               />
             </div>
             <div className='flex flex-col gap-2'>
@@ -201,6 +276,7 @@ function BlueprintForm() {
                 )}
                 type='text'
                 placeholder='Treasury'
+                disabled={state.processing}
               />
             </div>
           </div>
@@ -220,12 +296,19 @@ function BlueprintForm() {
               'w-full',
               'flex items-center gap-3',
               'rounded pr-6 pl-4 py-3 text-lg',
+              'bg-gradient-to-t',
+              busy ? 'opacity-50 cursor-wait' : 'opacity-100 cursor-pointer',
               'border-2 border-amber-300/50',
-              'bg-gradient-to-t from-amber-800 to-yellow-800'
+              'from-amber-800 to-yellow-800'
             )}
+            disabled={busy}
           >
             <Play size={24} />
-            Start Process
+            {state.processing
+              ? busy
+                ? 'Please Sign'
+                : 'Resume Process'
+              : 'Start Process'}
           </button>
         </div>
       </div>

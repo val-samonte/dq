@@ -36,6 +36,19 @@ export function Nav() {
             placeholder='Search by address, author or Blueprints'
           />
         </div>
+        <div className='flex-none'>
+          <Link
+            to='/blueprints'
+            className={cn(
+              'w-fit',
+              'flex items-center gap-3',
+              'rounded pr-4 pl-4 py-3 text-lg',
+              'bg-gray-600/50'
+            )}
+          >
+            <FilePlus size={28} />
+          </Link>
+        </div>
         {wallet?.publicKey && (
           <>
             <div className='flex-none'>
@@ -49,19 +62,6 @@ export function Nav() {
                 )}
               >
                 <HouseLine size={28} />
-              </Link>
-            </div>
-            <div className='flex-none'>
-              <Link
-                to='/blueprints'
-                className={cn(
-                  'w-fit',
-                  'flex items-center gap-3',
-                  'rounded pr-4 pl-4 py-3 text-lg',
-                  'bg-gray-600/50'
-                )}
-              >
-                <FilePlus size={28} />
               </Link>
             </div>
           </>
