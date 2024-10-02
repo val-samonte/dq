@@ -1,9 +1,12 @@
-import { useParams } from 'react-router-dom'
+import { redirect, useParams } from 'react-router-dom'
 import { Nav } from './Nav'
 import { useUserWallet } from '../atoms/userWalletAtom'
 import { Suspense, useEffect, useMemo } from 'react'
 import { useAtomValue, useSetAtom } from 'jotai'
 import { userBlueprintsAtom } from '../atoms/userBlueprintsAtom'
+import { BlueprintsGrid } from './BlueprintsGrid'
+import { PageHeader } from './PageHeader'
+import { trimAddress } from '../utils/trimAddress'
 
 function Content() {
   const wallet = useUserWallet()
@@ -16,14 +19,18 @@ function Content() {
     return userId === wallet.publicKey.toBase58()
   }, [userId, wallet])
 
+  if (!userId) {
+    redirect('/')
+    return null
+  }
+
   return (
     <>
-      <div className='py-32 px-5 text-center flex items-center justify-center'>
-        <h2 className='text-3xl tracking-wider'>
-          {isOwner ? 'Your' : 'Explore'} Blueprints
-        </h2>
-      </div>
-      {JSON.stringify(blueprintIds)}
+      <BlueprintsGrid ids={blueprintIds}>
+        <PageHeader>
+          {isOwner ? 'Your' : trimAddress(userId)} Blueprints
+        </PageHeader>
+      </BlueprintsGrid>
     </>
   )
 }

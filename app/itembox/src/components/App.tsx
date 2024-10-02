@@ -4,6 +4,8 @@ import { BlueprintCard } from './BlueprintCard'
 import { Nav } from './Nav'
 import { Link } from 'react-router-dom'
 import { useRef } from 'react'
+import { PageHeader } from './PageHeader'
+import { BlueprintsGrid } from './BlueprintsGrid'
 
 function App() {
   const dummy = useRef<HTMLDivElement>(null)
@@ -63,20 +65,9 @@ function App() {
         </div>
         <div ref={dummy} />
         <Nav />
-        <div className='w-full min-h-screen max-w-7xl mx-auto'>
-          <div className='py-32 px-5 text-center flex items-center justify-center'>
-            <h2 className='text-3xl tracking-wider'>Explore Blueprints</h2>
-          </div>
-          <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-5 px-5'>
-            <BlueprintCard />
-            <BlueprintCard />
-            <BlueprintCard />
-            <BlueprintCard />
-            <BlueprintCard />
-            <BlueprintCard />
-            <BlueprintCard />
-          </div>
-        </div>
+        <BlueprintsGrid ids={[]}>
+          <PageHeader>Explore Blueprints</PageHeader>
+        </BlueprintsGrid>
         <footer className='w-full max-w-7xl mx-auto'>
           <div className='py-32 px-5 text-center flex items-center justify-center'>
             <a
