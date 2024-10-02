@@ -6,8 +6,6 @@ import mkcert from 'vite-plugin-mkcert'
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
-    mkcert(),
-    react(),
     nodePolyfills({
       include: ['path', 'stream', 'util', 'crypto'],
       exclude: ['http'],
@@ -21,5 +19,7 @@ export default defineConfig({
       },
       protocolImports: true,
     }),
+    mkcert(),
+    react(),
   ],
 })
