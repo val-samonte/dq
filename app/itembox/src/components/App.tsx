@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom'
 import { useRef } from 'react'
 import { PageHeader } from './PageHeader'
 import { BlueprintsGrid } from './BlueprintsGrid'
+import { AllBlueprints } from './AllBlueprints'
 
 function App() {
   const dummy = useRef<HTMLDivElement>(null)
@@ -65,9 +66,7 @@ function App() {
         </div>
         <div ref={dummy} />
         <Nav />
-        <BlueprintsGrid ids={[]}>
-          <PageHeader>Explore Blueprints</PageHeader>
-        </BlueprintsGrid>
+        <AllBlueprints />
         <footer className='w-full max-w-7xl mx-auto'>
           <div className='py-32 px-5 text-center flex items-center justify-center'>
             <a

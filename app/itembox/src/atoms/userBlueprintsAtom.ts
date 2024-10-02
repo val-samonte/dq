@@ -1,6 +1,7 @@
 import { atom } from 'jotai'
 import { atomFamily } from 'jotai/utils'
 import { programAtom } from './programAtom'
+import { getDiscriminator } from '../utils/getDiscriminator'
 
 export const userBlueprintsBaseAtom = atomFamily((_: string) =>
   atom<string[]>([])
@@ -17,11 +18,18 @@ export const userBlueprintsAtom = atomFamily((id: string) =>
       if (!program) return
 
       // todo: set new Promise to show suspense loading
+      const blueprintDiscriminator = await getDiscriminator('Blueprint')
 
       const accounts = await program.provider.connection.getProgramAccounts(
         program.programId,
         {
           filters: [
+            {
+              memcmp: {
+                offset: 0,
+                bytes: blueprintDiscriminator,
+              },
+            },
             {
               memcmp: {
                 offset: 42, // authority

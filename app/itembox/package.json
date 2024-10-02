@@ -23,6 +23,7 @@
     "@solana/wallet-adapter-react-ui": "^0.9.35",
     "@solana/wallet-adapter-wallets": "^0.19.32",
     "@solana/web3.js": "^1.95.3",
+    "bs58": "^6.0.0",
     "classnames": "^2.5.1",
     "idb": "^8.0.0",
     "jotai": "^2.10.0",
