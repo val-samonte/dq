@@ -2,6 +2,7 @@ import { CircleNotch } from '@phosphor-icons/react'
 import { useAtomValue, useSetAtom } from 'jotai'
 import { blueprintAtom } from '../atoms/blueprintAtom'
 import { Suspense, useEffect } from 'react'
+import { trimAddress } from '../utils/trimAddress'
 
 function CardSkeleton() {
   return (
@@ -48,22 +49,22 @@ function CardWithData({ id }: { id: string }) {
   return (
     <div className='overflow-hidden rounded-lg flex flex-col bg-gray-700'>
       <div className='bg-black/20 w-full aspect-square flex items-center justify-center p-5'>
-        <img src='/Copperdagger.png' alt='' className='object-contain h-full' />
+        <img src={blueprint.image} alt='' className='object-contain h-full' />
       </div>
       <div className='p-2 flex flex-col gap-3'>
-        <h3 className='text-lg px-3 py-1'>Copper Sword</h3>
+        <h3 className='text-lg px-3 py-1'>{blueprint.name}</h3>
         <div className='grid grid-cols-2 gap-2'>
           <div className='flex flex-col gap-1 p-3 rounded bg-black/10'>
             <div className='text-xs uppercase tracking-wider opacity-50'>
               ID
             </div>
-            <div className='text-sm'>Dt29...YwzHC</div>
+            <div className='text-sm'>{trimAddress(blueprint.id)}</div>
           </div>
           <div className='flex flex-col gap-1 p-3 rounded bg-black/10'>
             <div className='text-xs uppercase tracking-wider opacity-50'>
               Creator
             </div>
-            <div className='text-sm'>Dt29...YwzHC</div>
+            <div className='text-sm'>{trimAddress(blueprint.authority)}</div>
           </div>
         </div>
       </div>
@@ -76,7 +77,7 @@ export function BlueprintCard({ id }: { id: string }) {
 
   useEffect(() => {
     reload()
-  }, [])
+  }, [id])
 
   return (
     <Suspense fallback={<CardSkeleton />}>

@@ -41,7 +41,7 @@ export function UserPage() {
 
   useEffect(() => {
     reload()
-  }, [])
+  }, [userId])
 
   return (
     <div className='absolute inset-0 flex flex-col'>

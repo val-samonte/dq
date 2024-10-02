@@ -55,10 +55,10 @@ export const idbAtom = atomFamily((id: string) =>
             case 0:
             case 1: {
               db.createObjectStore('blueprints', {
-                keyPath: 'pubkey',
+                keyPath: 'id',
               })
               db.createObjectStore('recipes', {
-                keyPath: 'pubkey',
+                keyPath: 'id',
               })
             }
           }

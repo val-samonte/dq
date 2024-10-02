@@ -14,6 +14,8 @@ import {
   getTokenMetadata,
   TOKEN_2022_PROGRAM_ID,
 } from '@solana/spl-token'
+import { rpcEndpointAtom } from './rpcEndpointAtom'
+import { getIrysUri } from '../utils/getIrysUri'
 
 type BatchResult = {
   account: IdlAccounts<Itembox>['blueprint']
@@ -47,6 +49,7 @@ export const blueprintAtom = atomFamily((id: string) =>
       return (await idb.get('blueprints', id)) || null
     },
     async (get, set, force = false) => {
+      const rpc = get(rpcEndpointAtom)
       const idb = await get(idbAtom('records'))
       if (!idb) return
 
@@ -102,14 +105,14 @@ export const blueprintAtom = atomFamily((id: string) =>
         uri = metadata.uri
       }
 
-      const response = await fetch(uri)
+      const response = await fetch(getIrysUri(rpc, uri))
       const jsonMetadata = await response.json()
 
       const blueprint: BlueprintRecord = {
         id,
         name: jsonMetadata?.name || name,
         description: jsonMetadata?.description || '',
-        image: jsonMetadata?.image || '',
+        image: getIrysUri(rpc, jsonMetadata?.image || ''),
         uri,
         mint: data.mint.toBase58(),
         nonFungible: data.nonFungible,
