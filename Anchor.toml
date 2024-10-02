@@ -25,6 +25,7 @@ members = ["programs/*", "programs-ecs/components/*", "programs-ecs/systems/*"]
 
 [scripts]
 create-collection = "yarn run ts-node --project ./tsconfig.json scripts/create-collection.ts"
+init-itembox = "yarn run ts-node --project ./tsconfig.json scripts/init-itembox.ts"
 test = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/**/*.ts"
 
 [test]
