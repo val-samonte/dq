@@ -75,7 +75,7 @@ function BlueprintForm() {
   const [mintAuthority, setMintAuthority] = useState(state.mintAuthority)
   const [treasury, setTreasury] = useState(state.treasury)
   const [busy, setBusy] = useState(false)
-  const [complete, setComplete] = useState(false)
+  const [blueprint, setBlueprint] = useState('')
 
   const trimmedMintAuthority = useMemo(() => {
     try {
@@ -130,7 +130,7 @@ function BlueprintForm() {
   }, [selectedFile])
 
   useEffect(() => {
-    if (!complete) {
+    if (!blueprint) {
       setName(state.name)
       setDescription(state.description)
       setSelectedFile(state.file ? base64ToFile(state.file, name) : null)
@@ -139,7 +139,7 @@ function BlueprintForm() {
       setMintAuthority((s) => state.mintAuthority || s)
       setTreasury((s) => state.treasury || s)
     }
-  }, [state, complete])
+  }, [state, blueprint])
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
@@ -180,6 +180,7 @@ function BlueprintForm() {
 
     let image = ''
     let metadata = ''
+    let blueprint = ''
 
     if (!state.image) {
       try {
@@ -227,9 +228,10 @@ function BlueprintForm() {
           new PublicKey(state.mintAuthority)
         )
 
+        blueprint = result.blueprint.toBase58()
         setState((s) => ({
           ...s,
-          blueprintAddress: result.blueprint.toBase58(),
+          blueprintAddress: blueprint,
         }))
         console.log(result)
       } catch (e) {
@@ -240,7 +242,7 @@ function BlueprintForm() {
     }
 
     setBusy(false)
-    setComplete(true)
+    setBlueprint(state.blueprintAddress || blueprint)
     setState((s) => ({
       ...defaultForm,
       mintAuthority: s.mintAuthority,
@@ -388,7 +390,7 @@ function BlueprintForm() {
         </div>
       </div>
       <div className='flex flex-col items-center justify-between gap-10'>
-        <div className='flex-none flex gap-2 text-gray-400 items-center'>
+        <div className='flex-none flex gap-2 text-gray-400 items-center justify-center relative'>
           {[1, 2, 3].map((i) => {
             if (step < i) {
               return <RadioButton key={i} size={32} className='opacity-10' />
@@ -410,8 +412,18 @@ function BlueprintForm() {
             }
             return <CheckCircle key={i} size={32} className='opacity-100' />
           })}
+          {blueprint && (
+            <div className='bg-gray-800 absolute -inset-10 text-center flex items-center justify-center'>
+              <Link
+                to={`/blueprints/${blueprint}`}
+                className='flex rounded px-3 py-1 bg-green-900/10 text-green-200'
+              >
+                Blueprint Created!
+              </Link>
+            </div>
+          )}
         </div>
-        {complete ? (
+        {blueprint ? (
           <div className='flex-none mx-auto flex items-center gap-5 portrait:flex-col'>
             {wallet?.publicKey && (
               <Link
@@ -431,7 +443,7 @@ function BlueprintForm() {
             <button
               onClick={() => {
                 setBusy(false)
-                setComplete(false)
+                setBlueprint('')
               }}
               className={cn(
                 'w-fit',
@@ -456,7 +468,7 @@ function BlueprintForm() {
                     mintAuthority: s.mintAuthority,
                     treasury: s.treasury,
                   }))
-                  setComplete(false)
+                  setBlueprint('')
                 }}
                 className={cn(
                   'w-fit',
