@@ -427,7 +427,7 @@ function BlueprintForm() {
           <div className='flex-none mx-auto flex items-center gap-5 portrait:flex-col'>
             {wallet?.publicKey && (
               <Link
-                to={`/users/${wallet.publicKey.toBase58()}`}
+                to={`/user/${wallet.publicKey.toBase58()}`}
                 className={cn(
                   'w-fit',
                   'flex items-center gap-3',

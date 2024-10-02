@@ -7,6 +7,7 @@ import App from './components/App.tsx'
 
 import './index.css'
 import { CreateBlueprintPage } from './components/CreateBlueprintPage.tsx'
+import { UserPage } from './components/UserPage.tsx'
 
 const Reload = () => {
   return (
@@ -29,6 +30,7 @@ createRoot(document.getElementById('root')!).render(
         <Router>
           <Routes>
             <Route path={'/'} element={<App />} />
+            <Route path={'/user/:userId'} element={<UserPage />} />
             <Route path={'/blueprints'} element={<CreateBlueprintPage />} />
           </Routes>
         </Router>
