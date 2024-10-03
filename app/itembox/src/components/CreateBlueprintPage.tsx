@@ -529,7 +529,7 @@ export function CreateBlueprintPage() {
         {wallet?.publicKey ? (
           <BlueprintForm />
         ) : (
-          <div className='flex flex-col gap-5 items-center justify-center text-center'>
+          <div className='flex flex-col gap-5 items-center justify-center text-center min-h-[80vh]'>
             <Smiley size={32} />
             <div>Please connect your wallet to continue</div>
           </div>
