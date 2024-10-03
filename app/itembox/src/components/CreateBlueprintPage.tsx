@@ -166,7 +166,7 @@ function BlueprintForm() {
         name,
         description,
         file: selectedImage,
-        nonFungible: true,
+        nonFungible,
         mintAuthority: mintAuthority,
         treasury: treasury,
         processing: true,
