@@ -327,7 +327,7 @@ function BlueprintForm() {
                     'rounded px-4 py-3 text-lg',
                     'bg-black/20 w-full'
                   )}
-                  placeholder='Description'
+                  placeholder='Description of the asset. Supports markdown syntax.'
                   disabled={state.processing}
                 />
               </div>

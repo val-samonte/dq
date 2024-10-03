@@ -9,6 +9,7 @@ import './index.css'
 import { CreateBlueprintPage } from './components/CreateBlueprintPage.tsx'
 import { UserPage } from './components/UserPage.tsx'
 import cn from 'classnames'
+import { BlueprintPage } from './components/BlueprintPage.tsx'
 
 const Reload = () => {
   return (
@@ -41,6 +42,10 @@ createRoot(document.getElementById('root')!).render(
             <Route path={'/'} element={<App />} />
             <Route path={'/user/:userId'} element={<UserPage />} />
             <Route path={'/blueprints'} element={<CreateBlueprintPage />} />
+            <Route
+              path={'/blueprints/:blueprintId'}
+              element={<BlueprintPage />}
+            />
           </Routes>
         </Router>
       </WalletAdapter>

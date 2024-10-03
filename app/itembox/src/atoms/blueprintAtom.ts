@@ -39,6 +39,8 @@ const refresher = atomFamily((_: string) => atom(Date.now()))
 export const blueprintAtom = atomFamily((id: string) =>
   atom(
     async (get) => {
+      if (!id) return null
+
       get(refresher(id))
       const idb = await get(idbAtom('records'))
 

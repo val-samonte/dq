@@ -1,4 +1,4 @@
-import { Compass, FilePlus, GithubLogo } from '@phosphor-icons/react'
+import { Compass, FilePlus } from '@phosphor-icons/react'
 import cn from 'classnames'
 import { Nav } from './Nav'
 import { Link } from 'react-router-dom'
