@@ -10,8 +10,10 @@ import Markdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import { FilePlus, NumberSquareOne, Shapes, Stack } from '@phosphor-icons/react'
 import { PageHeader } from './PageHeader'
+import { useUserWallet } from '../atoms/userWalletAtom'
 
 function Content() {
+  const wallet = useUserWallet()
   const { blueprintId } = useParams()
   const blueprint = useAtomValue(blueprintAtom(blueprintId || ''))
 
@@ -27,7 +29,7 @@ function Content() {
           'flex gap-5 md:gap-10'
         )}
       >
-        <div className='md:max-w-[40vh] w-full aspect-square flex flex-col gap-5'>
+        <div className='md:max-w-[36vh] min-w-80 w-full aspect-square flex flex-col gap-5'>
           <div className='bg-black/20 rounded-lg overflow-hidden'>
             <img
               src={blueprint.image}
@@ -51,7 +53,9 @@ function Content() {
         </div>
 
         <div className='flex flex-col gap-5 h-full'>
-          <h2 className='text-3xl tracking-wider pt-5'>{blueprint.name}</h2>
+          <h1 className='text-4xl tracking-wider pt-5 md:pt-10'>
+            {blueprint.name}
+          </h1>
           <div className='flex flex-col md:flex-row gap-5'>
             <Link
               to={`/blueprints/${blueprintId}`}
@@ -77,34 +81,36 @@ function Content() {
               {blueprint.description}
             </Markdown>
           </div>
-          <div className='flex items-center justify-center md:justify-end gap-5 mt-10'>
-            <button
-              onClick={() => {}}
-              className={cn(
-                'w-fit',
-                'flex items-center gap-3',
-                'rounded pr-6 pl-4 py-3 text-lg',
-                'border-2 border-transparent',
-                'bg-gray-600/50'
-              )}
-            >
-              <FilePlus size={24} />
-              Mint
-            </button>
-            <button
-              onClick={() => {}}
-              className={cn(
-                'md:w-fit portrait:flex-auto',
-                'flex items-center justify-center gap-3',
-                'rounded pr-6 pl-4 py-3 text-lg text-center text-nowrap',
-                'border-2 border-amber-300/50',
-                'bg-gradient-to-t from-amber-800 to-yellow-800'
-              )}
-            >
-              <Shapes className='flex-none' size={24} />
-              Create Recipe
-            </button>
-          </div>
+          {wallet?.publicKey?.toBase58() === blueprint.authority && (
+            <div className='flex items-center justify-center md:justify-end gap-5 mt-10'>
+              <button
+                onClick={() => {}}
+                className={cn(
+                  'w-fit',
+                  'flex items-center gap-3',
+                  'rounded pr-6 pl-4 py-3 text-lg',
+                  'border-2 border-transparent',
+                  'bg-gray-600/50'
+                )}
+              >
+                <FilePlus size={24} />
+                Mint
+              </button>
+              <button
+                onClick={() => {}}
+                className={cn(
+                  'md:w-fit portrait:flex-auto',
+                  'flex items-center justify-center gap-3',
+                  'rounded pr-6 pl-4 py-3 text-lg text-center text-nowrap',
+                  'border-2 border-amber-300/50',
+                  'bg-gradient-to-t from-amber-800 to-yellow-800'
+                )}
+              >
+                <Shapes className='flex-none' size={24} />
+                Create Recipe
+              </button>
+            </div>
+          )}
         </div>
       </div>
       <PageHeader>{blueprint.name} Recipes</PageHeader>
@@ -124,9 +130,11 @@ export function BlueprintPage() {
     <div className='absolute inset-0 flex flex-col'>
       <Nav />
       <CenterWrapper>
-        <Suspense fallback={null}>
-          <Content />
-        </Suspense>
+        <div className='min-h-screen'>
+          <Suspense fallback={null}>
+            <Content />
+          </Suspense>
+        </div>
         <Footer />
       </CenterWrapper>
     </div>
