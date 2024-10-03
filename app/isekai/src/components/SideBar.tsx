@@ -10,16 +10,16 @@ export function SideBar() {
     </div>
 
     <nav className="mt-10">
-        <a className="flex items-center px-6 py-2 mt-4 text-gray-500 hover:bg-gray-700 hover:bg-opacity-25 hover:text-gray-100" href="/ui-elements">
+        <a className="flex items-center px-6 py-2 mt-4 text-gray-500 hover:bg-gray-700 hover:bg-opacity-25 hover:text-gray-100" href="/stories">
             <CirclesThreePlus size={32} />
 
-            <span className="mx-3">Stories</span>
+            <span className="mx-3">Created Stories</span>
         </a>
 
-        <a className="flex items-center px-6 py-2 mt-4 text-gray-500 hover:bg-gray-700 hover:bg-opacity-25 hover:text-gray-100" href="/tables">
+        <a className="flex items-center px-6 py-2 mt-4 text-gray-500 hover:bg-gray-700 hover:bg-opacity-25 hover:text-gray-100" href="/blueprints">
             <CardsThree size={32} />
 
-            <span className="mx-3">Import Blueprints</span>
+            <span className="mx-3">Imported Blueprints</span>
         </a>
     </nav>
 </div>

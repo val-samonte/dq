@@ -5,6 +5,7 @@ import { WalletAdapter } from './atoms/WalletAdapter.tsx'
 import App from './components/App.tsx'
 import './index.css'
 import { Route, BrowserRouter as Router, Routes } from 'react-router-dom'
+import { BlueprintPage } from './components/BlueprintPage.tsx'
 
 const Reload = () => {
   return (
@@ -29,6 +30,7 @@ createRoot(document.getElementById('root')!).render(
             <Route path={'/'} element={<App />} />
             <Route path={'/story/new'} element={<App />} />
             <Route path={'/stories'} element={<App />} />
+            <Route path={'/blueprints'} element={<BlueprintPage />} />
             <Route path={'/:blueprintAddress/import'} element={<App />} />
           </Routes>
         </Router>
