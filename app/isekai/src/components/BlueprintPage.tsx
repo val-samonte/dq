@@ -3,11 +3,15 @@ import { FilePlus } from "@phosphor-icons/react"
 import { Nav } from "./Nav"
 import { SideBar } from "./SideBar"
 import { useState } from "react"
+import { BpModal } from "./BpModal"
 
 export const BlueprintPage = () => {
-  const [showBpList, setShowBpList] = useState(false)
+  const [showBpList, setShowBpList] = useState(true)
+  const hideBpModal = () => {
+    setShowBpList(false)
+  }
   return (<div className="absolute inset-0 h-full flex flex-col overflow-y-auto overflow-x-hidden">
-    {showBpList && <BpModal />}
+    {showBpList && <BpModal handleClose={hideBpModal} />}
     <Nav />
     <div className="content flex h-full">
       <SideBar />
@@ -24,6 +28,7 @@ export const BlueprintPage = () => {
             'bg-gradient-to-t from-amber-800 to-yellow-800'
           )}
           onClick={() => setShowBpList(true)}
+          data-modal-target="bp-modal" data-modal-toggle="bp-modal"
         >
         <FilePlus size={24} />
         Create a Blueprint
