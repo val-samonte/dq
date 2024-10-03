@@ -28,7 +28,6 @@ import { createGenericFileFromBrowserFile } from '@metaplex-foundation/umi'
 import { umiAtom } from '../atoms/umiAtom'
 import { itemboxSdkAtom } from '../atoms/itemboxSdkAtom'
 import { PageHeader } from './PageHeader'
-import { Footer } from './Footer'
 
 interface BlueprintFormState {
   name: string
@@ -534,7 +533,6 @@ export function CreateBlueprintPage() {
             <div>Please connect your wallet to continue</div>
           </div>
         )}
-        <Footer />
       </CenterWrapper>
     </div>
   )
