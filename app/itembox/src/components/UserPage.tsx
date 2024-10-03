@@ -10,6 +10,7 @@ import { trimAddress } from '../utils/trimAddress'
 import cn from 'classnames'
 import { FilePlus } from '@phosphor-icons/react'
 import { CenterWrapper } from './CenterWrapper'
+import { Footer } from './Footer'
 
 function Content() {
   const wallet = useUserWallet()
@@ -84,6 +85,7 @@ export function UserPage() {
         <Suspense fallback={null}>
           <Content />
         </Suspense>
+        <Footer />
       </CenterWrapper>
     </div>
   )

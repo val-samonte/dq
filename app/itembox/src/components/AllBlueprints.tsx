@@ -22,16 +22,14 @@ export function AllBlueprints() {
   }, [])
 
   return (
-    <div className='px-5'>
-      <Suspense
-        fallback={
-          <BlueprintsGrid ids={[]}>
-            <PageHeader>Explore Blueprints</PageHeader>
-          </BlueprintsGrid>
-        }
-      >
-        <Content />
-      </Suspense>
-    </div>
+    <Suspense
+      fallback={
+        <BlueprintsGrid ids={[]}>
+          <PageHeader>Explore Blueprints</PageHeader>
+        </BlueprintsGrid>
+      }
+    >
+      <Content />
+    </Suspense>
   )
 }

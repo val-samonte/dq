@@ -23,7 +23,7 @@ export function BlueprintsGrid({
           </Suspense>
         ))}
       </div>
-      <div className='flex items-center justify-center p-5 h-[30vh]'>
+      <div className='flex items-center justify-center px-5 h-[30vh]'>
         {whenEmpty ?? (
           <CircleNotch size={64} className='opacity-10 animate-spin' />
         )}

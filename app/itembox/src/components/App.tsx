@@ -4,6 +4,7 @@ import { Nav } from './Nav'
 import { Link } from 'react-router-dom'
 import { useRef } from 'react'
 import { AllBlueprints } from './AllBlueprints'
+import { Footer } from './Footer'
 
 function App() {
   const dummy = useRef<HTMLDivElement>(null)
@@ -64,17 +65,7 @@ function App() {
         <div ref={dummy} />
         <Nav />
         <AllBlueprints />
-        <footer className='w-full max-w-7xl mx-auto'>
-          <div className='py-32 px-5 text-center flex items-center justify-center'>
-            <a
-              href='https://github.com/val-samonte/dq'
-              target='_blank'
-              rel='noreferrer noopener'
-            >
-              <GithubLogo size={32} />
-            </a>
-          </div>
-        </footer>
+        <Footer />
       </div>
     </div>
   )

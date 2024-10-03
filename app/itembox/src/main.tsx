@@ -8,14 +8,23 @@ import App from './components/App.tsx'
 import './index.css'
 import { CreateBlueprintPage } from './components/CreateBlueprintPage.tsx'
 import { UserPage } from './components/UserPage.tsx'
+import cn from 'classnames'
 
 const Reload = () => {
   return (
-    <div className='flex items-center justify-center flex-col absolute inset-0 gap-2'>
+    <div className='flex items-center justify-center flex-col absolute inset-0 gap-5'>
       <span>An error occurred. Please refresh the page.</span>
+
       <button
-        className='px-3 py-2 bg-amber-300/10'
-        onClick={() => window.location.reload()}
+        className={cn(
+          'w-fit',
+          'flex items-center gap-3',
+          'rounded px-4 py-3 text-lg',
+          'bg-gray-600/50'
+        )}
+        onClick={() => {
+          window.location.reload()
+        }}
       >
         Refresh
       </button>
