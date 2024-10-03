@@ -1,4 +1,4 @@
-import { CircleNotch } from '@phosphor-icons/react'
+import { CircleNotch, Stack } from '@phosphor-icons/react'
 import { useAtomValue, useSetAtom } from 'jotai'
 import { blueprintAtom } from '../atoms/blueprintAtom'
 import { Suspense, useEffect } from 'react'
@@ -8,7 +8,7 @@ import { Link } from 'react-router-dom'
 function CardSkeleton() {
   return (
     <div className='overflow-hidden rounded-lg flex flex-col bg-gray-700'>
-      <div className='bg-black/20 w-full aspect-square flex items-center justify-center p-5'>
+      <div className='bg-black/20 w-full aspect-square flex items-center justify-center p-2'>
         <div className='w-full aspect-square flex items-center justify-center'>
           <CircleNotch size={64} className='opacity-10 animate-spin' />
         </div>
@@ -51,9 +51,14 @@ function CardWithData({ id }: { id: string }) {
     <div className='overflow-hidden rounded-lg flex flex-col bg-gray-700'>
       <Link
         to={`/blueprints/${id}`}
-        className='bg-black/20 w-full aspect-square flex items-center justify-center p-5'
+        className='bg-black/20 w-full aspect-square flex items-center justify-center p-2 relative'
       >
         <img src={blueprint.image} alt='' className='object-contain h-full' />
+        {!blueprint.nonFungible && (
+          <div className='absolute top-0 left-0 p-5 opacity-50'>
+            <Stack size={32} />
+          </div>
+        )}
       </Link>
       <div className='p-2 flex flex-col gap-3'>
         <h3 className='text-lg px-3 py-1'>

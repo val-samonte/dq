@@ -161,30 +161,28 @@ function BlueprintForm() {
     if (!trimmedMintAuthority) return
     if (!trimmedTreasury) return
 
+    let form = {
+      name,
+      description,
+      file: selectedImage,
+      nonFungible,
+      mintAuthority: mintAuthority,
+      treasury: treasury,
+      processing: true,
+      image: state.image,
+      metadata: state.metadata,
+      blueprintAddress: state.blueprintAddress,
+    }
+
     if (!state.processing) {
-      setState({
-        name,
-        description,
-        file: selectedImage,
-        nonFungible,
-        mintAuthority: mintAuthority,
-        treasury: treasury,
-        processing: true,
-        image: '',
-        metadata: '',
-        blueprintAddress: '',
-      })
+      setState(form)
     }
 
     setBusy(true)
 
-    let image = ''
-    let metadata = ''
-    let blueprint = ''
-
-    if (!state.image) {
+    if (!form.image) {
       try {
-        const file = selectedFile ?? base64ToFile(state.file, name)
+        const file = selectedFile ?? base64ToFile(form.file, name)
         const umiImageFile = await createGenericFileFromBrowserFile(file)
         const [imgUri] = await umi.uploader.upload([umiImageFile])
 
@@ -192,8 +190,8 @@ function BlueprintForm() {
           throw Error('Missing image uri ' + imgUri)
         }
 
-        image = imgUri
-        setState((s) => ({ ...s, image: imgUri }))
+        form.image = imgUri
+        setState((s) => ({ ...s, image: form.image }))
       } catch (e) {
         console.error(e)
         setBusy(false)
@@ -201,16 +199,16 @@ function BlueprintForm() {
       }
     }
 
-    if (!state.metadata) {
+    if (!form.metadata) {
       try {
         const uri = await umi.uploader.uploadJson({
           name,
           description: description,
-          image: state.image || image,
+          image: form.image,
         })
 
-        metadata = uri
-        setState((s) => ({ ...s, metadata: uri }))
+        form.metadata = uri
+        setState((s) => ({ ...s, metadata: form.metadata }))
       } catch (e) {
         console.error(e)
         setBusy(false)
@@ -218,20 +216,20 @@ function BlueprintForm() {
       }
     }
 
-    if (!state.blueprintAddress) {
+    if (!form.blueprintAddress) {
       try {
         const result = await itembox.createBlueprint(
-          state.nonFungible,
-          state.name,
-          state.metadata || metadata,
-          new PublicKey(state.treasury),
-          new PublicKey(state.mintAuthority)
+          form.nonFungible,
+          form.name,
+          form.metadata,
+          new PublicKey(form.treasury),
+          new PublicKey(form.mintAuthority)
         )
 
-        blueprint = result.blueprint.toBase58()
+        form.blueprintAddress = result.blueprint.toBase58()
         setState((s) => ({
           ...s,
-          blueprintAddress: blueprint,
+          blueprintAddress: form.blueprintAddress,
         }))
         console.log(result)
       } catch (e) {
@@ -242,7 +240,7 @@ function BlueprintForm() {
     }
 
     setBusy(false)
-    setBlueprint(state.blueprintAddress || blueprint)
+    setBlueprint(form.blueprintAddress)
     setState((s) => ({
       ...defaultForm,
       mintAuthority: s.mintAuthority,
