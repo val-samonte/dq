@@ -3,8 +3,8 @@ import { createRoot } from 'react-dom/client'
 import { ErrorBoundary } from './components/ErrorBoundary.tsx'
 import { WalletAdapter } from './atoms/WalletAdapter.tsx'
 import App from './components/App.tsx'
-
 import './index.css'
+import { Route, BrowserRouter as Router, Routes } from 'react-router-dom'
 
 const Reload = () => {
   return (
@@ -24,7 +24,14 @@ createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <ErrorBoundary fallback={<Reload />}>
       <WalletAdapter>
-        <App />
+        <Router>
+          <Routes>
+            <Route path={'/'} element={<App />} />
+            <Route path={'/story/new'} element={<App />} />
+            <Route path={'/stories'} element={<App />} />
+            <Route path={'/:blueprintAddress/import'} element={<App />} />
+          </Routes>
+        </Router>
       </WalletAdapter>
     </ErrorBoundary>
   </StrictMode>
