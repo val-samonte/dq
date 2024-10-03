@@ -81,8 +81,8 @@ function Content() {
               {blueprint.description}
             </Markdown>
           </div>
-          {wallet?.publicKey?.toBase58() === blueprint.authority && (
-            <div className='flex items-center justify-center md:justify-end gap-5 mt-10'>
+          <div className='flex items-center justify-center md:justify-end gap-5 mt-10'>
+            {wallet?.publicKey?.toBase58() === blueprint.mintAuthority && (
               <button
                 onClick={() => {}}
                 className={cn(
@@ -96,8 +96,10 @@ function Content() {
                 <FilePlus size={24} />
                 Mint
               </button>
-              <button
-                onClick={() => {}}
+            )}
+            {wallet?.publicKey?.toBase58() === blueprint.authority && (
+              <Link
+                to={'new-recipe'}
                 className={cn(
                   'md:w-fit portrait:flex-auto',
                   'flex items-center justify-center gap-3',
@@ -108,9 +110,9 @@ function Content() {
               >
                 <Shapes className='flex-none' size={24} />
                 Create Recipe
-              </button>
-            </div>
-          )}
+              </Link>
+            )}
+          </div>
         </div>
       </div>
       <PageHeader>{blueprint.name} Recipes</PageHeader>

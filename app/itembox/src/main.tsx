@@ -10,6 +10,7 @@ import { CreateBlueprintPage } from './components/CreateBlueprintPage.tsx'
 import { UserPage } from './components/UserPage.tsx'
 import cn from 'classnames'
 import { BlueprintPage } from './components/BlueprintPage.tsx'
+import { CreateRecipePage } from './components/CreateRecipePage.tsx'
 
 const Reload = () => {
   return (
@@ -45,6 +46,10 @@ createRoot(document.getElementById('root')!).render(
             <Route
               path={'/blueprints/:blueprintId'}
               element={<BlueprintPage />}
+            />
+            <Route
+              path={'/blueprints/:blueprintId/new-recipe'}
+              element={<CreateRecipePage />}
             />
           </Routes>
         </Router>
