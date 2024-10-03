@@ -26,7 +26,6 @@ const batchFetcherAtom = atom((get) => {
   const program = get(programAtom)
 
   return new BatchCallback<BatchResult>(async (addresses) => {
-    if (!program) return []
     const result = await program.account.blueprint.fetchMultiple(addresses)
     return result.map((account, i) => ({
       account,
@@ -60,7 +59,6 @@ export const blueprintAtom = atomFamily((id: string) =>
       }
 
       const program = get(programAtom)
-      if (!program) return
 
       const fetcher = get(batchFetcherAtom)
 

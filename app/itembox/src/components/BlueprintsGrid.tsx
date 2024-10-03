@@ -4,10 +4,15 @@ import { CircleNotch } from '@phosphor-icons/react'
 
 export interface BlueprintsGridProps {
   children: ReactNode
+  whenEmpty?: ReactNode
   ids: string[]
 }
 
-export function BlueprintsGrid({ children, ids }: BlueprintsGridProps) {
+export function BlueprintsGrid({
+  children,
+  whenEmpty,
+  ids,
+}: BlueprintsGridProps) {
   return (
     <div className='w-full min-h-screen max-w-7xl mx-auto'>
       {children}
@@ -18,8 +23,10 @@ export function BlueprintsGrid({ children, ids }: BlueprintsGridProps) {
           </Suspense>
         ))}
       </div>
-      <div className='flex items-center justify-center py-32 px-5'>
-        <CircleNotch size={64} className='opacity-10 animate-spin' />
+      <div className='flex items-center justify-center p-5 h-[30vh]'>
+        {whenEmpty ?? (
+          <CircleNotch size={64} className='opacity-10 animate-spin' />
+        )}
       </div>
     </div>
   )

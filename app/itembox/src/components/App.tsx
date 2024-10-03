@@ -1,11 +1,8 @@
 import { Compass, FilePlus, GithubLogo } from '@phosphor-icons/react'
 import cn from 'classnames'
-import { BlueprintCard } from './BlueprintCard'
 import { Nav } from './Nav'
 import { Link } from 'react-router-dom'
 import { useRef } from 'react'
-import { PageHeader } from './PageHeader'
-import { BlueprintsGrid } from './BlueprintsGrid'
 import { AllBlueprints } from './AllBlueprints'
 
 function App() {

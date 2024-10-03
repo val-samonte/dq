@@ -1,4 +1,4 @@
-import { redirect, useParams } from 'react-router-dom'
+import { Link, redirect, useParams } from 'react-router-dom'
 import { Nav } from './Nav'
 import { useUserWallet } from '../atoms/userWalletAtom'
 import { Suspense, useEffect, useMemo } from 'react'
@@ -7,6 +7,9 @@ import { userBlueprintsAtom } from '../atoms/userBlueprintsAtom'
 import { BlueprintsGrid } from './BlueprintsGrid'
 import { PageHeader } from './PageHeader'
 import { trimAddress } from '../utils/trimAddress'
+import cn from 'classnames'
+import { FilePlus } from '@phosphor-icons/react'
+import { CenterWrapper } from './CenterWrapper'
 
 function Content() {
   const wallet = useUserWallet()
@@ -26,7 +29,37 @@ function Content() {
 
   return (
     <>
-      <BlueprintsGrid ids={blueprintIds}>
+      <BlueprintsGrid
+        ids={blueprintIds}
+        whenEmpty={
+          <div className='flex flex-col gap-10 items-center justify-center text-center'>
+            {isOwner ? (
+              <>
+                <span className='opacity-50 text-lg'>
+                  You do not have any Blueprints yet!
+                </span>
+                <Link
+                  to={'/blueprints'}
+                  className={cn(
+                    'w-fit',
+                    'flex items-center gap-3',
+                    'rounded pr-6 pl-4 py-3 text-lg',
+                    'border-2 border-amber-300/50',
+                    'bg-gradient-to-t from-amber-800 to-yellow-800'
+                  )}
+                >
+                  <FilePlus size={24} />
+                  Create a Blueprint
+                </Link>
+              </>
+            ) : (
+              <span className='opacity-50 text-lg'>
+                User has no blueprints yet
+              </span>
+            )}
+          </div>
+        }
+      >
         <PageHeader>
           {isOwner ? 'Your' : trimAddress(userId)} Blueprints
         </PageHeader>
@@ -37,18 +70,21 @@ function Content() {
 
 export function UserPage() {
   const { userId } = useParams()
+  const wallet = useUserWallet()
   const reload = useSetAtom(userBlueprintsAtom(userId ?? ''))
 
   useEffect(() => {
     reload()
-  }, [userId])
+  }, [userId, wallet])
 
   return (
     <div className='absolute inset-0 flex flex-col'>
       <Nav />
-      <Suspense fallback={null}>
-        <Content />
-      </Suspense>
+      <CenterWrapper>
+        <Suspense fallback={null}>
+          <Content />
+        </Suspense>
+      </CenterWrapper>
     </div>
   )
 }

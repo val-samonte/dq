@@ -263,7 +263,7 @@ function BlueprintForm() {
         )}
       >
         <div className='flex-none'>
-          <div className='min-h-80 w-80 landscape:min-h-96 landscape:w-96 h-full bg-black/20 flex items-center justify-center'>
+          <div className='min-h-80 w-full landscape:min-h-96 landscape:w-96 h-full bg-black/20 flex items-center justify-center'>
             <button
               className='w-full aspect-square p-5'
               onClick={() => {

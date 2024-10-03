@@ -11,7 +11,5 @@ export const PROGRAM_ID = new PublicKey(itemBoxIdl.address)
 export const programAtom = atom((get) => {
   const provider = get(anchorProviderAtom)
 
-  if (!provider) return null
-
   return new Program<Itembox>(itemBoxIdl, provider)
 })

@@ -10,7 +10,6 @@ export const allBlueprintsAtom = atom(
   },
   async (get, set) => {
     const program = get(programAtom)
-    if (!program) return
 
     // todo: set new Promise to show suspense loading
 
