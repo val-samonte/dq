@@ -26,7 +26,7 @@ export const BpModal = ({ handleClose }: BpModalProps) => {
               <X size={16} className="cursor-pointer" onClick={handleClose} />
           </div>
           <div className="p-4 md:p-5">
-            <BlueprintsGrid ids={blueprints} />
+            <BlueprintsGrid ids={blueprints} simpleView={true} />
           </div>
         </div>
       </div>

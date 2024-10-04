@@ -40,7 +40,7 @@ function CardSkeleton() {
   )
 }
 
-function CardWithData({ id }: { id: string }) {
+function CardWithData({ id, simpleView = false }: { id: string, simpleView: boolean }) {
   const blueprint = useAtomValue(blueprintAtom(id))
 
   if (!blueprint) {
@@ -64,7 +64,7 @@ function CardWithData({ id }: { id: string }) {
         <h3 className='text-lg px-3 py-1'>
           <Link to={`/${id}/import`}>{blueprint.name}</Link>
         </h3>
-        <div className='grid grid-cols-2 gap-2'>
+        {!simpleView && (<div className='grid grid-cols-2 gap-2'>
           <Link
             to={`/${id}/import`}
             className='flex flex-col gap-1 p-3 rounded bg-black/10'
@@ -74,17 +74,17 @@ function CardWithData({ id }: { id: string }) {
             </div>
             <div className='text-sm'>{trimAddress(blueprint.id)}</div>
           </Link>
-            <div className='text-xs uppercase tracking-wider opacity-50'>
-              Creator
-            </div>
-            <div className='text-sm'>{trimAddress(blueprint.authority)}</div>
-        </div>
+          <div className='text-xs uppercase tracking-wider opacity-50'>
+            Creator
+          </div>
+          <div className='text-sm'>{trimAddress(blueprint.authority)}</div>
+        </div>)}
       </div>
     </div>
   )
 }
 
-export function BlueprintCard({ id }: { id: string }) {
+export function BlueprintCard({ id, simpleView = false }: { id: string, simpleView: boolean }) {
   const reload = useSetAtom(blueprintAtom(id))
 
   useEffect(() => {
@@ -93,7 +93,7 @@ export function BlueprintCard({ id }: { id: string }) {
 
   return (
     <Suspense fallback={<CardSkeleton />}>
-      <CardWithData id={id} />
+      <CardWithData id={id} simpleView={simpleView} />
     </Suspense>
   )
 }
