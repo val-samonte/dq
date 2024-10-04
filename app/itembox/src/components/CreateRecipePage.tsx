@@ -13,6 +13,7 @@ import {
   createRecipeTabAtom,
   SelectedIngredientActionTypes,
   selectedIngredientsAtom,
+  selectedIngredientsCounterAtom,
 } from '../atoms/selectedIngredientsAtom'
 import { NumberInput } from './NumberInput'
 import { TokensList } from './TokensList'
@@ -26,8 +27,10 @@ function Content() {
   const [selectedIngredients, setIngredients] = useAtom(
     selectedIngredientsAtom(blueprintId || '')
   )
+  const { total, tokens, blueprints } = useAtomValue(
+    selectedIngredientsCounterAtom(blueprintId || '')
+  )
   const [outputAmount, setOutputAmount] = useState('1')
-
   const [tab, setTab] = useAtom(createRecipeTabAtom)
   const [search, setSearch] = useAtom(assetSearchAtom)
 
@@ -76,12 +79,26 @@ function Content() {
                   ? 'opacity-100 bg-gray-700'
                   : 'opacity-80 bg-gray-700/50',
                 'flex gap-3 transition-all',
+                'items-center justify-between',
                 'rounded-t px-4 py-3 text-lg'
               )}
             >
-              <Scroll size={24} />
-              <span className='hidden lg:inline'>Blueprints</span>
-              <span className='inline lg:hidden'>BP</span>
+              <span className='flex items-center gap-3'>
+                <Scroll size={24} />
+                <span className='hidden lg:inline'>Blueprints</span>
+                <span className='inline lg:hidden'>BP</span>
+              </span>
+              {blueprints > 0 && (
+                <span
+                  className={cn(
+                    'bg-green-400/50 rounded-full',
+                    'flex items-center justify-center',
+                    'w-6 h-6 text-sm font-mono'
+                  )}
+                >
+                  {blueprints}
+                </span>
+              )}
             </button>
             <button
               onClick={() => {
@@ -92,11 +109,25 @@ function Content() {
                   ? 'opacity-100 bg-gray-700'
                   : 'opacity-80 bg-gray-700/50',
                 'flex gap-3 transition-all',
-                'rounded-t pr-4 lg:pr-6 pl-4 py-3 text-lg'
+                'items-center justify-between',
+                'rounded-t px-4 py-3 text-lg'
               )}
             >
-              <Coins size={24} />
-              Tokens
+              <span className='flex items-center gap-3'>
+                <Coins size={24} />
+                Tokens
+              </span>
+              {tokens > 0 && (
+                <span
+                  className={cn(
+                    'bg-green-400/50 rounded-full',
+                    'flex items-center justify-center',
+                    'w-6 h-6 text-sm font-mono'
+                  )}
+                >
+                  {tokens}
+                </span>
+              )}
             </button>
           </div>
           <div className='h-full flex flex-col overflow-y-auto overflow-x-hidden relative'>
@@ -136,12 +167,27 @@ function Content() {
               className={cn(
                 'flex-auto',
                 'bg-gray-700',
-                'flex gap-3 items-center',
-                'rounded-t pl-4 pr-6 py-3 text-lg'
+                'flex gap-3',
+                'items-center justify-between',
+                'rounded-t px-4 py-3 text-lg'
               )}
             >
-              <Shapes size={24} />
-              Selected Ingredients
+              <span className='flex items-center gap-3'>
+                <Shapes size={24} />
+                Selected Ingredients
+              </span>
+              {total > 0 && (
+                <span
+                  className={cn(
+                    'bg-green-400/50 rounded-full',
+                    'flex items-center justify-center',
+                    'w-6 h-6 text-sm font-mono'
+                    // 'px-3',
+                  )}
+                >
+                  {total}
+                </span>
+              )}
             </div>
             <button
               onClick={() =>

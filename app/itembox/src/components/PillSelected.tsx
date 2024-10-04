@@ -22,8 +22,7 @@ export function PillSelected({
   return (
     <div className='grid lg:hidden grid-cols-2 gap-2 px-2 pb-2 text-sm'>
       <NumberInput
-        min={1}
-        step={1}
+        min={1 / 10 ** decimals}
         decimals={decimals}
         className='flex-1 bg-black/20 rounded px-2 py-1'
         placeholder='Amount'

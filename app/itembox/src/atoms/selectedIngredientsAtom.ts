@@ -62,7 +62,9 @@ export const selectedIngredientsAtom = atomFamily((id: string) =>
       switch (action.type) {
         case SelectedIngredientActionTypes.ADD: {
           const { type, ...payload } = action
-          set(listAtom, [...list, payload])
+          if (list.length < 9) {
+            set(listAtom, [...list, payload])
+          }
           break
         }
         case SelectedIngredientActionTypes.UPDATE: {
@@ -92,4 +94,27 @@ export const selectedIngredientsAtom = atomFamily((id: string) =>
       }
     }
   )
+)
+
+export const selectedIngredientsCounterAtom = atomFamily((id: string) =>
+  atom((get) => {
+    const list = get(selectedIngredientsAtom(id))
+
+    let blueprints = 0
+    let tokens = 0
+
+    for (let i = 0; i < list.length; i++) {
+      if (list[i].assetType === 3) {
+        tokens++
+      } else {
+        blueprints++
+      }
+    }
+
+    return {
+      total: blueprints + tokens,
+      blueprints,
+      tokens,
+    }
+  })
 )

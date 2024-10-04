@@ -72,8 +72,7 @@ export function SelectedIngredient({ id }: { id: string }) {
             </div>
           ) : (
             <NumberInput
-              min={1}
-              step={1}
+              min={selected.assetType === 1 ? 1 : 1 / 10 ** selected.decimals}
               decimals={selected.assetType === 1 ? 0 : selected.decimals}
               className='flex-auto w-full bg-black/10 rounded px-3 py-2'
               placeholder='Amount'
