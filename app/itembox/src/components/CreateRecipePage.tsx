@@ -7,16 +7,26 @@ import { CenterWrapper } from './CenterWrapper'
 import { useUserWallet } from '../atoms/userWalletAtom'
 import cn from 'classnames'
 import {
+  CaretDown,
   CheckFat,
   Coins,
+  Fire,
   HandDeposit,
   Scroll,
   Shapes,
   Trash,
+  TrashSimple,
   X,
 } from '@phosphor-icons/react'
 import { allBlueprintsAtom } from '../atoms/allBlueprintsAtom'
 import { trimAddress } from '../utils/trimAddress'
+import {
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuItems,
+  MenuSeparator,
+} from '@headlessui/react'
 
 function Content() {
   const wallet = useUserWallet()
@@ -165,10 +175,11 @@ function Content() {
             'hidden lg:flex flex-col lg:col-span-5 h-full rounded-lg bg-gray-700 overflow-hidden'
           )}
         >
-          <div className='px-2 pt-2 bg-black/20 flex items-center justify-between'>
+          <div className='px-2 pt-2 gap-2 bg-black/20 flex items-center justify-between'>
             <div
               className={cn(
-                'w-fit bg-gray-700',
+                'flex-auto',
+                'bg-gray-700',
                 'flex gap-3 items-center',
                 'rounded-t pl-4 pr-6 py-3 text-lg'
               )}
@@ -176,7 +187,7 @@ function Content() {
               <Shapes size={24} />
               Selected Ingredients
             </div>
-            <button className='rounded p-2 flex items-center justify-center bg-gray-700/50'>
+            <button className='rounded p-2 flex items-center justify-center'>
               <Trash size={20} />
             </button>
           </div>
@@ -189,7 +200,7 @@ function Content() {
                     <div className='flex justify-between'>
                       <span className='text-lg'>Copper Sword</span>
                       <button>
-                        <X size={16} />
+                        <TrashSimple size={16} />
                       </button>
                     </div>
                     <div className='flex flex-wrap gap-x-3'>
@@ -218,14 +229,72 @@ function Content() {
                       className='flex-auto w-full bg-black/10 rounded px-3 py-2'
                       placeholder='Amount'
                     />
-                    <button
-                      className={cn(
-                        'flex-none w-36 bg-black/10 rounded px-3 py-2 flex gap-2 items-center justify-center'
-                      )}
-                    >
-                      <HandDeposit size={20} />
-                      Transfer
-                    </button>
+                    <Menu>
+                      <MenuButton
+                        className={cn(
+                          'flex-none w-40 bg-black/10 rounded px-3 py-2',
+                          'flex items-center gap-2 justify-between'
+                        )}
+                      >
+                        <span className='flex items-center gap-2'>
+                          <HandDeposit size={20} />
+                          Transfer
+                        </span>
+                        <CaretDown size={20} className='opacity-20' />
+                      </MenuButton>
+                      <MenuItems
+                        anchor='bottom'
+                        className={cn(
+                          'flex flex-col bg-gray-700 rounded overflow-hidden',
+                          'shadow-lg border border-black/5'
+                        )}
+                      >
+                        <MenuItem>
+                          <button className='text-left flex flex-col px-3 py-2 gap-2 min-w-36 data-[focus]:bg-gray-600/20'>
+                            <div className='flex items-center gap-2'>
+                              <HandDeposit size={20} />
+                              Transfer
+                            </div>
+                            <p className='text-xs text-gray-400'>
+                              Ingredient will be deposited to the
+                              <br />
+                              Blueprint&apos;s treasury wallet.
+                            </p>
+                          </button>
+                        </MenuItem>
+                        <MenuSeparator className={'border-b border-black/5'} />
+                        <MenuItem>
+                          <button className='text-left flex flex-col px-3 py-2 gap-2 min-w-36 data-[focus]:bg-gray-600/20'>
+                            <div className='flex items-center gap-2'>
+                              <Fire size={20} />
+                              Burn
+                            </div>
+                            <p className='text-xs text-gray-400'>
+                              Ingredient will be burned / discarded.
+                            </p>
+                          </button>
+                        </MenuItem>
+                        <MenuSeparator className={'border-b border-black/5'} />
+                        <MenuItem>
+                          <button className='text-left flex flex-col px-3 py-2 gap-2 min-w-36 data-[focus]:bg-gray-600/20'>
+                            <div className='flex items-center gap-2'>
+                              <CheckFat size={20} />
+                              Require Only
+                            </div>
+                            <p className='text-xs text-gray-400'>
+                              Ingredient just needs to be present.
+                            </p>
+                            <p className='text-xs opacity-80 text-red-400'>
+                              WARNING
+                            </p>
+                            <p className='text-xs text-gray-400'>
+                              Do not use alone. Other ingredients <br />
+                              must be other than "Require Only".
+                            </p>
+                          </button>
+                        </MenuItem>
+                      </MenuItems>
+                    </Menu>
                   </div>
                 </div>
               </div>
