@@ -6,27 +6,10 @@ import { Nav } from './Nav'
 import { CenterWrapper } from './CenterWrapper'
 import { useUserWallet } from '../atoms/userWalletAtom'
 import cn from 'classnames'
-import {
-  CaretDown,
-  CheckFat,
-  Coins,
-  Fire,
-  HandDeposit,
-  Scroll,
-  Shapes,
-  Trash,
-  TrashSimple,
-  X,
-} from '@phosphor-icons/react'
+import { CheckFat, Coins, Scroll, Shapes, Trash } from '@phosphor-icons/react'
 import { allBlueprintsAtom } from '../atoms/allBlueprintsAtom'
-import { trimAddress } from '../utils/trimAddress'
-import {
-  Menu,
-  MenuButton,
-  MenuItem,
-  MenuItems,
-  MenuSeparator,
-} from '@headlessui/react'
+import { SelectedIngredient } from './SelectedIngredient'
+import { BlueprintPill } from './BlueprintPill'
 
 function Content() {
   const wallet = useUserWallet()
@@ -64,7 +47,7 @@ function Content() {
           <br /> {blueprint.name}
         </h1>
       </div>
-      <div className={cn('h-[60vh] grid grid-cols-12 gap-5')}>
+      <div className={cn('h-[62.5vh] grid grid-cols-12 gap-5')}>
         <div
           className={cn(
             'col-span-12 lg:col-span-7 h-full rounded-lg rounded-br-none',
@@ -117,57 +100,18 @@ function Content() {
                 placeholder='Search by asset address'
               />
             </div>
-            <div className='grid grid-cols-1 lg:grid-cols-2 gap-3 lg:gap-5 px-3 lg:px-5 pb-3 lg:pb-5'>
-              {blueprintIds.map((id) => (
-                <div
-                  key={id}
-                  className={cn(
-                    'rounded-lg bg-black/10',
-                    'border-2',
-                    'flex flex-col',
-                    'border-transparent'
-                    // 'border-green-400/50'
-                  )}
-                >
-                  <div className='flex p-2 gap-5'>
-                    <div className='flex-none rounded w-20 h-20 bg-black/20 overflow-hidden'></div>
-                    <div className='flex flex-col gap-1 justify-center'>
-                      <div>Copper Sword</div>
-                      <div className='flex flex-wrap gap-x-3'>
-                        <div className='flex text-xs gap-2'>
-                          <span className='text-gray-600'>ID</span>
-                          <span className='text-gray-400'>
-                            {trimAddress(id)}
-                          </span>
-                        </div>
-                        <div className='flex text-xs gap-2'>
-                          <span className='text-gray-600'>BY</span>
-                          <span className='text-gray-400'>
-                            {trimAddress(id)}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className='grid lg:hidden grid-cols-2 gap-2 px-2 pb-2 text-sm'>
-                    <input
-                      type='number'
-                      min={1}
-                      className='flex-1 bg-black/20 rounded px-2 py-1'
-                      placeholder='Amount'
-                    />
-                    <button
-                      className={cn(
-                        'flex-1 bg-black/20 rounded pl-1 pr-2 py-1 flex gap-2 items-center justify-center'
-                      )}
-                    >
-                      <HandDeposit size={20} />
-                      Transfer
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
+            {tab === 'blueprints' && (
+              <div className='grid grid-cols-1 lg:grid-cols-2 gap-3 lg:gap-5 px-3 lg:px-5 pb-3 lg:pb-5'>
+                {blueprintIds
+                  .filter((id) => id !== blueprintId)
+                  .map((id) => (
+                    <BlueprintPill key={id} id={id} />
+                  ))}
+              </div>
+            )}
+            {tab === 'tokens' && (
+              <div className='grid grid-cols-1 lg:grid-cols-2 gap-3 lg:gap-5 px-3 lg:px-5 pb-3 lg:pb-5'></div>
+            )}
           </div>
         </div>
         <div
@@ -193,111 +137,7 @@ function Content() {
           </div>
           <div className='px-5 overflow-y-auto overflow-x-hidden'>
             <div className='flex flex-col py-5 gap-5'>
-              <div className='bg-black/10 rounded-lg p-3 flex gap-3'>
-                <div className='flex-none rounded w-24 h-24 bg-black/20 overflow-hidden'></div>
-                <div className='flex flex-col flex-auto gap-2'>
-                  <div className='flex flex-col gap-1'>
-                    <div className='flex justify-between'>
-                      <span className='text-lg'>Copper Sword</span>
-                      <button>
-                        <TrashSimple size={16} />
-                      </button>
-                    </div>
-                    <div className='flex flex-wrap gap-x-3'>
-                      <div className='flex text-xs gap-2'>
-                        <span className='text-gray-600'>ID</span>
-                        <span className='text-gray-400'>
-                          {trimAddress(
-                            '53vUyd7iFntjgcwtmAZAhtyrWmssiRvs3AvWiUJfoXw5'
-                          )}
-                        </span>
-                      </div>
-                      <div className='flex text-xs gap-2'>
-                        <span className='text-gray-600'>BY</span>
-                        <span className='text-gray-400'>
-                          {trimAddress(
-                            '53vUyd7iFntjgcwtmAZAhtyrWmssiRvs3AvWiUJfoXw5'
-                          )}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                  <div className='flex gap-3 mt-auto'>
-                    <input
-                      type='number'
-                      min={1}
-                      className='flex-auto w-full bg-black/10 rounded px-3 py-2'
-                      placeholder='Amount'
-                    />
-                    <Menu>
-                      <MenuButton
-                        className={cn(
-                          'flex-none w-40 bg-black/10 rounded px-3 py-2',
-                          'flex items-center gap-2 justify-between'
-                        )}
-                      >
-                        <span className='flex items-center gap-2'>
-                          <HandDeposit size={20} />
-                          Transfer
-                        </span>
-                        <CaretDown size={20} className='opacity-20' />
-                      </MenuButton>
-                      <MenuItems
-                        anchor='bottom'
-                        className={cn(
-                          'flex flex-col bg-gray-700 rounded overflow-hidden',
-                          'shadow-lg border border-black/5'
-                        )}
-                      >
-                        <MenuItem>
-                          <button className='text-left flex flex-col px-3 py-2 gap-2 min-w-36 data-[focus]:bg-gray-600/20'>
-                            <div className='flex items-center gap-2'>
-                              <HandDeposit size={20} />
-                              Transfer
-                            </div>
-                            <p className='text-xs text-gray-400'>
-                              Ingredient will be deposited to the
-                              <br />
-                              Blueprint&apos;s treasury wallet.
-                            </p>
-                          </button>
-                        </MenuItem>
-                        <MenuSeparator className={'border-b border-black/5'} />
-                        <MenuItem>
-                          <button className='text-left flex flex-col px-3 py-2 gap-2 min-w-36 data-[focus]:bg-gray-600/20'>
-                            <div className='flex items-center gap-2'>
-                              <Fire size={20} />
-                              Burn
-                            </div>
-                            <p className='text-xs text-gray-400'>
-                              Ingredient will be burned / discarded.
-                            </p>
-                          </button>
-                        </MenuItem>
-                        <MenuSeparator className={'border-b border-black/5'} />
-                        <MenuItem>
-                          <button className='text-left flex flex-col px-3 py-2 gap-2 min-w-36 data-[focus]:bg-gray-600/20'>
-                            <div className='flex items-center gap-2'>
-                              <CheckFat size={20} />
-                              Require Only
-                            </div>
-                            <p className='text-xs text-gray-400'>
-                              Ingredient just needs to be present.
-                            </p>
-                            <p className='text-xs opacity-80 text-red-400'>
-                              WARNING
-                            </p>
-                            <p className='text-xs text-gray-400'>
-                              Do not use alone. Other ingredients <br />
-                              must be other than "Require Only".
-                            </p>
-                          </button>
-                        </MenuItem>
-                      </MenuItems>
-                    </Menu>
-                  </div>
-                </div>
-              </div>
+              <SelectedIngredient />
             </div>
           </div>
         </div>
@@ -348,7 +188,7 @@ export function CreateRecipePage() {
     <div className='absolute inset-0 flex flex-col'>
       <Nav />
       <CenterWrapper>
-        <div className='min-h-screen'>
+        <div className='min-h-[calc(100vh-4rem)]'>
           <Suspense fallback={null}>
             <Content />
           </Suspense>
