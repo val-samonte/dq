@@ -50,6 +50,10 @@ function WithData({ id }: { id: string }) {
         amount: '1',
         assetType: blueprint.nonFungible ? 0 : 1,
         consumeMethod: 'transfer',
+        name: blueprint.name,
+        image: blueprint.image,
+        authority: blueprint.authority,
+        decimals: 1,
       })
     } else {
       setIngredients({
@@ -128,7 +132,7 @@ function WithData({ id }: { id: string }) {
           <Menu>
             <MenuButton
               className={cn(
-                'flex-1 bg-black/20 rounded pl-1 pr-2 py-1 flex gap-2 items-center justify-center'
+                'flex-1 bg-black/20 rounded p-1 flex gap-2 items-center justify-center'
               )}
             >
               <span className='flex items-center gap-2'>

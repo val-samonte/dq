@@ -26,7 +26,7 @@ function Content() {
   const [selectedIngredients, setIngredients] = useAtom(
     selectedIngredientsAtom(blueprintId || '')
   )
-  const [outputAmount, setOutputAmount] = useState('')
+  const [outputAmount, setOutputAmount] = useState('1')
 
   const [tab, setTab] = useAtom(createRecipeTabAtom)
   const [search, setSearch] = useAtom(assetSearchAtom)

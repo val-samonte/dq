@@ -1,14 +1,71 @@
-import { useAtomValue } from 'jotai'
+import { useAtom, useAtomValue } from 'jotai'
 import { TokenPill, TokenPillProps } from './TokenPill'
 import { queriedTokenAtom, tokensListAtom } from '../atoms/tokensListAtom'
 import { Suspense } from 'react'
 import { PillSkeleton } from './PillSkeleton'
+import { useParams } from 'react-router-dom'
+import {
+  SelectedIngredientActionTypes,
+  selectedIngredientsAtom,
+} from '../atoms/selectedIngredientsAtom'
+import { PillSelected } from './PillSelected'
 
-function TokenPillWrapper(token: Omit<TokenPillProps, 'onClick'>) {
-  // select token
-  // check if token is selected, display child
+function TokenPillWrapper(
+  token: Omit<TokenPillProps, 'onClick'> & { decimals: number }
+) {
+  const { blueprintId } = useParams()
+  const [selectedIngredients, setIngredients] = useAtom(
+    selectedIngredientsAtom(blueprintId || '')
+  )
+  const selected = selectedIngredients.find((i) => i.id === token.id)
 
-  return <TokenPill key={token.id} {...token} onClick={() => {}} />
+  return (
+    <TokenPill
+      key={token.id}
+      {...token}
+      onClick={() => {
+        if (!selected) {
+          setIngredients({
+            type: SelectedIngredientActionTypes.ADD,
+            id: token.id,
+            amount: '1',
+            assetType: 3,
+            consumeMethod: 'transfer',
+            name: token.name,
+            image: token.image || '',
+            decimals: token.decimals,
+          })
+        } else {
+          setIngredients({
+            type: SelectedIngredientActionTypes.REMOVE,
+            id: token.id,
+          })
+        }
+      }}
+    >
+      {selected && (
+        <PillSelected
+          amount={selected.amount}
+          consumeMethod={selected.consumeMethod}
+          decimals={token.decimals}
+          onAmountChange={(amount) => {
+            setIngredients({
+              ...selected,
+              type: SelectedIngredientActionTypes.UPDATE,
+              amount,
+            })
+          }}
+          onConsumeMethodChange={(consumeMethod) => {
+            setIngredients({
+              ...selected,
+              type: SelectedIngredientActionTypes.UPDATE,
+              consumeMethod,
+            })
+          }}
+        />
+      )}
+    </TokenPill>
+  )
 }
 
 function QueriedToken() {

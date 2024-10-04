@@ -33,7 +33,7 @@ export function PillSelected({
       <Menu>
         <MenuButton
           className={cn(
-            'flex-1 bg-black/20 rounded pl-1 pr-2 py-1 flex gap-2 items-center justify-center'
+            'flex-1 bg-black/20 rounded p-1 flex gap-2 items-center justify-center'
           )}
         >
           <span className='flex items-center gap-2'>
