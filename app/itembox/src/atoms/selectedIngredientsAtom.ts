@@ -4,7 +4,7 @@ import { atomFamily, atomWithStorage } from 'jotai/utils'
 interface SelectedIngredient {
   id: string // blueprint or mint address
   assetType: number // Blueprint NF [0], Blueprint F [1], SPL [2], Token Extensions [3]. (1)
-  amount: number // in decimal
+  amount: string // in decimal
   consumeMethod: 'retain' | 'burn' | 'transfer'
 }
 
@@ -34,13 +34,13 @@ export type SelectedIngredientAction =
       type: SelectedIngredientActionTypes.ADD
       id: string
       assetType: number
-      amount: number
+      amount: string
       consumeMethod: 'retain' | 'burn' | 'transfer'
     }
   | {
       type: SelectedIngredientActionTypes.UPDATE
       id: string
-      amount: number
+      amount: string
       consumeMethod: 'retain' | 'burn' | 'transfer'
     }
   | {
@@ -83,7 +83,7 @@ export const selectedIngredientsAtom = atomFamily((id: string) =>
         case SelectedIngredientActionTypes.REMOVE: {
           set(
             listAtom,
-            list.filter((i) => i.id === action.id)
+            list.filter((i) => i.id !== action.id)
           )
           break
         }

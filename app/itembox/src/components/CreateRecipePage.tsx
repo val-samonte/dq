@@ -1,7 +1,7 @@
 import { redirect, useParams } from 'react-router-dom'
 import { blueprintAtom } from '../atoms/blueprintAtom'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
-import { Suspense, useEffect } from 'react'
+import { Suspense, useEffect, useState } from 'react'
 import { Nav } from './Nav'
 import { CenterWrapper } from './CenterWrapper'
 import { useUserWallet } from '../atoms/userWalletAtom'
@@ -15,13 +15,17 @@ import {
   SelectedIngredientActionTypes,
   selectedIngredientsAtom,
 } from '../atoms/selectedIngredientsAtom'
+import { NumberInput } from './NumberInput'
 
 function Content() {
   const wallet = useUserWallet()
   const { blueprintId } = useParams()
   const blueprint = useAtomValue(blueprintAtom(blueprintId || ''))
   const blueprintIds = useAtomValue(allBlueprintsAtom)
-  const setIngredients = useSetAtom(selectedIngredientsAtom(blueprintId || ''))
+  const [selectedIngredients, setIngredients] = useAtom(
+    selectedIngredientsAtom(blueprintId || '')
+  )
+  const [outputAmount, setOutputAmount] = useState('')
 
   const [tab, setTab] = useAtom(createRecipeTabAtom)
 
@@ -122,7 +126,7 @@ function Content() {
         </div>
         <div
           className={cn(
-            'hidden lg:flex flex-col lg:col-span-5 h-full rounded-lg bg-gray-700 overflow-hidden'
+            'hidden lg:flex flex-col lg:col-span-5 h-full rounded-lg rounded-br-none bg-gray-700 overflow-hidden'
           )}
         >
           <div className='px-2 pt-2 gap-2 bg-black/20 flex items-center justify-between'>
@@ -146,15 +150,35 @@ function Content() {
               <Trash size={20} />
             </button>
           </div>
-          <div className='px-5 overflow-y-auto overflow-x-hidden'>
-            <div className='flex flex-col py-5 gap-5'>
-              <SelectedIngredient />
+          <div className='px-5 overflow-y-auto overflow-x-hidden relative flex-auto'>
+            <div className='flex flex-col py-5 gap-5 show-next-when-empty'>
+              {selectedIngredients.map((ing) => (
+                <SelectedIngredient key={ing.id} id={ing.id} />
+              ))}
+            </div>
+            <div className='absolute inset-0 flex items-center justify-center text-center opacity-50'>
+              Please select items on the left
             </div>
           </div>
         </div>
       </div>
       <div className='flex-none mx-auto flex items-center gap-5 portrait:flex-col lg:py-5'>
-        <div>This Recipe will produce x1 {blueprint.name}</div>
+        <div className='flex flex-col lg:flex-row flex-wrap items-center justify-center gap-3'>
+          <span>This Recipe will produce</span>
+          {blueprint.nonFungible ? (
+            <span>x1</span>
+          ) : (
+            <NumberInput
+              min={1}
+              step={1}
+              decimals={0}
+              className='w-full max-w-14 bg-black/10 rounded px-3 py-2 text-center'
+              value={outputAmount}
+              onChange={setOutputAmount}
+            />
+          )}
+          <span>{blueprint.name}</span>
+        </div>
         <button
           onClick={() => {}}
           className={cn(

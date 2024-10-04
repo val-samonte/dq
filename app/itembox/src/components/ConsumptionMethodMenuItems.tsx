@@ -18,7 +18,7 @@ export function ConsumptionMethodMenuItems({
       <MenuItem>
         <button
           onClick={() => onSelect('transfer')}
-          className='text-left flex flex-col px-3 py-2 gap-2 min-w-36 data-[focus]:bg-gray-600/20'
+          className='text-left flex flex-col px-3 py-2 gap-2 min-w-36 data-[focus]:bg-gray-600/50'
         >
           <div className='flex items-center gap-2'>
             <HandDeposit size={20} />
@@ -35,7 +35,7 @@ export function ConsumptionMethodMenuItems({
       <MenuItem>
         <button
           onClick={() => onSelect('burn')}
-          className='text-left flex flex-col px-3 py-2 gap-2 min-w-36 data-[focus]:bg-gray-600/20'
+          className='text-left flex flex-col px-3 py-2 gap-2 min-w-36 data-[focus]:bg-gray-600/50'
         >
           <div className='flex items-center gap-2'>
             <Fire size={20} />
@@ -50,7 +50,7 @@ export function ConsumptionMethodMenuItems({
       <MenuItem>
         <button
           onClick={() => onSelect('retain')}
-          className='text-left flex flex-col px-3 py-2 gap-2 min-w-36 data-[focus]:bg-gray-600/20'
+          className='text-left flex flex-col px-3 py-2 gap-2 min-w-36 data-[focus]:bg-gray-600/50'
         >
           <div className='flex items-center gap-2'>
             <CheckFat size={20} />

@@ -16,6 +16,8 @@ import {
   SelectedIngredientActionTypes,
   selectedIngredientsAtom,
 } from '../atoms/selectedIngredientsAtom'
+import { useParams } from 'react-router-dom'
+import { NumberInput } from './NumberInput'
 
 function Skeleton() {
   return (
@@ -53,8 +55,9 @@ function Skeleton() {
 
 function WithData({ id }: { id: string }) {
   const blueprint = useAtomValue(blueprintAtom(id))
+  const { blueprintId } = useParams()
   const [selectedIngredients, setIngredients] = useAtom(
-    selectedIngredientsAtom(id)
+    selectedIngredientsAtom(blueprintId || '')
   )
 
   const selected = selectedIngredients.find((i) => i.id === id)
@@ -68,12 +71,11 @@ function WithData({ id }: { id: string }) {
       setIngredients({
         type: SelectedIngredientActionTypes.ADD,
         id,
-        amount: 1.0,
+        amount: '1',
         assetType: blueprint.nonFungible ? 0 : 1,
         consumeMethod: 'transfer',
       })
     } else {
-      console.log('REMOVE', id)
       setIngredients({
         type: SelectedIngredientActionTypes.REMOVE,
         id,
@@ -121,9 +123,10 @@ function WithData({ id }: { id: string }) {
       </div>
       {selected && (
         <div className='grid lg:hidden grid-cols-2 gap-2 px-2 pb-2 text-sm'>
-          <input
-            type='number'
+          <NumberInput
             min={1}
+            step={1}
+            decimals={0}
             className='flex-1 bg-black/20 rounded px-2 py-1'
             placeholder='Amount'
             value={selected.amount}
@@ -131,7 +134,7 @@ function WithData({ id }: { id: string }) {
               setIngredients({
                 ...selected,
                 type: SelectedIngredientActionTypes.UPDATE,
-                amount: parseFloat(e.target.value),
+                amount: e,
               })
             }}
           />
