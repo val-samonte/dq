@@ -6,7 +6,7 @@ import { useState } from "react"
 import { BpModal } from "./BpModal"
 
 export const BlueprintPage = () => {
-  const [showBpList, setShowBpList] = useState(true)
+  const [showBpList, setShowBpList] = useState(false)
   const hideBpModal = () => {
     setShowBpList(false)
   }
@@ -31,7 +31,7 @@ export const BlueprintPage = () => {
           data-modal-target="bp-modal" data-modal-toggle="bp-modal"
         >
         <FilePlus size={24} />
-        Create a Blueprint
+        Import a Blueprint
         </button>
       </div>
     </div>

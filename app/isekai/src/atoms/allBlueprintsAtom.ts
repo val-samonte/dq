@@ -15,27 +15,25 @@ export const allBlueprintsAtom = atom(
 
     const blueprintDiscriminator = await getDiscriminator('Blueprint')
 
-    if (program) {
-      const accounts = await program.provider.connection.getProgramAccounts(
-        program.programId,
-        {
-          filters: [
-            {
-              memcmp: {
-                offset: 0,
-                bytes: blueprintDiscriminator,
-              },
+    const accounts = await program.provider.connection.getProgramAccounts(
+      program.programId,
+      {
+        filters: [
+          {
+            memcmp: {
+              offset: 0,
+              bytes: blueprintDiscriminator,
             },
-          ],
-          dataSlice: { offset: 0, length: 0 },
-        }
-      )
+          },
+        ],
+        dataSlice: { offset: 0, length: 0 },
+      }
+    )
 
-      set(
-        allBlueprintsBaseAtom,
-        accounts.slice(0, 100).map((a) => a.pubkey.toBase58())
-      )
-    }
+    set(
+      allBlueprintsBaseAtom,
+      accounts.slice(0, 100).map((a) => a.pubkey.toBase58())
+    )
 
   }
 )
