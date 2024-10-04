@@ -298,7 +298,7 @@ function BlueprintForm() {
                 </label>
                 <input
                   value={name}
-                  onChange={(e) => setName(e.target.value.substring(0, 60))}
+                  onChange={(e) => setName(e.target.value.substring(0, 32))}
                   className={cn(
                     'flex items-center gap-3',
                     'rounded px-4 py-3 text-lg',
@@ -313,13 +313,13 @@ function BlueprintForm() {
                 <label className='px-1 text-xs uppercase tracking-wider opacity-50 flex items-center justify-between'>
                   <span>Asset Description</span>
                   <span className='tabular-nums'>
-                    ({description.length}/256)
+                    ({description.length}/1024)
                   </span>
                 </label>
                 <textarea
                   value={description}
                   onChange={(e) =>
-                    setDescription(e.target.value.substring(0, 256))
+                    setDescription(e.target.value.substring(0, 1024))
                   }
                   className={cn(
                     'flex items-center gap-3',

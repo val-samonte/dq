@@ -1,8 +1,15 @@
 import { useAtomValue } from 'jotai'
-import { TokenPill } from './TokenPill'
+import { TokenPill, TokenPillProps } from './TokenPill'
 import { queriedTokenAtom, tokensListAtom } from '../atoms/tokensListAtom'
 import { Suspense } from 'react'
 import { PillSkeleton } from './PillSkeleton'
+
+function TokenPillWrapper(token: Omit<TokenPillProps, 'onClick'>) {
+  // select token
+  // check if token is selected, display child
+
+  return <TokenPill key={token.id} {...token} onClick={() => {}} />
+}
 
 function QueriedToken() {
   const token = useAtomValue(queriedTokenAtom)
@@ -11,7 +18,7 @@ function QueriedToken() {
     return null
   }
 
-  return <TokenPill key={token.id} {...token} onClick={() => {}} />
+  return <TokenPillWrapper key={token.id} {...token} />
 }
 
 export function TokensList() {
@@ -20,7 +27,7 @@ export function TokensList() {
   return (
     <div className='grid grid-cols-1 lg:grid-cols-2 gap-3 lg:gap-5 px-3 lg:px-5 pb-3 lg:pb-5'>
       {tokens.map((token) => (
-        <TokenPill key={token.id} {...token} onClick={() => {}} />
+        <TokenPillWrapper key={token.id} {...token} />
       ))}
       <Suspense fallback={<PillSkeleton />}>
         <QueriedToken />

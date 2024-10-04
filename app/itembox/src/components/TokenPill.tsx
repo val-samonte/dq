@@ -1,6 +1,7 @@
 import cn from 'classnames'
 import { trimAddress } from '../utils/trimAddress'
 import { ReactNode } from 'react'
+import { explorerAddress } from '../utils/explorerAddress'
 
 export interface TokenPillProps {
   id: string
@@ -43,15 +44,20 @@ export function TokenPill({
             />
           )}
         </button>
-        <div className='flex flex-col gap-1 justify-center'>
+        <div className='flex flex-col gap-2 justify-center'>
           <button className='text-left' onClick={onClick}>
             {name}
           </button>
           <div className='flex flex-wrap gap-x-3'>
-            <div className='flex text-xs gap-2'>
+            <a
+              href={explorerAddress(id)}
+              rel='noreferrer noopener'
+              target='_blank'
+              className='flex text-xs gap-2'
+            >
               <span className='text-gray-500'>Mint</span>
               <span className='text-gray-400'>{trimAddress(id)}</span>
-            </div>
+            </a>
             <div className='flex text-xs gap-2'>
               <span className='text-gray-400'>{symbol}</span>
             </div>

@@ -8,9 +8,17 @@ import { blueprintAtom } from '../atoms/blueprintAtom'
 import cn from 'classnames'
 import Markdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
-import { FilePlus, NumberSquareOne, Shapes, Stack } from '@phosphor-icons/react'
+import {
+  CopySimple,
+  FilePlus,
+  LinkSimple,
+  NumberSquareOne,
+  Shapes,
+  Stack,
+} from '@phosphor-icons/react'
 import { PageHeader } from './PageHeader'
 import { useUserWallet } from '../atoms/userWalletAtom'
+import { CopyToClipboard } from './CopyToClipboard'
 
 function Content() {
   const wallet = useUserWallet()
@@ -20,6 +28,8 @@ function Content() {
   if (!blueprint) {
     return null
   }
+
+  const owner = wallet?.publicKey?.toBase58() === blueprint.authority
 
   return (
     <>
@@ -52,29 +62,41 @@ function Content() {
           </div>
         </div>
 
-        <div className='flex flex-col gap-5 h-full'>
+        <div className='flex-auto flex flex-col gap-5 h-full'>
           <h1 className='text-4xl tracking-wider pt-5 md:pt-10'>
             {blueprint.name}
           </h1>
-          <div className='flex flex-col md:flex-row gap-5'>
-            <Link
-              to={`/blueprints/${blueprintId}`}
-              className='flex-1 flex flex-col gap-1 p-3 rounded bg-black/10'
+          <div className='flex flex-col gap-3'>
+            <div
+              // to={`/blueprints/${blueprintId}`}
+              className='flex-1 flex flex-col lg:flex-row justify-between gap-2 p-3 rounded bg-black/10'
             >
-              <div className='text-xs uppercase tracking-wider opacity-50'>
+              <div className='text-sm uppercase tracking-wider opacity-50'>
                 ID
               </div>
-              <div className='text-sm break-all'>{blueprint.id}</div>
-            </Link>
-            <Link
-              to={`/user/${blueprint.authority}`}
-              className='flex-1 flex flex-col gap-1 p-3 rounded bg-black/10'
-            >
-              <div className='text-xs uppercase tracking-wider opacity-50'>
-                Creator
+              <div className='text-sm flex items-center gap-2'>
+                <span className='break-all'>{blueprint.id}</span>
+                {blueprintId && (
+                  <CopyToClipboard content={blueprintId}>
+                    <CopySimple size={20} />
+                  </CopyToClipboard>
+                )}
               </div>
-              <div className='text-sm break-all'>{blueprint.authority}</div>
-            </Link>
+            </div>
+            <div className='flex-1 flex flex-col lg:flex-row justify-between gap-2 p-3 rounded bg-black/10'>
+              <div className='text-sm uppercase tracking-wider opacity-50'>
+                Creator{owner && <span>&nbsp;(You)</span>}
+              </div>
+              <div className='text-sm flex items-center gap-2'>
+                <span className='break-all'>{blueprint.authority}</span>
+                <CopyToClipboard content={blueprint.authority}>
+                  <CopySimple size={20} />
+                </CopyToClipboard>
+                <Link to={`/user/${blueprint.authority}`}>
+                  <LinkSimple size={20} />
+                </Link>
+              </div>
+            </div>
           </div>
           <div className='text-xl opacity-80 flex flex-col gap-5'>
             <Markdown remarkPlugins={[remarkGfm]}>
@@ -97,7 +119,7 @@ function Content() {
                 Mint
               </button>
             )}
-            {wallet?.publicKey?.toBase58() === blueprint.authority && (
+            {owner && (
               <Link
                 to={'new-recipe'}
                 className={cn(

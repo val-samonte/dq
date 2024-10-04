@@ -10,7 +10,7 @@ import {
   SelectedIngredientActionTypes,
   selectedIngredientsAtom,
 } from '../atoms/selectedIngredientsAtom'
-import { useParams } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import { NumberInput } from './NumberInput'
 import { PillSkeleton } from './PillSkeleton'
 import { assetSearchAtom } from '../atoms/tokensListAtom'
@@ -81,21 +81,24 @@ function WithData({ id }: { id: string }) {
             className='w-full h-full aspect-square object-contain'
           />
         </button>
-        <div className='flex flex-col gap-1 justify-center'>
+        <div className='flex flex-col gap-2 justify-center'>
           <button className='text-left' onClick={toggleSelect}>
             {blueprint.name}
           </button>
           <div className='flex flex-wrap gap-x-3'>
-            <div className='flex text-xs gap-2'>
+            <Link to={`/blueprints/${id}`} className='flex text-xs gap-2'>
               <span className='text-gray-500'>ID</span>
               <span className='text-gray-400'>{trimAddress(id)}</span>
-            </div>
-            <div className='flex text-xs gap-2'>
+            </Link>
+            <Link
+              to={`/user/${blueprint.authority}`}
+              className='flex text-xs gap-2'
+            >
               <span className='text-gray-500'>BY</span>
               <span className='text-gray-400'>
                 {trimAddress(blueprint.authority)}
               </span>
-            </div>
+            </Link>
           </div>
         </div>
       </div>

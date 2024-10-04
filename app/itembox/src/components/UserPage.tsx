@@ -8,9 +8,10 @@ import { BlueprintsGrid } from './BlueprintsGrid'
 import { PageHeader } from './PageHeader'
 import { trimAddress } from '../utils/trimAddress'
 import cn from 'classnames'
-import { FilePlus } from '@phosphor-icons/react'
+import { CopySimple, FilePlus } from '@phosphor-icons/react'
 import { CenterWrapper } from './CenterWrapper'
 import { Footer } from './Footer'
+import { CopyToClipboard } from './CopyToClipboard'
 
 function Content() {
   const wallet = useUserWallet()
@@ -62,7 +63,15 @@ function Content() {
         }
       >
         <PageHeader>
-          {isOwner ? 'Your' : trimAddress(userId)} Blueprints
+          <span>{isOwner ? 'Your' : trimAddress(userId)} Blueprints</span>
+          <div className='text-sm'>
+            <CopyToClipboard content={userId}>
+              <span className='flex items-center gap-2 bg-black/20 rounded px-2 py-1'>
+                <span>Copy Address</span>
+                <CopySimple size={20} />
+              </span>
+            </CopyToClipboard>
+          </div>
         </PageHeader>
       </BlueprintsGrid>
     </>
