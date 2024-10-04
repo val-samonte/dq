@@ -9,7 +9,6 @@ import cn from 'classnames'
 import { CheckFat, Coins, Scroll, Shapes, Trash } from '@phosphor-icons/react'
 import { allBlueprintsAtom } from '../atoms/allBlueprintsAtom'
 import { SelectedIngredient } from './SelectedIngredient'
-import { BlueprintPill } from './BlueprintPill'
 import {
   createRecipeTabAtom,
   SelectedIngredientActionTypes,
@@ -18,12 +17,12 @@ import {
 import { NumberInput } from './NumberInput'
 import { TokensList } from './TokensList'
 import { assetSearchAtom } from '../atoms/tokensListAtom'
+import { BlueprintsList } from './BlueprintsList'
 
 function Content() {
   const wallet = useUserWallet()
   const { blueprintId } = useParams()
   const blueprint = useAtomValue(blueprintAtom(blueprintId || ''))
-  const blueprintIds = useAtomValue(allBlueprintsAtom)
   const [selectedIngredients, setIngredients] = useAtom(
     selectedIngredientsAtom(blueprintId || '')
   )
@@ -49,7 +48,7 @@ function Content() {
   return (
     <div className='flex flex-col p-5 gap-5'>
       <div className='flex gap-5 items-center lg:py-5'>
-        <div className='w-24 h-24 aspect-square rounded-lg bg-black/20 overflow-hidden'>
+        <div className='w-24 h-24 aspect-square rounded-lg overflow-hidden'>
           <img
             src={blueprint.image}
             className='w-full h-full object-contain '
@@ -116,15 +115,15 @@ function Content() {
               />
             </div>
             {tab === 'blueprints' && (
-              <div className='grid grid-cols-1 lg:grid-cols-2 gap-3 lg:gap-5 px-3 lg:px-5 pb-3 lg:pb-5'>
-                {blueprintIds
-                  .filter((id) => id !== blueprintId)
-                  .map((id) => (
-                    <BlueprintPill key={id} id={id} />
-                  ))}
-              </div>
+              <Suspense fallback={null}>
+                <BlueprintsList />
+              </Suspense>
             )}
-            {tab === 'tokens' && <TokensList />}
+            {tab === 'tokens' && (
+              <Suspense fallback={null}>
+                <TokensList />
+              </Suspense>
+            )}
           </div>
         </div>
         <div
@@ -160,7 +159,7 @@ function Content() {
               ))}
             </div>
             <div className='absolute inset-0 flex items-center justify-center text-center opacity-50'>
-              Please select resources on the left
+              Please select resources from the left
             </div>
           </div>
         </div>

@@ -74,7 +74,7 @@ function WithData({ id }: { id: string }) {
 
   return (
     <div className='bg-black/10 rounded-lg p-3 flex gap-3'>
-      <div className='flex-none rounded w-24 h-24 bg-black/20 overflow-hidden'>
+      <div className='flex-none rounded w-24 h-24 overflow-hidden'>
         <img
           src={blueprint.image}
           alt={blueprint.name}
@@ -118,7 +118,9 @@ function WithData({ id }: { id: string }) {
             <NumberInput
               min={1}
               step={1}
-              decimals={0}
+              decimals={
+                selected.assetType === 1 ? 0 : selected.token?.decimals ?? 0
+              }
               className='flex-auto w-full bg-black/10 rounded px-3 py-2'
               placeholder='Amount'
               value={selected.amount}

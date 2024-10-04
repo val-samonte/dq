@@ -32,7 +32,7 @@ export const allBlueprintsAtom = atom(
 
     set(
       allBlueprintsBaseAtom,
-      accounts.slice(0, 100).map((a) => a.pubkey.toBase58())
+      accounts.map((a) => a.pubkey.toBase58())
     )
   }
 )

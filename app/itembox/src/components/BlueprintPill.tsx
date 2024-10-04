@@ -13,8 +13,10 @@ import {
 import { useParams } from 'react-router-dom'
 import { NumberInput } from './NumberInput'
 import { PillSkeleton } from './PillSkeleton'
+import { assetSearchAtom } from '../atoms/tokensListAtom'
 
 function WithData({ id }: { id: string }) {
+  const search = useAtomValue(assetSearchAtom)
   const blueprint = useAtomValue(blueprintAtom(id))
   const { blueprintId } = useParams()
   const [selectedIngredients, setIngredients] = useAtom(
@@ -24,7 +26,20 @@ function WithData({ id }: { id: string }) {
   const selected = selectedIngredients.find((i) => i.id === id)
 
   if (!blueprint) {
-    return <PillSkeleton />
+    return null
+  }
+
+  if (search) {
+    if (
+      !(
+        blueprint.id === search.trim() ||
+        blueprint.authority === search.trim() ||
+        blueprint.mint === search.trim() ||
+        blueprint.name.toLowerCase().includes(search.trim().toLowerCase())
+      )
+    ) {
+      return null
+    }
   }
 
   const toggleSelect = () => {
@@ -58,7 +73,7 @@ function WithData({ id }: { id: string }) {
       <div className='flex p-2 gap-5'>
         <button
           onClick={toggleSelect}
-          className='flex-none rounded w-20 h-20 bg-black/20 overflow-hidden'
+          className='flex-none rounded w-20 h-20 overflow-hidden'
         >
           <img
             src={blueprint.image}

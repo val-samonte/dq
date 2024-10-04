@@ -33,7 +33,7 @@ export function TokenPill({
       <div className='flex p-2 gap-5'>
         <button
           onClick={onClick}
-          className='flex-none rounded w-20 h-20 bg-black/20 overflow-hidden'
+          className='flex-none rounded w-20 h-20 overflow-hidden'
         >
           {image && (
             <img

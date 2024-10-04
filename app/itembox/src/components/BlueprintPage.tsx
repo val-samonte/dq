@@ -30,7 +30,7 @@ function Content() {
         )}
       >
         <div className='md:max-w-[36vh] min-w-80 w-full aspect-square flex flex-col gap-5'>
-          <div className='bg-black/20 rounded-lg overflow-hidden'>
+          <div className='rounded-lg overflow-hidden'>
             <img
               src={blueprint.image}
               alt={blueprint.name}

@@ -5,6 +5,7 @@ import { atom } from 'jotai'
 
 import tokens from '../assets/tokens.json'
 import { PublicKey } from '@solana/web3.js'
+import { allBlueprintsAtom } from './allBlueprintsAtom'
 
 export interface TokenItem {
   id: string
@@ -62,4 +63,25 @@ export const queriedTokenAtom = atom(async (get) => {
   } catch (e) {}
 
   return null
+})
+
+export const blueprintsListAtom = atom(async (get) => {
+  const search = get(assetSearchAtom)
+  const blueprintIds = get(allBlueprintsAtom)
+  const slice = blueprintIds.slice(0, 100)
+
+  if (!search) return slice
+
+  try {
+    new PublicKey(search)
+  } catch (e) {
+    return slice
+  }
+
+  const found = blueprintIds.find((id) => id === search)
+  if (found) {
+    return [found]
+  }
+
+  return slice
 })

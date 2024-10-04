@@ -53,7 +53,11 @@ function CardWithData({ id }: { id: string }) {
         to={`/blueprints/${id}`}
         className='bg-black/20 w-full aspect-square flex items-center justify-center p-2 relative'
       >
-        <img src={blueprint.image} alt='' className='object-contain h-full' />
+        <img
+          src={blueprint.image}
+          alt=''
+          className='object-contain h-full rounded-t'
+        />
         {!blueprint.nonFungible && (
           <div className='absolute top-0 left-0 p-5 opacity-50'>
             <Stack size={32} />
