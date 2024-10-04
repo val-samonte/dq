@@ -33,7 +33,7 @@ export function Nav() {
               'bg-black/20 w-full'
             )}
             type='text'
-            placeholder='Search by address, author or Blueprints'
+            placeholder='Search by address, author or Blueprint'
           />
         </div>
         <div className='flex-none'>

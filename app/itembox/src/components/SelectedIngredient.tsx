@@ -110,21 +110,27 @@ function WithData({ id }: { id: string }) {
           </div>
         </div>
         <div className='flex gap-3 mt-auto'>
-          <NumberInput
-            min={1}
-            step={1}
-            decimals={0}
-            className='flex-auto w-full bg-black/10 rounded px-3 py-2'
-            placeholder='Amount'
-            value={selected.amount}
-            onChange={(e) => {
-              setIngredients({
-                ...selected,
-                type: SelectedIngredientActionTypes.UPDATE,
-                amount: e,
-              })
-            }}
-          />
+          {selected.assetType === 0 ? (
+            <div className='flex-auto w-full bg-black/10 rounded px-3 py-2'>
+              1 <span className='text-gray-400 ml-2'>(Fixed)</span>
+            </div>
+          ) : (
+            <NumberInput
+              min={1}
+              step={1}
+              decimals={0}
+              className='flex-auto w-full bg-black/10 rounded px-3 py-2'
+              placeholder='Amount'
+              value={selected.amount}
+              onChange={(e) => {
+                setIngredients({
+                  ...selected,
+                  type: SelectedIngredientActionTypes.UPDATE,
+                  amount: e,
+                })
+              }}
+            />
+          )}
           <Menu>
             <MenuButton
               className={cn(

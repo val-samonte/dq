@@ -16,6 +16,8 @@ import {
   selectedIngredientsAtom,
 } from '../atoms/selectedIngredientsAtom'
 import { NumberInput } from './NumberInput'
+import { TokensList } from './TokensList'
+import { assetSearchAtom } from '../atoms/tokensListAtom'
 
 function Content() {
   const wallet = useUserWallet()
@@ -28,6 +30,7 @@ function Content() {
   const [outputAmount, setOutputAmount] = useState('')
 
   const [tab, setTab] = useAtom(createRecipeTabAtom)
+  const [search, setSearch] = useAtom(assetSearchAtom)
 
   useEffect(() => {
     if (
@@ -107,7 +110,9 @@ function Content() {
                   'bg-black/20 w-full'
                 )}
                 type='text'
-                placeholder='Search by asset address'
+                placeholder='Search by asset address, name or symbol'
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
               />
             </div>
             {tab === 'blueprints' && (
@@ -119,9 +124,7 @@ function Content() {
                   ))}
               </div>
             )}
-            {tab === 'tokens' && (
-              <div className='grid grid-cols-1 lg:grid-cols-2 gap-3 lg:gap-5 px-3 lg:px-5 pb-3 lg:pb-5'></div>
-            )}
+            {tab === 'tokens' && <TokensList />}
           </div>
         </div>
         <div

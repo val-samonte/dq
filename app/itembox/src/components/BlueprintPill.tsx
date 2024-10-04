@@ -1,12 +1,6 @@
 import cn from 'classnames'
 import { trimAddress } from '../utils/trimAddress'
-import {
-  CaretDown,
-  CheckFat,
-  CircleNotch,
-  Fire,
-  HandDeposit,
-} from '@phosphor-icons/react'
+import { CaretDown, CheckFat, Fire, HandDeposit } from '@phosphor-icons/react'
 import { Suspense, useEffect } from 'react'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { blueprintAtom } from '../atoms/blueprintAtom'
@@ -18,40 +12,7 @@ import {
 } from '../atoms/selectedIngredientsAtom'
 import { useParams } from 'react-router-dom'
 import { NumberInput } from './NumberInput'
-
-function Skeleton() {
-  return (
-    <div
-      className={cn(
-        'rounded-lg bg-black/10',
-        'border-2',
-        'flex flex-col',
-        'border-transparent'
-      )}
-    >
-      <div className='flex p-2 gap-5'>
-        <div className='flex-none rounded w-20 h-20 bg-black/20 overflow-hidden flex items-center justify-center'>
-          <CircleNotch size={28} className='opacity-10 animate-spin' />
-        </div>
-        <div className='flex flex-col gap-1 justify-center'>
-          <div className='opacity-50'>
-            <div className='w-32 h-6 animate-pulse bg-white rounded' />
-          </div>
-          <div className='flex flex-wrap gap-x-3'>
-            <div className='flex text-xs gap-2 opacity-50'>
-              <div className='w-4 h-4 animate-pulse bg-gray-600 rounded' />
-              <div className='w-16 h-4 animate-pulse bg-gray-400 rounded' />
-            </div>
-            <div className='flex text-xs gap-2 opacity-50'>
-              <div className='w-4 h-4 animate-pulse bg-gray-600 rounded' />
-              <div className='w-16 h-4 animate-pulse bg-gray-400 rounded' />
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  )
-}
+import { PillSkeleton } from './PillSkeleton'
 
 function WithData({ id }: { id: string }) {
   const blueprint = useAtomValue(blueprintAtom(id))
@@ -63,7 +24,7 @@ function WithData({ id }: { id: string }) {
   const selected = selectedIngredients.find((i) => i.id === id)
 
   if (!blueprint) {
-    return <Skeleton />
+    return <PillSkeleton />
   }
 
   const toggleSelect = () => {
@@ -123,21 +84,27 @@ function WithData({ id }: { id: string }) {
       </div>
       {selected && (
         <div className='grid lg:hidden grid-cols-2 gap-2 px-2 pb-2 text-sm'>
-          <NumberInput
-            min={1}
-            step={1}
-            decimals={0}
-            className='flex-1 bg-black/20 rounded px-2 py-1'
-            placeholder='Amount'
-            value={selected.amount}
-            onChange={(e) => {
-              setIngredients({
-                ...selected,
-                type: SelectedIngredientActionTypes.UPDATE,
-                amount: e,
-              })
-            }}
-          />
+          {blueprint.nonFungible ? (
+            <div className='flex-1 bg-black/20 rounded px-2 py-1'>
+              1 <span className='text-gray-400 ml-2'>(Fixed)</span>
+            </div>
+          ) : (
+            <NumberInput
+              min={1}
+              step={1}
+              decimals={0}
+              className='flex-1 bg-black/20 rounded px-2 py-1'
+              placeholder='Amount'
+              value={selected.amount}
+              onChange={(e) => {
+                setIngredients({
+                  ...selected,
+                  type: SelectedIngredientActionTypes.UPDATE,
+                  amount: e,
+                })
+              }}
+            />
+          )}
           <Menu>
             <MenuButton
               className={cn(
@@ -194,7 +161,7 @@ export function BlueprintPill({ id }: { id: string }) {
   }, [id])
 
   return (
-    <Suspense fallback={<Skeleton />}>
+    <Suspense fallback={<PillSkeleton />}>
       <WithData id={id} />
     </Suspense>
   )

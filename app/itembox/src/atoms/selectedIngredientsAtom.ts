@@ -9,14 +9,6 @@ interface SelectedIngredient {
 }
 
 export const createRecipeTabAtom = atom('blueprints')
-export const createRecipeSearchAtom = atom('')
-
-// filter search
-// search by id
-// search by name
-// search by author
-// if search is valid pubkey,
-// query https://tokens.jup.ag/token/So11111111111111111111111111111111111111112
 
 const selectedIngredientsBaseAtom = atomFamily((id: string) =>
   atomWithStorage<SelectedIngredient[]>(`itembox_create_recipe_${id}`, [])
