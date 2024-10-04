@@ -1,15 +1,14 @@
-import cn from "classnames"
-import { FilePlus } from "@phosphor-icons/react"
-import { Nav } from "./Nav"
-import { SideBar } from "./SideBar"
-import { useState } from "react"
-import { BpModal } from "./BpModal"
+import { ReactNode, Suspense } from 'react'
+import { BlueprintCard } from './BlueprintCard'
+import { CircleNotch } from '@phosphor-icons/react'
 
-export const BlueprintPage = () => {
-  const [showBpList, setShowBpList] = useState(false)
-  const hideBpModal = () => {
-    setShowBpList(false)
-  }
+export interface BlueprintsGridProps {
+  whenEmpty?: ReactNode
+  ids: string[]
+  simpleView: boolean
+}
+
+export function ImportBpPage({ address }: { address: string }) {
   return (<div className="absolute inset-0 h-full flex flex-col overflow-y-auto overflow-x-hidden">
     {showBpList && <BpModal handleClose={hideBpModal} />}
     <Nav />
@@ -36,4 +35,4 @@ export const BlueprintPage = () => {
       </div>
     </div>
   </div>)
-};
+}
