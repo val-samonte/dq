@@ -1,11 +1,21 @@
 import cn from 'classnames'
 import { trimAddress } from '../utils/trimAddress'
-import { CaretDown, CircleNotch, HandDeposit } from '@phosphor-icons/react'
+import {
+  CaretDown,
+  CheckFat,
+  CircleNotch,
+  Fire,
+  HandDeposit,
+} from '@phosphor-icons/react'
 import { Suspense, useEffect } from 'react'
-import { useAtomValue, useSetAtom } from 'jotai'
+import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { blueprintAtom } from '../atoms/blueprintAtom'
 import { Menu, MenuButton } from '@headlessui/react'
 import { ConsumptionMethodMenuItems } from './ConsumptionMethodMenuItems'
+import {
+  SelectedIngredientActionTypes,
+  selectedIngredientsAtom,
+} from '../atoms/selectedIngredientsAtom'
 
 function Skeleton() {
   return (
@@ -43,9 +53,32 @@ function Skeleton() {
 
 function WithData({ id }: { id: string }) {
   const blueprint = useAtomValue(blueprintAtom(id))
+  const [selectedIngredients, setIngredients] = useAtom(
+    selectedIngredientsAtom(id)
+  )
+
+  const selected = selectedIngredients.find((i) => i.id === id)
 
   if (!blueprint) {
     return <Skeleton />
+  }
+
+  const toggleSelect = () => {
+    if (!selected) {
+      setIngredients({
+        type: SelectedIngredientActionTypes.ADD,
+        id,
+        amount: 1.0,
+        assetType: blueprint.nonFungible ? 0 : 1,
+        consumeMethod: 'transfer',
+      })
+    } else {
+      console.log('REMOVE', id)
+      setIngredients({
+        type: SelectedIngredientActionTypes.REMOVE,
+        id,
+      })
+    }
   }
 
   return (
@@ -54,20 +87,24 @@ function WithData({ id }: { id: string }) {
         'rounded-lg bg-black/10',
         'border-2',
         'flex flex-col',
-        'border-transparent'
-        // 'border-green-400/50'
+        selected ? 'border-green-400/50' : 'border-transparent'
       )}
     >
       <div className='flex p-2 gap-5'>
-        <div className='flex-none rounded w-20 h-20 bg-black/20 overflow-hidden'>
+        <button
+          onClick={toggleSelect}
+          className='flex-none rounded w-20 h-20 bg-black/20 overflow-hidden'
+        >
           <img
             src={blueprint.image}
             alt={blueprint.name}
             className='w-full h-full aspect-square object-contain'
           />
-        </div>
+        </button>
         <div className='flex flex-col gap-1 justify-center'>
-          <div>{blueprint.name}</div>
+          <button className='text-left' onClick={toggleSelect}>
+            {blueprint.name}
+          </button>
           <div className='flex flex-wrap gap-x-3'>
             <div className='flex text-xs gap-2'>
               <span className='text-gray-600'>ID</span>
@@ -82,28 +119,66 @@ function WithData({ id }: { id: string }) {
           </div>
         </div>
       </div>
-      <div className='grid lg:hidden grid-cols-2 gap-2 px-2 pb-2 text-sm'>
-        <input
-          type='number'
-          min={1}
-          className='flex-1 bg-black/20 rounded px-2 py-1'
-          placeholder='Amount'
-        />
-        <Menu>
-          <MenuButton
-            className={cn(
-              'flex-1 bg-black/20 rounded pl-1 pr-2 py-1 flex gap-2 items-center justify-center'
-            )}
-          >
-            <span className='flex items-center gap-2'>
-              <HandDeposit size={20} />
-              Transfer
-            </span>
-            <CaretDown size={20} className='text-gray-600' />
-          </MenuButton>
-          <ConsumptionMethodMenuItems onSelect={console.log} />
-        </Menu>
-      </div>
+      {selected && (
+        <div className='grid lg:hidden grid-cols-2 gap-2 px-2 pb-2 text-sm'>
+          <input
+            type='number'
+            min={1}
+            className='flex-1 bg-black/20 rounded px-2 py-1'
+            placeholder='Amount'
+            value={selected.amount}
+            onChange={(e) => {
+              setIngredients({
+                ...selected,
+                type: SelectedIngredientActionTypes.UPDATE,
+                amount: parseFloat(e.target.value),
+              })
+            }}
+          />
+          <Menu>
+            <MenuButton
+              className={cn(
+                'flex-1 bg-black/20 rounded pl-1 pr-2 py-1 flex gap-2 items-center justify-center'
+              )}
+            >
+              <span className='flex items-center gap-2'>
+                {
+                  {
+                    retain: (
+                      <>
+                        <CheckFat size={20} />
+                        Require <span className='hidden lg:inline'>Only</span>
+                      </>
+                    ),
+                    burn: (
+                      <>
+                        <Fire size={20} />
+                        Burn
+                      </>
+                    ),
+                    transfer: (
+                      <>
+                        <HandDeposit size={20} />
+                        Transfer
+                      </>
+                    ),
+                  }[selected.consumeMethod]
+                }
+              </span>
+              <CaretDown size={20} className='text-gray-600' />
+            </MenuButton>
+            <ConsumptionMethodMenuItems
+              onSelect={(consumeMethod) => {
+                setIngredients({
+                  ...selected,
+                  type: SelectedIngredientActionTypes.UPDATE,
+                  consumeMethod,
+                })
+              }}
+            />
+          </Menu>
+        </div>
+      )}
     </div>
   )
 }

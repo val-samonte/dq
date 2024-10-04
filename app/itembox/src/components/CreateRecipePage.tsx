@@ -1,7 +1,7 @@
 import { redirect, useParams } from 'react-router-dom'
 import { blueprintAtom } from '../atoms/blueprintAtom'
-import { useAtomValue, useSetAtom } from 'jotai'
-import { Suspense, useEffect, useState } from 'react'
+import { useAtom, useAtomValue, useSetAtom } from 'jotai'
+import { Suspense, useEffect } from 'react'
 import { Nav } from './Nav'
 import { CenterWrapper } from './CenterWrapper'
 import { useUserWallet } from '../atoms/userWalletAtom'
@@ -10,14 +10,20 @@ import { CheckFat, Coins, Scroll, Shapes, Trash } from '@phosphor-icons/react'
 import { allBlueprintsAtom } from '../atoms/allBlueprintsAtom'
 import { SelectedIngredient } from './SelectedIngredient'
 import { BlueprintPill } from './BlueprintPill'
+import {
+  createRecipeTabAtom,
+  SelectedIngredientActionTypes,
+  selectedIngredientsAtom,
+} from '../atoms/selectedIngredientsAtom'
 
 function Content() {
   const wallet = useUserWallet()
   const { blueprintId } = useParams()
   const blueprint = useAtomValue(blueprintAtom(blueprintId || ''))
   const blueprintIds = useAtomValue(allBlueprintsAtom)
+  const setIngredients = useSetAtom(selectedIngredientsAtom(blueprintId || ''))
 
-  const [tab, setTab] = useState('blueprints')
+  const [tab, setTab] = useAtom(createRecipeTabAtom)
 
   useEffect(() => {
     if (
@@ -47,7 +53,7 @@ function Content() {
           <br /> {blueprint.name}
         </h1>
       </div>
-      <div className={cn('h-[62.5vh] grid grid-cols-12 gap-5')}>
+      <div className={cn('h-[60vh] grid grid-cols-12 gap-5')}>
         <div
           className={cn(
             'col-span-12 lg:col-span-7 h-full rounded-lg rounded-br-none',
@@ -131,7 +137,12 @@ function Content() {
               <Shapes size={24} />
               Selected Ingredients
             </div>
-            <button className='rounded p-2 flex items-center justify-center'>
+            <button
+              onClick={() =>
+                setIngredients({ type: SelectedIngredientActionTypes.CLEAR })
+              }
+              className='rounded p-2 flex items-center justify-center'
+            >
               <Trash size={20} />
             </button>
           </div>
@@ -143,6 +154,7 @@ function Content() {
         </div>
       </div>
       <div className='flex-none mx-auto flex items-center gap-5 portrait:flex-col lg:py-5'>
+        <div>This Recipe will produce x1 {blueprint.name}</div>
         <button
           onClick={() => {}}
           className={cn(

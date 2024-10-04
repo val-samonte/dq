@@ -5,7 +5,7 @@ import cn from 'classnames'
 export function ConsumptionMethodMenuItems({
   onSelect,
 }: {
-  onSelect: (method: string) => void
+  onSelect: (method: 'retain' | 'burn' | 'transfer') => void
 }) {
   return (
     <MenuItems
