@@ -33,11 +33,11 @@ function Skeleton() {
           </div>
           <div className='flex flex-wrap gap-x-3'>
             <div className='flex text-xs gap-2 opacity-50'>
-              <div className='w-4 h-4 animate-pulse bg-gray-600 rounded' />
+              <div className='w-4 h-4 animate-pulse bg-gray-500 rounded' />
               <div className='w-16 h-4 animate-pulse bg-gray-400 rounded' />
             </div>
             <div className='flex text-xs gap-2 opacity-50'>
-              <div className='w-4 h-4 animate-pulse bg-gray-600 rounded' />
+              <div className='w-4 h-4 animate-pulse bg-gray-500 rounded' />
               <div className='w-16 h-4 animate-pulse bg-gray-400 rounded' />
             </div>
           </div>
@@ -98,11 +98,11 @@ function WithData({ id }: { id: string }) {
           </div>
           <div className='flex flex-wrap gap-x-3'>
             <div className='flex text-xs gap-2'>
-              <span className='text-gray-600'>ID</span>
+              <span className='text-gray-500'>ID</span>
               <span className='text-gray-400'>{trimAddress(id)}</span>
             </div>
             <div className='flex text-xs gap-2'>
-              <span className='text-gray-600'>BY</span>
+              <span className='text-gray-500'>BY</span>
               <span className='text-gray-400'>
                 {trimAddress(blueprint.authority)}
               </span>

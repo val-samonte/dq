@@ -160,7 +160,7 @@ function Content() {
               ))}
             </div>
             <div className='absolute inset-0 flex items-center justify-center text-center opacity-50'>
-              Please select items on the left
+              Please select resources on the left
             </div>
           </div>
         </div>

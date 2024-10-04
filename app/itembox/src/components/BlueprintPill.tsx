@@ -47,10 +47,12 @@ function WithData({ id }: { id: string }) {
   return (
     <div
       className={cn(
-        'rounded-lg bg-black/10',
+        'rounded-lg',
         'border-2',
         'flex flex-col',
-        selected ? 'border-green-400/50' : 'border-transparent'
+        selected
+          ? 'border-green-400/50 bg-green-900/20'
+          : 'border-transparent bg-black/10'
       )}
     >
       <div className='flex p-2 gap-5'>
@@ -70,11 +72,11 @@ function WithData({ id }: { id: string }) {
           </button>
           <div className='flex flex-wrap gap-x-3'>
             <div className='flex text-xs gap-2'>
-              <span className='text-gray-600'>ID</span>
+              <span className='text-gray-500'>ID</span>
               <span className='text-gray-400'>{trimAddress(id)}</span>
             </div>
             <div className='flex text-xs gap-2'>
-              <span className='text-gray-600'>BY</span>
+              <span className='text-gray-500'>BY</span>
               <span className='text-gray-400'>
                 {trimAddress(blueprint.authority)}
               </span>

@@ -11,18 +11,7 @@ function QueriedToken() {
     return null
   }
 
-  return (
-    <TokenPill
-      key={token.id}
-      {...token}
-      selected={false}
-      amount={'1'}
-      consumeMethod={'transfer'}
-      onClick={() => {}}
-      onAmountChange={() => {}}
-      onConsumeMethodChange={() => {}}
-    />
-  )
+  return <TokenPill key={token.id} {...token} onClick={() => {}} />
 }
 
 export function TokensList() {
@@ -31,16 +20,7 @@ export function TokensList() {
   return (
     <div className='grid grid-cols-1 lg:grid-cols-2 gap-3 lg:gap-5 px-3 lg:px-5 pb-3 lg:pb-5'>
       {tokens.map((token) => (
-        <TokenPill
-          key={token.id}
-          {...token}
-          selected={false}
-          amount={'1'}
-          consumeMethod={'transfer'}
-          onClick={() => {}}
-          onAmountChange={() => {}}
-          onConsumeMethodChange={() => {}}
-        />
+        <TokenPill key={token.id} {...token} onClick={() => {}} />
       ))}
       <Suspense fallback={<PillSkeleton />}>
         <QueriedToken />

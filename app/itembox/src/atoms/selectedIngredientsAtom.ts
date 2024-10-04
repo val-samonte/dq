@@ -1,11 +1,13 @@
 import { atom } from 'jotai'
 import { atomFamily, atomWithStorage } from 'jotai/utils'
+import { TokenItem } from './tokensListAtom'
 
 interface SelectedIngredient {
   id: string // blueprint or mint address
   assetType: number // Blueprint NF [0], Blueprint F [1], SPL [2], Token Extensions [3]. (1)
   amount: string // in decimal
   consumeMethod: 'retain' | 'burn' | 'transfer'
+  token?: TokenItem
 }
 
 export const createRecipeTabAtom = atom('blueprints')
@@ -28,6 +30,7 @@ export type SelectedIngredientAction =
       assetType: number
       amount: string
       consumeMethod: 'retain' | 'burn' | 'transfer'
+      token?: TokenItem
     }
   | {
       type: SelectedIngredientActionTypes.UPDATE

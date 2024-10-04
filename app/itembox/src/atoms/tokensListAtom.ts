@@ -6,11 +6,19 @@ import { atom } from 'jotai'
 import tokens from '../assets/tokens.json'
 import { PublicKey } from '@solana/web3.js'
 
+export interface TokenItem {
+  id: string
+  name: string
+  symbol: string
+  decimals: number
+  image: string
+}
+
 export const assetSearchAtom = atom('')
 
-export const tokensListAtom = atom((get) => {
+export const tokensListAtom = atom<TokenItem[]>((get) => {
   const search = get(assetSearchAtom)
-  if (!search) return tokens.slice(0, 100)
+  if (!search) return tokens.slice(0, 100) as TokenItem[]
 
   const lowcase = search.toLowerCase()
 
@@ -22,7 +30,7 @@ export const tokensListAtom = atom((get) => {
         token.symbol.toLowerCase().includes(lowcase)
       )
     })
-    .slice(0, 100)
+    .slice(0, 100) as TokenItem[]
 })
 
 export const queriedTokenAtom = atom(async (get) => {
@@ -50,7 +58,7 @@ export const queriedTokenAtom = atom(async (get) => {
       symbol: data.symbol,
       decimals: data.symbols,
       image: data.logoURI,
-    }
+    } as TokenItem
   } catch (e) {}
 
   return null
