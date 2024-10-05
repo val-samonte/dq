@@ -1,4 +1,4 @@
-import { redirect, useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { blueprintAtom } from '../atoms/blueprintAtom'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { Suspense, useEffect, useState } from 'react'
@@ -7,7 +7,6 @@ import { CenterWrapper } from './CenterWrapper'
 import { useUserWallet } from '../atoms/userWalletAtom'
 import cn from 'classnames'
 import {
-  CheckFat,
   Coins,
   FilePlus,
   Scroll,
@@ -49,13 +48,14 @@ function Content() {
   const [tab, setTab] = useAtom(createRecipeTabAtom)
   const [search, setSearch] = useAtom(assetSearchAtom)
   const [state, setState] = useAtom(createRecipeStateAtom)
+  const navigate = useNavigate()
 
   useEffect(() => {
     if (
       !wallet?.publicKey ||
       wallet.publicKey.toBase58() !== blueprint?.authority
     ) {
-      redirect(`/blueprints/${blueprintId}`)
+      navigate(`/blueprints/${blueprintId}`)
     }
   }, [blueprint, wallet])
 
@@ -263,7 +263,7 @@ function Content() {
         </div>
       </div>
       <div className='flex-none mx-auto flex items-center gap-5 portrait:flex-col lg:py-5'>
-        <div className='flex flex-col md:flex-row flex-wrap items-center justify-center gap-3'>
+        <div className='text-lg flex flex-col md:flex-row flex-wrap items-center justify-center gap-3'>
           <span>This Recipe will produce</span>
           {blueprint.nonFungible ? (
             <span>x1</span>

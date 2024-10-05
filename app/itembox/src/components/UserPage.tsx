@@ -1,4 +1,4 @@
-import { Link, redirect, useParams } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import { Nav } from './Nav'
 import { useUserWallet } from '../atoms/userWalletAtom'
 import { Suspense, useEffect, useMemo } from 'react'
@@ -23,11 +23,6 @@ function Content() {
     if (!wallet?.publicKey) return false
     return userId === wallet.publicKey.toBase58()
   }, [userId, wallet])
-
-  if (!userId) {
-    redirect('/')
-    return null
-  }
 
   return (
     <>
@@ -63,15 +58,17 @@ function Content() {
         }
       >
         <PageHeader>
-          <span>{isOwner ? 'Your' : trimAddress(userId)} Blueprints</span>
-          <div className='text-sm'>
-            <CopyToClipboard content={userId}>
-              <span className='flex items-center gap-2 bg-black/20 rounded px-2 py-1'>
-                <span>Copy Address</span>
-                <CopySimple size={20} />
-              </span>
-            </CopyToClipboard>
-          </div>
+          <span>{isOwner ? 'Your' : trimAddress(userId!)} Blueprints</span>
+          {userId && (
+            <div className='text-sm'>
+              <CopyToClipboard content={userId}>
+                <span className='flex items-center gap-2 bg-black/20 rounded px-2 py-1'>
+                  <span>Copy Address</span>
+                  <CopySimple size={20} />
+                </span>
+              </CopyToClipboard>
+            </div>
+          )}
         </PageHeader>
       </BlueprintsGrid>
     </>

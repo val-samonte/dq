@@ -144,11 +144,12 @@ function Content() {
 
 export function BlueprintPage() {
   const { blueprintId } = useParams()
+  const wallet = useUserWallet()
   const reload = useSetAtom(blueprintAtom(blueprintId || ''))
 
   useEffect(() => {
     reload()
-  }, [blueprintId])
+  }, [blueprintId, wallet])
 
   return (
     <div className='absolute inset-0 flex flex-col'>

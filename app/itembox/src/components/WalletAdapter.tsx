@@ -7,8 +7,8 @@ import {
 } from '@solana/wallet-adapter-react'
 import { WalletModalProvider } from '@solana/wallet-adapter-react-ui'
 import { useAtomValue, useSetAtom } from 'jotai'
-import { rpcEndpointAtom } from './rpcEndpointAtom'
-import { userWalletAtom } from './userWalletAtom'
+import { rpcEndpointAtom } from '../atoms/rpcEndpointAtom'
+import { userWalletAtom } from '../atoms/userWalletAtom'
 
 export const WalletInitializer: FC<{ children: ReactNode }> = ({
   children,
