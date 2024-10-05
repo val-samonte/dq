@@ -6,10 +6,19 @@ import { Nav } from './Nav'
 import { CenterWrapper } from './CenterWrapper'
 import { useUserWallet } from '../atoms/userWalletAtom'
 import cn from 'classnames'
-import { CheckFat, Coins, Scroll, Shapes, Trash } from '@phosphor-icons/react'
+import {
+  CheckFat,
+  Coins,
+  FilePlus,
+  Scroll,
+  Shapes,
+  Signature,
+  Trash,
+} from '@phosphor-icons/react'
 import { allBlueprintsAtom } from '../atoms/allBlueprintsAtom'
 import { SelectedIngredient } from './SelectedIngredient'
 import {
+  createRecipeStateAtom,
   createRecipeTabAtom,
   SelectedIngredientActionTypes,
   selectedIngredientsAtom,
@@ -19,9 +28,15 @@ import { NumberInput } from './NumberInput'
 import { TokensList } from './TokensList'
 import { assetSearchAtom } from '../atoms/tokensListAtom'
 import { BlueprintsList } from './BlueprintsList'
+import { parseNumber } from '../utils/formatNumber'
+import { itemboxSdkAtom } from '../atoms/itemboxSdkAtom'
+import { PublicKey } from '@solana/web3.js'
+import { programAtom } from '../atoms/programAtom'
 
 function Content() {
   const wallet = useUserWallet()
+  const sdk = useAtomValue(itemboxSdkAtom)
+  const program = useAtomValue(programAtom)
   const { blueprintId } = useParams()
   const blueprint = useAtomValue(blueprintAtom(blueprintId || ''))
   const [selectedIngredients, setIngredients] = useAtom(
@@ -33,6 +48,7 @@ function Content() {
   const [outputAmount, setOutputAmount] = useState('1')
   const [tab, setTab] = useAtom(createRecipeTabAtom)
   const [search, setSearch] = useAtom(assetSearchAtom)
+  const [state, setState] = useAtom(createRecipeStateAtom)
 
   useEffect(() => {
     if (
@@ -46,6 +62,41 @@ function Content() {
   if (!blueprint) {
     // todo: make skeleton
     return null
+  }
+
+  const onSubmit = async () => {
+    if (!blueprintId) return
+    // todo: validate ingredients
+
+    const output = parseNumber(outputAmount, 0)
+    if (output === 0) {
+      return
+    }
+
+    setState(1)
+
+    try {
+      const ingredients = selectedIngredients.map((ingredient) => ({
+        asset: new PublicKey(ingredient.id),
+        amount: parseNumber(ingredient.amount, 1),
+        consumeMethod: ingredient.consumeMethod,
+      }))
+
+      const result = await sdk.createRecipe(
+        new PublicKey(blueprintId),
+        ingredients
+      )
+
+      const recipeData = await program.account.recipe.fetch(result.recipe)
+
+      console.log(result)
+      console.log(recipeData)
+    } catch (e) {
+      console.error(e)
+      setState(0)
+    }
+
+    setState(0)
   }
 
   return (
@@ -133,6 +184,7 @@ function Content() {
           <div className='h-full flex flex-col overflow-y-auto overflow-x-hidden relative'>
             <div className='p-3 lg:p-5 bg-gray-700 sticky top-0'>
               <input
+                disabled={state !== 0}
                 className={cn(
                   'z-10',
                   'items-center gap-3',
@@ -211,12 +263,13 @@ function Content() {
         </div>
       </div>
       <div className='flex-none mx-auto flex items-center gap-5 portrait:flex-col lg:py-5'>
-        <div className='flex flex-col lg:flex-row flex-wrap items-center justify-center gap-3'>
+        <div className='flex flex-col md:flex-row flex-wrap items-center justify-center gap-3'>
           <span>This Recipe will produce</span>
           {blueprint.nonFungible ? (
             <span>x1</span>
           ) : (
             <NumberInput
+              disabled={state !== 0}
               min={1}
               step={1}
               decimals={0}
@@ -228,30 +281,31 @@ function Content() {
           <span>{blueprint.name}</span>
         </div>
         <button
-          onClick={() => {}}
+          onClick={onSubmit}
           className={cn(
             'w-fit',
             'flex items-center gap-3',
             'rounded pr-6 pl-4 py-3 text-lg',
             'bg-gradient-to-t',
-            // busy ? 'opacity-50 cursor-wait' : 'opacity-100 cursor-pointer',
+            state !== 0
+              ? 'opacity-50 cursor-wait'
+              : 'opacity-100 cursor-pointer',
             'border-2 border-amber-300/50',
             'from-amber-800 to-yellow-800'
           )}
-          // disabled={busy}
+          disabled={state !== 0}
         >
-          <CheckFat size={24} />
-          Create Recipe
-          {/* {state.processing && busy ? (
-                <Signature size={24} />
-              ) : (
-                <Play size={24} />
-              )}
-              {state.processing
-                ? busy
-                  ? 'Please Sign'
-                  : 'Resume Process'
-                : 'Start Process'} */}
+          {state === 0 ? (
+            <>
+              <FilePlus size={24} />
+              Create Recipe
+            </>
+          ) : (
+            <>
+              <Signature size={24} />
+              Please Sign
+            </>
+          )}
         </button>
       </div>
     </div>
