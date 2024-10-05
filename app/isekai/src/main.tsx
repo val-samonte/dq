@@ -7,6 +7,7 @@ import './index.css'
 import { Route, BrowserRouter as Router, Routes } from 'react-router-dom'
 import { ListBlueprintsPage } from './components/ListBlueprintsPage.tsx'
 import { ImportBpPage } from './components/ImportBpPage.tsx'
+import { CreateStoryPage } from './components/CreateStoryPage.tsx'
 
 const Reload = () => {
   return (
@@ -29,8 +30,8 @@ createRoot(document.getElementById('root')!).render(
         <Router>
           <Routes>
             <Route path={'/'} element={<App />} />
-            <Route path={'/story/new'} element={<App />} />
-            <Route path={'/stories'} element={<App />} />
+            <Route path={'/story/new'} element={<CreateStoryPage />} />
+            <Route path={'/stories'} element={<CreateStoryPage />} />
             <Route path={'/blueprints'} element={<ListBlueprintsPage />} />
             <Route path={'/:blueprintAddress/import'} element={<ImportBpPage />} />
           </Routes>
