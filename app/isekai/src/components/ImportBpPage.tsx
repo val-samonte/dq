@@ -31,7 +31,11 @@ export function ImportBpPage() {
         </div>
         <div className='flex flex-col w-lg overflow-hidden gap-4'>
           <div className='flex flex-col gap-2'>
-            <button id='typeDropdown' data-dropdown-toggle='ddOptions' className='text-white px-5 py-2.5 text-center inline-flex items-center rounded pr-6 pl-4 py-3 text-lg border-2 border-transparent bg-gray-600/50 justify-between' type='button' onClick={() => setShowOptions(!showOptions)}> <span>Item Type {(selectedType !== '') && '(' + selectedType.charAt(0).toUpperCase() + selectedType.slice(1) + ')' }</span>
+            <button id='typeDropdown' data-dropdown-toggle='ddOptions' className='text-white px-5 py-2.5 text-start inline-flex items-center rounded pr-6 pl-4 py-3 text-lg border-2 border-transparent bg-gray-600/50 justify-between w-[255px] max-w-lg' type='button' onClick={() => setShowOptions(!showOptions)}>
+              <span> {(selectedType !== '') ? selectedType.charAt(0).toUpperCase() + selectedType.slice(1) : 'Item Type'}
+                <br />
+                {(selectedType !== '') && <small>Item Type</small>}
+              </span>
               <CaretDown size={16} />
             </button>
             <div id='ddOptions' className={cn({'hidden': !showOptions},'z-10 w-full divide-y rounded-lg shadow w-44 bg-gray-700 divide-gray-600')}>
