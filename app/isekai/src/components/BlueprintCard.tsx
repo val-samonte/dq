@@ -5,6 +5,11 @@ import { Suspense, useEffect } from 'react'
 import { trimAddress } from '../utils/trimAddress'
 import { Link } from 'react-router-dom'
 
+interface BpProps {
+  id: string
+  simpleView?: boolean
+}
+
 function CardSkeleton() {
   return (
     <div className='overflow-hidden rounded-lg flex flex-col bg-gray-700'>
@@ -40,7 +45,7 @@ function CardSkeleton() {
   )
 }
 
-function CardWithData({ id, simpleView = false }: { id: string, simpleView: boolean }) {
+function CardWithData({ id, simpleView = false }: BpProps) {
   const blueprint = useAtomValue(blueprintAtom(id))
 
   if (!blueprint) {
@@ -74,18 +79,20 @@ function CardWithData({ id, simpleView = false }: { id: string, simpleView: bool
             </div>
             <div className='text-sm'>{trimAddress(blueprint.id)}</div>
           </Link>
-          <div className='text-xs uppercase tracking-wider opacity-50'>
-            Creator
+          <div className='flex flex-col gap-1 p-3 rounded bg-black/10'>
+            <div className='text-xs uppercase tracking-wider opacity-50'>
+              Creator
+            </div>
+            <div className='text-sm'>{trimAddress(blueprint.authority)}</div>
           </div>
-          <div className='text-sm'>{trimAddress(blueprint.authority)}</div>
         </div>)}
       </div>
     </div>
   )
 }
 
-export function BlueprintCard({ id, simpleView = false }: { id: string, simpleView: boolean }) {
-  const reload = useSetAtom(blueprintAtom(id))
+export function BlueprintCard({ id, simpleView = false }: BpProps) {
+  const reload = useSetAtom(blueprintAtom(id || ''))
 
   useEffect(() => {
     reload()
