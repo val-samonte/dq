@@ -19,14 +19,14 @@ export type BlueprintRecord = {
 export type RecipeRecord = {
   id: string
   blueprint: string
-  outputAmount: number
+  outputAmount: string
   ingredients: IngredientRecord[]
 }
 
 export type IngredientRecord = {
   asset: string
   assetType: number
-  amount: number
+  amount: string
   consumeMethod: number
 }
 

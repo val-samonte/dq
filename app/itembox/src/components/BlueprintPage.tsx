@@ -16,9 +16,9 @@ import {
   Shapes,
   Stack,
 } from '@phosphor-icons/react'
-import { PageHeader } from './PageHeader'
 import { useUserWallet } from '../atoms/userWalletAtom'
 import { CopyToClipboard } from './CopyToClipboard'
+import { BlueprintRecipes } from './BlueprintRecipes'
 
 function Content() {
   const wallet = useUserWallet()
@@ -137,7 +137,7 @@ function Content() {
           </div>
         </div>
       </div>
-      <PageHeader>{blueprint.name} Recipes</PageHeader>
+      <BlueprintRecipes {...blueprint} />
     </>
   )
 }
@@ -155,7 +155,7 @@ export function BlueprintPage() {
     <div className='absolute inset-0 flex flex-col'>
       <Nav />
       <CenterWrapper>
-        <div className='min-h-screen'>
+        <div className='min-h-[calc(100vh-4rem)]'>
           <Suspense fallback={null}>
             <Content />
           </Suspense>
