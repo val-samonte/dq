@@ -10,7 +10,7 @@ export type ConsumeMethod = 'retain' | 'burn' | 'transfer'
 
 export interface Ingredient {
   asset: PublicKey
-  amount: number
+  amount: BN
   consumeMethod: ConsumeMethod
 }
 
@@ -80,7 +80,7 @@ export class ItemboxSDK {
     blueprint: PublicKey,
     ingredients: {
       asset: PublicKey
-      amount: number
+      amount: BN
       consumeMethod: 'retain' | 'burn' | 'transfer'
     }[],
     outputAmount = 1
@@ -103,7 +103,7 @@ export class ItemboxSDK {
       .createRecipe({
         outputAmount: new BN(outputAmount),
         ingredients: ingredients.map(({ amount, consumeMethod }) => ({
-          amount: new BN(amount),
+          amount,
           consumeMethod: { retain: 0, burn: 1, transfer: 2 }[consumeMethod],
         })),
       })

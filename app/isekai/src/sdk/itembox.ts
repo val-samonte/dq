@@ -5,7 +5,7 @@
  * IDL can be found at `target/idl/itembox.json`.
  */
 export type Itembox = {
-  "address": "C7JFdGAV8HeTnv5zRFfKAXh2vCrUeuZWZeqekrX1RnAf",
+  "address": "2pYTUmoW7ZLCAwqztVQnXS6EwW8m8sdxMqEhFbdK6Bat",
   "metadata": {
     "name": "itembox",
     "version": "0.1.0",
