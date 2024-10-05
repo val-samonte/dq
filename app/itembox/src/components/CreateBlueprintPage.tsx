@@ -396,29 +396,30 @@ function BlueprintForm() {
       </div>
       <div className='flex flex-col items-center justify-between gap-5 p-5'>
         <div className='flex-none flex gap-2 text-gray-400 items-center justify-center relative'>
-          {[1, 2, 3].map((i) => {
-            if (step < i) {
-              return <RadioButton key={i} size={32} className='opacity-10' />
-            }
-            if (step === i) {
-              return (
-                <Fragment key={i}>
-                  {busy ? (
-                    <CircleNotch
-                      size={32}
-                      className='opacity-50 animate-spin'
-                    />
-                  ) : (
-                    <PauseCircle size={32} className='opacity-50' />
-                  )}
-                  {message}
-                </Fragment>
-              )
-            }
-            return <CheckCircle key={i} size={32} className='opacity-100' />
-          })}
+          {!blueprint &&
+            [1, 2, 3].map((i) => {
+              if (step < i) {
+                return <RadioButton key={i} size={32} className='opacity-10' />
+              }
+              if (step === i) {
+                return (
+                  <Fragment key={i}>
+                    {busy ? (
+                      <CircleNotch
+                        size={32}
+                        className='opacity-50 animate-spin'
+                      />
+                    ) : (
+                      <PauseCircle size={32} className='opacity-50' />
+                    )}
+                    {message}
+                  </Fragment>
+                )
+              }
+              return <CheckCircle key={i} size={32} className='opacity-100' />
+            })}
           {blueprint && (
-            <div className='bg-gray-800 absolute -inset-10 text-center flex items-center justify-center'>
+            <div className='text-center flex items-center justify-center'>
               <Link
                 to={`/blueprints/${blueprint}`}
                 className='flex rounded px-3 py-1 bg-green-900/10 text-green-200'

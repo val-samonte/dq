@@ -1,44 +1,14 @@
-import { BN } from '@coral-xyz/anchor'
 import { useAtomValue, useSetAtom } from 'jotai'
-import { Suspense, useEffect, useMemo } from 'react'
-import { recipeAtom } from '../atoms/recipeAtom'
-import { IngredientPill, IngredientPillProps } from './IngredientPill'
-import { PublicKey } from '@solana/web3.js'
+import { Suspense, useEffect } from 'react'
+import { ingredientsAtom, recipeAtom } from '../atoms/recipeAtom'
+import { IngredientPill } from './IngredientPill'
 import cn from 'classnames'
 import { FilePlus } from '@phosphor-icons/react'
 import { Link } from 'react-router-dom'
 
-type IngredientData = IngredientPillProps & { id: string }
-
 function Content({ id }: { id: string }) {
   const recipe = useAtomValue(recipeAtom(id))
-
-  const { ingredients, requirements } = useMemo(() => {
-    const ingredients: IngredientData[] = []
-    const requirements: IngredientData[] = []
-
-    if (recipe) {
-      recipe.ingredients.forEach((ingredient) => {
-        const data: IngredientData = {
-          id: ingredient.asset,
-          asset: new PublicKey(ingredient.asset),
-          amount: new BN(ingredient.amount),
-          assetType: ingredient.assetType,
-          consumeMethod: ingredient.consumeMethod,
-        }
-        if (data.consumeMethod === 0) {
-          requirements.push(data)
-        } else {
-          ingredients.push(data)
-        }
-      })
-    }
-
-    return {
-      ingredients,
-      requirements,
-    }
-  }, [recipe])
+  const { ingredients, requirements } = useAtomValue(ingredientsAtom(id))
 
   if (!recipe) return null
 

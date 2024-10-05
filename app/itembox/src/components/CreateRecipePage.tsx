@@ -1,3 +1,4 @@
+import { BN } from '@coral-xyz/anchor'
 import { useNavigate, useParams } from 'react-router-dom'
 import { blueprintAtom } from '../atoms/blueprintAtom'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
@@ -81,7 +82,7 @@ function Content() {
     try {
       const ingredients = selectedIngredients.map((ingredient) => ({
         asset: new PublicKey(ingredient.id),
-        amount: parseNumber(ingredient.amount, 1),
+        amount: new BN(ingredient.amount, 1),
         consumeMethod: ingredient.consumeMethod,
       }))
 

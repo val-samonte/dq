@@ -50,7 +50,6 @@ function App() {
                   )}
                   onClick={() => {
                     if (dummy.current) {
-                      console.log(dummy.current)
                       dummy.current.scrollIntoView({ behavior: 'smooth' })
                     }
                   }}

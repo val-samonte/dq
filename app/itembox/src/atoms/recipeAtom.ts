@@ -1,10 +1,12 @@
-import { IdlAccounts } from '@coral-xyz/anchor'
+import { BN, IdlAccounts } from '@coral-xyz/anchor'
 import { Itembox } from '../sdk/itembox'
 import { atom } from 'jotai'
 import { programAtom } from './programAtom'
 import { BatchCallback } from '../utils/BatchCallback'
 import { atomFamily } from 'jotai/utils'
 import { idbAtom, RecipeRecord } from './idbAtom'
+import { IngredientPillProps } from '../components/IngredientPill'
+import { PublicKey } from '@solana/web3.js'
 
 type BatchResult = {
   account: IdlAccounts<Itembox>['recipe']
@@ -73,4 +75,48 @@ export const recipeAtom = atomFamily((id: string) =>
       set(refresher(id), Date.now())
     }
   )
+)
+
+export type IngredientData = IngredientPillProps & { id: string }
+
+export const ingredientsAtom = atomFamily((id: string) =>
+  atom<
+    Promise<{
+      ingredients: IngredientData[]
+      requirements: IngredientData[]
+      hasNonFungible: boolean
+    }>
+  >(async (get) => {
+    const recipe = await get(recipeAtom(id))
+
+    const ingredients: IngredientData[] = []
+    const requirements: IngredientData[] = []
+    let hasNonFungible = false
+
+    if (recipe) {
+      recipe.ingredients.forEach((ingredient) => {
+        if (ingredient.assetType === 0 && !hasNonFungible) {
+          hasNonFungible = true
+        }
+        const data: IngredientData = {
+          id: ingredient.asset,
+          asset: new PublicKey(ingredient.asset),
+          amount: new BN(ingredient.amount),
+          assetType: ingredient.assetType,
+          consumeMethod: ingredient.consumeMethod,
+        }
+        if (data.consumeMethod === 0) {
+          requirements.push(data)
+        } else {
+          ingredients.push(data)
+        }
+      })
+    }
+
+    return {
+      ingredients,
+      requirements,
+      hasNonFungible,
+    }
+  })
 )
