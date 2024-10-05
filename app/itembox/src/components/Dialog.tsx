@@ -18,10 +18,10 @@ export default function Dialog({ show, children, onClose }: DialogProps) {
       <UiDialog onClose={onClose ?? (() => {})} className='relative z-50'>
         <TransitionChild
           as={Fragment}
-          enter='ease-linear duration-500'
+          enter='ease-linear duration-300'
           enterFrom='opacity-0'
           enterTo='opacity-100'
-          leave='ease-linear duration-500'
+          leave='ease-linear duration-300'
           leaveFrom='opacity-100'
           leaveTo='opacity-0'
         >
@@ -33,14 +33,14 @@ export default function Dialog({ show, children, onClose }: DialogProps) {
               onClick={onClose}
               className={cn(
                 'cursor-default',
-                'backdrop-grayscale backdrop-opacity-80 bg-black/90 w-full h-full'
+                'backdrop-grayscale backdrop-opacity-80 bg-black/60 w-full h-full'
               )}
             />
           </div>
         </TransitionChild>
         <TransitionChild
           as={Fragment}
-          enter='ease-out duration-300 delay-100'
+          enter='ease-out duration-300'
           enterFrom='opacity-0 scale-95'
           enterTo='opacity-100 scale-100'
           leave='ease-in duration-200'

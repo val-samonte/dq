@@ -11,6 +11,7 @@ import { UserPage } from './components/UserPage.tsx'
 import cn from 'classnames'
 import { BlueprintPage } from './components/BlueprintPage.tsx'
 import { CreateRecipePage } from './components/CreateRecipePage.tsx'
+import { AllDialogs } from './components/dialogs/AllDialogs.tsx'
 
 const Reload = () => {
   return (
@@ -52,6 +53,7 @@ createRoot(document.getElementById('root')!).render(
               element={<CreateRecipePage />}
             />
           </Routes>
+          <AllDialogs />
         </Router>
       </WalletAdapter>
     </ErrorBoundary>

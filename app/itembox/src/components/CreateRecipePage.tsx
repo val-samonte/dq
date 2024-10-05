@@ -31,6 +31,7 @@ import { parseNumber } from '../utils/formatNumber'
 import { itemboxSdkAtom } from '../atoms/itemboxSdkAtom'
 import { PublicKey } from '@solana/web3.js'
 import { programAtom } from '../atoms/programAtom'
+import { recipeCreatedAtom } from './dialogs/RecipeCreated'
 
 function Content() {
   const wallet = useUserWallet()
@@ -48,6 +49,7 @@ function Content() {
   const [tab, setTab] = useAtom(createRecipeTabAtom)
   const [search, setSearch] = useAtom(assetSearchAtom)
   const [state, setState] = useAtom(createRecipeStateAtom)
+  const showDialog = useSetAtom(recipeCreatedAtom)
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -89,11 +91,19 @@ function Content() {
 
       const recipeData = await program.account.recipe.fetch(result.recipe)
 
-      console.log(result)
-      console.log(recipeData)
+      setIngredients({
+        type: SelectedIngredientActionTypes.CLEAR,
+      })
+
+      setOutputAmount('1')
+
+      showDialog({
+        account: recipeData,
+        publicKey: result.recipe.toBase58(),
+        signature: result.signature,
+      })
     } catch (e) {
       console.error(e)
-      setState(0)
     }
 
     setState(0)
