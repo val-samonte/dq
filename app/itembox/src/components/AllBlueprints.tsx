@@ -6,7 +6,7 @@ import { allBlueprintsAtom } from '../atoms/allBlueprintsAtom'
 
 function Content() {
   const blueprints = useAtomValue(allBlueprintsAtom)
-  console.log('bps2', blueprints)
+
   return (
     <BlueprintsGrid ids={blueprints}>
       <PageHeader>Explore Blueprints</PageHeader>
