@@ -185,7 +185,7 @@ pub fn craft_item_handler<'a, 'b, 'c, 'info>(
               );
             
               if let Some(ata_account_info) = account_map.get(&ata_pubkey) {
-                let required_amount = ingredient.amount * 10u64.pow(mint_account.decimals as u32);
+                let required_amount = ingredient.amount;
 
                 let ata_account = deserialize_ata(ata_account_info)?;
 
@@ -289,8 +289,7 @@ pub fn craft_item_handler<'a, 'b, 'c, 'info>(
 
           if let Some(ata_account_info) = account_map.get(&ata_pubkey) {
             let ata_account = deserialize_ata(ata_account_info)?;
-            let mint_account = deserialize_mint(asset_account)?;
-            let required_amount = ingredient.amount * 10u64.pow(mint_account.decimals as u32);
+            let required_amount = ingredient.amount;
             
             if ata_account.amount < required_amount {
               return Err(CraftItemError::InsufficientIngredientAmount.into());

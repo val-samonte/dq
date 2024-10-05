@@ -72,12 +72,12 @@ export function SelectedIngredient({ id }: { id: string }) {
             </div>
           ) : (
             <NumberInput
-              min={selected.assetType === 1 ? 1 : 1 / 10 ** selected.decimals}
               decimals={selected.assetType === 1 ? 0 : selected.decimals}
               className='flex-auto w-full bg-black/10 rounded px-3 py-2'
               placeholder='Amount'
               value={selected.amount}
               onChange={(e) => {
+                console.log(selected.decimals)
                 setIngredients({
                   ...selected,
                   type: SelectedIngredientActionTypes.UPDATE,

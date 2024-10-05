@@ -9,7 +9,7 @@ pub use instructions::*;
 pub use utils::*;
 pub use utils2022::*;
 
-declare_id!("44kRkhgfk9gQoj7DvqaBmVa7ShVsCr3hjxfibgzgvJjt");
+declare_id!("2pYTUmoW7ZLCAwqztVQnXS6EwW8m8sdxMqEhFbdK6Bat");
 
 #[program]
 pub mod itembox {

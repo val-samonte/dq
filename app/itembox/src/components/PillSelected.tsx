@@ -29,7 +29,6 @@ export function PillSelected({
         </div>
       ) : (
         <NumberInput
-          min={1 / 10 ** decimals}
           decimals={decimals}
           className='flex-1 bg-black/20 rounded px-2 py-1'
           placeholder='Amount'

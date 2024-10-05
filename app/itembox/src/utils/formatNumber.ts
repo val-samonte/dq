@@ -1,30 +1,58 @@
-export const parseNumber = (num: string, fallback?: number) => {
-  num = num ?? ''
-  let cleanNum = num.replace(/[^0-9.,]/g, '')
+import { BN } from '@coral-xyz/anchor'
 
-  cleanNum = cleanNum.replace(/,/g, '.')
-
-  const parts = cleanNum.split('.')
-
-  if (parts.length > 2) {
-    cleanNum =
-      parts.slice(0, parts.length - 1).join('') + '.' + parts.slice(-1).join('')
-  }
-
-  if (typeof fallback !== 'undefined') {
-    const result = parseFloat(cleanNum)
-    return isNaN(result) ? fallback : result
-  }
-
-  return parseFloat(cleanNum)
+// Helper function to handle decimals with BN
+const scaleToInteger = (value: string, decimals: number): BN => {
+  const cleanedValue = value.replace(/[^0-9.,]/g, '').replace(/,/g, '.')
+  const [integerPart, fractionalPart = ''] = cleanedValue.split('.')
+  const scaledFraction = fractionalPart.padEnd(decimals, '0').slice(0, decimals)
+  return new BN(integerPart + scaledFraction)
 }
 
-export const formatNumber = (num: string, decimals = 4) => {
-  const numValue = parseNumber(num)
-  return isNaN(numValue)
-    ? ''
-    : numValue.toLocaleString('en-US', {
-        minimumFractionDigits: decimals,
-        maximumFractionDigits: decimals,
-      })
+// Function to parse a number string into BN
+export const parseNumberBN = (
+  num: string,
+  decimals: number,
+  fallback?: BN
+): BN => {
+  try {
+    const cleanNum = num ?? ''
+    const bnValue = scaleToInteger(cleanNum, decimals)
+    return bnValue
+  } catch {
+    if (typeof fallback !== 'undefined') {
+      return fallback
+    }
+    throw new Error('Invalid number format')
+  }
+}
+
+// Function to format a BN value to a string with decimals
+export const formatNumberBN = (bn: BN, decimals: number = 4): string => {
+  const bnStr = bn.toString().padStart(decimals + 1, '0')
+  const integerPart = bnStr.slice(0, bnStr.length - decimals) || '0'
+  const fractionalPart = bnStr.slice(-decimals).padEnd(decimals, '0')
+
+  const formattedNumber = `${integerPart}.${fractionalPart}`
+  return parseFloat(formattedNumber).toLocaleString('en-US', {
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals,
+  })
+}
+
+export function convertToBN(valueStr: string, decimals: number) {
+  const cleanedValueStr = valueStr.replace(/,/g, '')
+
+  const [integerPart, fractionalPart = ''] = cleanedValueStr.split('.')
+
+  let fullFractionalPart = fractionalPart
+
+  if (decimals === 0) {
+    fullFractionalPart = ''
+  } else {
+    fullFractionalPart = fractionalPart.padEnd(decimals, '0')
+  }
+
+  const integerRepresentation = integerPart + fullFractionalPart
+
+  return new BN(integerRepresentation)
 }

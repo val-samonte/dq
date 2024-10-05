@@ -1,16 +1,16 @@
 import { BN, Program } from '@coral-xyz/anchor'
 import { Keypair, PublicKey } from '@solana/web3.js'
-import { Itembox } from '../target/types/itembox'
 import {
   getAssociatedTokenAddressSync,
   TOKEN_2022_PROGRAM_ID,
 } from '@solana/spl-token'
+import { Itembox } from '../target/types/itembox'
 
 export type ConsumeMethod = 'retain' | 'burn' | 'transfer'
 
 export interface Ingredient {
   asset: PublicKey
-  amount: number
+  amount: BN
   consumeMethod: ConsumeMethod
 }
 
@@ -80,7 +80,7 @@ export class ItemboxSDK {
     blueprint: PublicKey,
     ingredients: {
       asset: PublicKey
-      amount: number
+      amount: BN
       consumeMethod: 'retain' | 'burn' | 'transfer'
     }[],
     outputAmount = 1
@@ -103,7 +103,7 @@ export class ItemboxSDK {
       .createRecipe({
         outputAmount: new BN(outputAmount),
         ingredients: ingredients.map(({ amount, consumeMethod }) => ({
-          amount: new BN(amount),
+          amount,
           consumeMethod: { retain: 0, burn: 1, transfer: 2 }[consumeMethod],
         })),
       })
@@ -146,7 +146,7 @@ export class ItemboxSDK {
         throw new Error('Amount must be an integer')
       }
 
-      await this.program.methods
+      signature = await this.program.methods
         .mintItem({
           amount: new BN(1),
         })
@@ -195,6 +195,10 @@ export class ItemboxSDK {
     recipe: PublicKey,
     nonFungibleIngredients: { collection: PublicKey; item: PublicKey }[]
   ) {
+    if (!this.program.provider.publicKey) {
+      throw new Error('Wallet is not connected')
+    }
+
     const assetSigner = Keypair.generate()
     const recipeData = await this.program.account.recipe.fetch(recipe)
     const blueprintData = await this.program.account.blueprint.fetch(
@@ -281,7 +285,7 @@ export class ItemboxSDK {
           // include owner ata of the mint, token2022
           const ownerAta = getAssociatedTokenAddressSync(
             mint,
-            this.program.provider.publicKey,
+            this.program.provider.publicKey!,
             true,
             TOKEN_2022_PROGRAM_ID
           )
@@ -308,7 +312,7 @@ export class ItemboxSDK {
           // include owner ata
           const ownerAta = getAssociatedTokenAddressSync(
             mint,
-            this.program.provider.publicKey,
+            this.program.provider.publicKey!,
             true
           )
           addToList(ownerAta)
@@ -333,7 +337,7 @@ export class ItemboxSDK {
           // include owner ata of the mint, token2022
           const ownerAta = getAssociatedTokenAddressSync(
             mint,
-            this.program.provider.publicKey,
+            this.program.provider.publicKey!,
             true,
             TOKEN_2022_PROGRAM_ID
           )

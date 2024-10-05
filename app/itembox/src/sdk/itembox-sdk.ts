@@ -10,7 +10,7 @@ export type ConsumeMethod = 'retain' | 'burn' | 'transfer'
 
 export interface Ingredient {
   asset: PublicKey
-  amount: number
+  amount: BN
   consumeMethod: ConsumeMethod
 }
 

@@ -300,17 +300,17 @@ describe('DeezQuest: Itembox Program', () => {
     const ingredients: Ingredient[] = [
       {
         asset: splTokenMintIngredient,
-        amount: 10,
+        amount: new BN('10000000000'),
         consumeMethod: 'transfer',
       },
       {
         asset: refinedCopperBlueprint,
-        amount: 10,
+        amount: new BN(10),
         consumeMethod: 'burn',
       },
       {
         asset: hiltBlueprint,
-        amount: 1,
+        amount: new BN(1),
         consumeMethod: 'burn',
       },
     ]
@@ -324,7 +324,7 @@ describe('DeezQuest: Itembox Program', () => {
 
     ingredients.forEach((ing, i) => {
       expect(data.ingredients[i].asset.equals(ing.asset)).eq(true)
-      expect(data.ingredients[i].amount.toNumber()).eq(ing.amount)
+      expect(data.ingredients[i].amount.toString()).eq(ing.amount.toString())
       expect(
         ['retain', 'burn', 'transfer'][data.ingredients[i].consumeMethod]
       ).eq(ing.consumeMethod)
@@ -338,12 +338,12 @@ describe('DeezQuest: Itembox Program', () => {
     const ingredients: Ingredient[] = [
       {
         asset: splTokenMintIngredient,
-        amount: 10,
+        amount: new BN(10000000000),
         consumeMethod: 'burn',
       },
       {
         asset: refinedCopperBlueprint,
-        amount: 10,
+        amount: new BN(10),
         consumeMethod: 'retain',
       },
     ]
@@ -361,7 +361,7 @@ describe('DeezQuest: Itembox Program', () => {
 
     ingredients.forEach((ing, i) => {
       expect(data.ingredients[i].asset.equals(ing.asset)).eq(true)
-      expect(data.ingredients[i].amount.toNumber()).eq(ing.amount)
+      expect(data.ingredients[i].amount.toString()).eq(ing.amount.toString())
       expect(
         ['retain', 'burn', 'transfer'][data.ingredients[i].consumeMethod]
       ).eq(ing.consumeMethod)

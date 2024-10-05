@@ -28,7 +28,7 @@ import { NumberInput } from './NumberInput'
 import { TokensList } from './TokensList'
 import { assetSearchAtom } from '../atoms/tokensListAtom'
 import { BlueprintsList } from './BlueprintsList'
-import { parseNumber } from '../utils/formatNumber'
+import { convertToBN, parseNumberBN } from '../utils/formatNumber'
 import { itemboxSdkAtom } from '../atoms/itemboxSdkAtom'
 import { PublicKey } from '@solana/web3.js'
 import { programAtom } from '../atoms/programAtom'
@@ -72,19 +72,23 @@ function Content() {
     if (!blueprintId) return
     // todo: validate ingredients
 
-    const output = parseNumber(outputAmount, 0)
-    if (output === 0) {
+    const output = parseNumberBN(outputAmount, 0)
+    if (output.eq(new BN(0))) {
       return
     }
 
     setState(1)
 
     try {
-      const ingredients = selectedIngredients.map((ingredient) => ({
-        asset: new PublicKey(ingredient.id),
-        amount: new BN(ingredient.amount, 1),
-        consumeMethod: ingredient.consumeMethod,
-      }))
+      const ingredients = selectedIngredients.map((ingredient) => {
+        const parsedNumber = convertToBN(ingredient.amount, ingredient.decimals)
+
+        return {
+          asset: new PublicKey(ingredient.id),
+          amount: parsedNumber,
+          consumeMethod: ingredient.consumeMethod,
+        }
+      })
 
       const result = await sdk.createRecipe(
         new PublicKey(blueprintId),
@@ -278,8 +282,7 @@ function Content() {
           ) : (
             <NumberInput
               disabled={state !== 0}
-              min={1}
-              step={1}
+              min={new BN(1)}
               decimals={0}
               className='w-full max-w-14 bg-black/10 rounded px-3 py-2 text-center'
               value={outputAmount}

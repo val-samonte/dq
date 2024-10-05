@@ -85,6 +85,9 @@ function Content() {
             Transaction
           </a>
           <Link
+            onClick={() => {
+              setData(null)
+            }}
             to={`/blueprints/${data.account.blueprint.toBase58()}/recipes/${
               data.publicKey
             }`}
