@@ -26,17 +26,23 @@ export const parseNumberBN = (
   }
 }
 
-// Function to format a BN value to a string with decimals
 export const formatNumberBN = (bn: BN, decimals: number = 4): string => {
-  const bnStr = bn.toString().padStart(decimals + 1, '0')
-  const integerPart = bnStr.slice(0, bnStr.length - decimals) || '0'
-  const fractionalPart = bnStr.slice(-decimals).padEnd(decimals, '0')
+  const bnStr = bn.toString()
 
-  const formattedNumber = `${integerPart}.${fractionalPart}`
-  return parseFloat(formattedNumber).toLocaleString('en-US', {
-    minimumFractionDigits: decimals,
-    maximumFractionDigits: decimals,
-  })
+  if (decimals === 0) {
+    // No decimal places required, return as is
+    return bnStr
+  }
+
+  // Pad the BN string to ensure it has enough length to extract decimals
+  const paddedStr = bnStr.padStart(decimals + 1, '0')
+
+  // Calculate the positions for integer and fractional parts
+  const integerPart = paddedStr.slice(0, paddedStr.length - decimals) || '0'
+  const fractionalPart = paddedStr.slice(-decimals)
+
+  // Format the final value
+  return `${integerPart}.${fractionalPart}`
 }
 
 export function convertToBN(valueStr: string, decimals: number) {

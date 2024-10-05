@@ -16,9 +16,7 @@ function Content() {
   const { ingredients, requirements, hasNonFungible } = useAtomValue(
     ingredientsAtom(recipeId || '')
   )
-  console.log(recipe)
   const blueprint = useAtomValue(blueprintAtom(recipe?.blueprint || ''))
-  // const navigate = useNavigate()
 
   const [tab, setTab] = useState('nonfungible')
 

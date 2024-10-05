@@ -50,7 +50,7 @@ function WithData({ id }: { id: string }) {
         name: blueprint.name,
         image: blueprint.image,
         authority: blueprint.authority,
-        decimals: 1,
+        decimals: 0,
       })
     } else {
       setIngredients({

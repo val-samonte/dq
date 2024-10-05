@@ -8,6 +8,7 @@ import { explorerAddress } from '../utils/explorerAddress'
 import { PublicKey } from '@solana/web3.js'
 import { CircleNotch } from '@phosphor-icons/react'
 import { PillExpanded } from './PillExpanded'
+import { formatNumberBN } from '../utils/formatNumber'
 
 export interface IngredientPillProps {
   asset: PublicKey
@@ -44,7 +45,7 @@ function Blueprint({ asset, amount }: IngredientPillProps) {
           to: `/user/${blueprint.authority}`,
         },
       ]}
-      amount={amount}
+      amount={formatNumberBN(amount, 0)}
     />
   )
 }
@@ -71,7 +72,7 @@ function Token({ asset, amount }: IngredientPillProps) {
           label: token.symbol,
         },
       ]}
-      amount={amount}
+      amount={formatNumberBN(amount, token.decimals)}
     />
   )
 }

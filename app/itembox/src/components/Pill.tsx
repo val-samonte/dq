@@ -1,4 +1,3 @@
-import { BN } from '@coral-xyz/anchor'
 import { X } from '@phosphor-icons/react'
 import cn from 'classnames'
 import { ReactNode } from 'react'
@@ -14,7 +13,7 @@ export interface PillProps {
     to?: string
     onClick?: () => void
   }[]
-  amount?: BN
+  amount?: string
   selected?: boolean
   children?: ReactNode
   onClick?: () => void

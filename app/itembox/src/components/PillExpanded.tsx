@@ -1,4 +1,3 @@
-import { BN } from '@coral-xyz/anchor'
 import cn from 'classnames'
 import { ReactNode } from 'react'
 import { Link } from 'react-router-dom'
@@ -13,7 +12,7 @@ export interface PillExpandedProps {
     to?: string
     onClick?: () => void
   }[]
-  amount?: BN
+  amount?: string
   selected?: boolean
   children?: ReactNode
   onClick?: () => void
