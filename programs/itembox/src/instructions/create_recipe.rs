@@ -45,6 +45,8 @@ pub fn create_recipe_handler(ctx: Context<CreateRecipe>, args: CreateRecipeArgs)
   recipe.bump = ctx.bumps.recipe;
   recipe.blueprint = ctx.accounts.blueprint.key();
   recipe.output_amount = args.output_amount;
+
+  let mut clear_requirements = false;
   
   for (index, account_info) in remaining_accounts.iter().enumerate() {
 
@@ -53,6 +55,15 @@ pub fn create_recipe_handler(ctx: Context<CreateRecipe>, args: CreateRecipeArgs)
     }
 
     if let Some(ingredient) = args.ingredients.get(index) {
+
+      if ingredient.amount == 0 {
+        return Err(CreateRecipeError::IngredientAmountIsZero.into());
+      }
+
+      if ingredient.consume_method > 0 && !clear_requirements {
+        clear_requirements = true;
+      }
+
       // TODO: SECURITY RISK, we cannot rely with this comparison
       if account_info.owner.eq(&crate::id()) {
         let blueprint_account = Blueprint::from_account_info(&account_info)?;
@@ -91,6 +102,14 @@ pub fn create_recipe_handler(ctx: Context<CreateRecipe>, args: CreateRecipeArgs)
     }
   }
 
+  if recipe.ingredients.len() == 0 {
+    return Err(CreateRecipeError::NoIngredients.into());
+  }
+
+  if !clear_requirements {
+    return Err(CreateRecipeError::IngredientIsRetainOnly.into());
+  }
+
   Ok(())
 }
 
@@ -114,4 +133,13 @@ pub enum CreateRecipeError {
 
   #[msg("Missing ingredient definition for the remaining accounts")]
   MissingIngredientDefinition,
+
+  #[msg("Ingredient amount should not be equal to zero")]
+  IngredientAmountIsZero,
+
+  #[msg("One of the ingredients must not have Retain as consume method")]
+  IngredientIsRetainOnly,
+
+  #[msg("No ingredients provided")]
+  NoIngredients
 }

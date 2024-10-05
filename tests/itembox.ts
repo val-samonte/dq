@@ -339,7 +339,7 @@ describe('DeezQuest: Itembox Program', () => {
       {
         asset: splTokenMintIngredient,
         amount: 10,
-        consumeMethod: 'retain',
+        consumeMethod: 'burn',
       },
       {
         asset: refinedCopperBlueprint,

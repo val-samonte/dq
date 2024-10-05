@@ -32,6 +32,7 @@ import { itemboxSdkAtom } from '../atoms/itemboxSdkAtom'
 import { PublicKey } from '@solana/web3.js'
 import { programAtom } from '../atoms/programAtom'
 import { recipeCreatedAtom } from './dialogs/RecipeCreated'
+import { BlueprintHeader } from './BlueprintHeader'
 
 function Content() {
   const wallet = useUserWallet()
@@ -113,18 +114,12 @@ function Content() {
 
   return (
     <div className='flex flex-col p-5 gap-5'>
-      <div className='flex gap-5 items-center lg:py-5'>
-        <div className='w-24 h-24 aspect-square rounded-lg overflow-hidden'>
-          <img
-            src={blueprint.image}
-            className='w-full h-full object-contain '
-          />
-        </div>
-        <h1 className='text-xl lg:text-4xl tracking-wider'>
-          <span className='text-base'>New Recipe for</span>
-          <br /> {blueprint.name}
-        </h1>
-      </div>
+      <BlueprintHeader
+        to={`/blueprints/${blueprint.id}`}
+        name={blueprint.name}
+        image={blueprint.image}
+        title={'New Recipe for'}
+      />
       <div className={cn('h-[60vh] grid grid-cols-12 gap-5')}>
         <div
           className={cn(
