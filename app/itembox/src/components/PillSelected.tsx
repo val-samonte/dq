@@ -8,6 +8,7 @@ export interface PillSelectedProps {
   amount: string
   decimals: number
   consumeMethod: 'retain' | 'burn' | 'transfer'
+  nonFungible?: boolean
   onAmountChange: (value: string) => void
   onConsumeMethodChange: (value: 'retain' | 'burn' | 'transfer') => void
 }
@@ -16,19 +17,26 @@ export function PillSelected({
   amount,
   decimals,
   consumeMethod,
+  nonFungible,
   onAmountChange,
   onConsumeMethodChange,
 }: PillSelectedProps) {
   return (
     <div className='grid lg:hidden grid-cols-2 gap-2 px-2 pb-2 text-sm'>
-      <NumberInput
-        min={1 / 10 ** decimals}
-        decimals={decimals}
-        className='flex-1 bg-black/20 rounded px-2 py-1'
-        placeholder='Amount'
-        value={amount}
-        onChange={onAmountChange}
-      />
+      {nonFungible ? (
+        <div className='flex-1 bg-black/20 rounded px-2 py-1'>
+          1 <span className='text-gray-400 ml-2'>(Fixed)</span>
+        </div>
+      ) : (
+        <NumberInput
+          min={1 / 10 ** decimals}
+          decimals={decimals}
+          className='flex-1 bg-black/20 rounded px-2 py-1'
+          placeholder='Amount'
+          value={amount}
+          onChange={onAmountChange}
+        />
+      )}
       <Menu>
         <MenuButton
           className={cn(

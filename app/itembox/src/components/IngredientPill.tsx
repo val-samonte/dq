@@ -1,18 +1,85 @@
-// 0 or 1 - use blueprint
-// 2 - use spl
-// 3 - use token2022
+import { BN } from '@coral-xyz/anchor'
+import { Suspense, useEffect } from 'react'
+import { PillSkeleton } from './PillSkeleton'
+import { useAtom, useAtomValue } from 'jotai'
+import { blueprintAtom } from '../atoms/blueprintAtom'
+import { tokenDataAtom } from '../atoms/tokensListAtom'
+import { Pill } from './Pill'
+import { trimAddress } from '../utils/trimAddress'
+import { explorerAddress } from '../utils/explorerAddress'
+import { PublicKey } from '@solana/web3.js'
 
-// [
-//   {
-//       "asset": "F5F6hfDu8KdvUoD8Lv5qZmbDEkyYRy61NHYD3DAo3c3p",
-//       "assetType": 0,
-//       "amount": "01",
-//       "consumeMethod": 2
-//   },
-//   {
-//       "asset": "oreoU2P8bN6jkk3jbaiVxYnG1dCXcYxwhwyK9jSybcp",
-//       "assetType": 2,
-//       "amount": "01",
-//       "consumeMethod": 2
-//   }
-// ]
+export interface IngredientPillProps {
+  asset: PublicKey
+  assetType: number
+  amount: BN
+  consumeMethod: number
+}
+
+function Blueprint({ asset, amount }: IngredientPillProps) {
+  const id = asset.toBase58()
+  const [blueprint, reload] = useAtom(blueprintAtom(id))
+
+  useEffect(() => {
+    reload()
+  }, [])
+
+  if (!blueprint) {
+    return null
+  }
+
+  return (
+    <Pill
+      name={blueprint.name}
+      image={blueprint.image}
+      tags={[
+        {
+          label: 'ID',
+          value: trimAddress(id),
+          to: `/blueprints/${id}`,
+        },
+        {
+          label: 'BY',
+          value: trimAddress(blueprint.authority),
+          to: `/user/${blueprint.authority}`,
+        },
+      ]}
+      amount={amount}
+    />
+  )
+}
+
+function Token({ asset, amount }: IngredientPillProps) {
+  const id = asset.toBase58()
+  const token = useAtomValue(tokenDataAtom(id))
+
+  if (!token) {
+    return null
+  }
+
+  return (
+    <Pill
+      name={token.name}
+      image={token.image}
+      tags={[
+        {
+          label: 'Mint',
+          value: trimAddress(id),
+          href: explorerAddress(id),
+        },
+        {
+          label: token.symbol,
+        },
+      ]}
+      amount={amount}
+    />
+  )
+}
+
+export function IngredientPill(props: IngredientPillProps) {
+  return (
+    <Suspense fallback={<PillSkeleton />}>
+      {props.assetType < 2 ? <Blueprint {...props} /> : <Token {...props} />}
+    </Suspense>
+  )
+}

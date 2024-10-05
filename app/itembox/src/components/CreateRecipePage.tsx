@@ -91,6 +91,8 @@ function Content() {
 
       const recipeData = await program.account.recipe.fetch(result.recipe)
 
+      setState(0)
+
       setIngredients({
         type: SelectedIngredientActionTypes.CLEAR,
       })

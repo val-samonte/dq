@@ -8,6 +8,7 @@ import { NumberSquareOne, Stack } from '@phosphor-icons/react'
 import { explorerTransaction } from '../../utils/explorerAddress'
 import cn from 'classnames'
 import { Link } from 'react-router-dom'
+import { IngredientPill } from '../IngredientPill'
 export interface RecipeCreatedDialogProps {
   account: IdlAccounts<Itembox>['recipe']
   publicKey: string
@@ -63,23 +64,10 @@ function Content() {
             amount={data.account.outputAmount.toString()}
           />
         </Suspense>
-        <div className='flex flex-col'>
-          {/* 
-          [
-            {
-                "asset": "F5F6hfDu8KdvUoD8Lv5qZmbDEkyYRy61NHYD3DAo3c3p",
-                "assetType": 0,
-                "amount": "01",
-                "consumeMethod": 2
-            },
-            {
-                "asset": "oreoU2P8bN6jkk3jbaiVxYnG1dCXcYxwhwyK9jSybcp",
-                "assetType": 2,
-                "amount": "01",
-                "consumeMethod": 2
-            }
-          ] 
-          */}
+        <div className='flex flex-col gap-1 w-full'>
+          {data.account.ingredients.map((ingredient) => (
+            <IngredientPill {...ingredient} key={ingredient.asset.toBase58()} />
+          ))}
         </div>
         <div className='flex gap-5 w-full'>
           <a

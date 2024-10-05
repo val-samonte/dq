@@ -15,7 +15,7 @@ export function PillSkeleton() {
         <div className='flex-none rounded w-20 h-20 bg-black/20 overflow-hidden flex items-center justify-center'>
           <CircleNotch size={28} className='opacity-10 animate-spin' />
         </div>
-        <div className='flex flex-col gap-1 justify-center'>
+        <div className='flex flex-col gap-2 justify-center'>
           <div className='opacity-50'>
             <div className='w-32 h-6 animate-pulse bg-white rounded' />
           </div>

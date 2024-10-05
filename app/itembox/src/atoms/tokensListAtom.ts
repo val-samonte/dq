@@ -6,6 +6,7 @@ import { atom } from 'jotai'
 import tokens from '../assets/tokens.json'
 import { PublicKey } from '@solana/web3.js'
 import { allBlueprintsAtom } from './allBlueprintsAtom'
+import { atomFamily } from 'jotai/utils'
 
 export interface TokenItem {
   id: string
@@ -64,6 +65,30 @@ export const queriedTokenAtom = atom(async (get) => {
 
   return null
 })
+
+export const tokenDataAtom = atomFamily((id: string) =>
+  atom(async () => {
+    const found = tokens.find((token) => token.id === id)
+    if (found) return found as TokenItem
+
+    try {
+      const response = await fetch(`https://tokens.jup.ag/token/${id}`)
+      if (!response.ok) return null
+
+      const data = await response.json()
+
+      return {
+        id: data.address,
+        name: data.name,
+        symbol: data.symbol,
+        decimals: data.symbols,
+        image: data.logoURI,
+      } as TokenItem
+    } catch (e) {}
+
+    return null
+  })
+)
 
 export const blueprintsListAtom = atom(async (get) => {
   const search = get(assetSearchAtom)
