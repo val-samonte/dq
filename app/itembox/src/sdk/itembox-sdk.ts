@@ -83,13 +83,13 @@ export class ItemboxSDK {
       amount: BN
       consumeMethod: 'retain' | 'burn' | 'transfer'
     }[],
-    outputAmount = 1
+    outputAmount = new BN(1)
   ) {
     const blueprintData = await this.program.account.blueprint.fetch(blueprint)
     const recipeSigner = Keypair.generate()
 
     if (blueprintData.nonFungible) {
-      if (outputAmount > 1) {
+      if (outputAmount.gt(new BN(1))) {
         throw new Error(
           'Recipes cannot produce more than one non-fungible item'
         )

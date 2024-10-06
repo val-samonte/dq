@@ -95,7 +95,8 @@ function Content() {
 
       const result = await sdk.createRecipe(
         new PublicKey(blueprintId),
-        ingredients
+        ingredients,
+        new BN(outputAmount)
       )
 
       const recipeData = await program.account.recipe.fetch(result.recipe)
