@@ -12,11 +12,12 @@ import { IngredientExpanded } from './IngredientExpanded'
 import { NonFungibleInventory } from './NonFungibleInventory'
 import { useUserWallet } from '../atoms/userWalletAtom'
 import { PleaseConnect } from './PleaseConnect'
+import { FungibleInventory } from './FungibleInventory'
 
 function Content() {
   const { recipeId } = useParams()
   const recipe = useAtomValue(recipeAtom(recipeId || ''))
-  const { ingredients, requirements, nonFungibles } = useAtomValue(
+  const { ingredients, requirements, nonFungibles, fungibles } = useAtomValue(
     ingredientsAtom(recipeId || '')
   )
   const blueprint = useAtomValue(blueprintAtom(recipe?.blueprint || ''))
@@ -93,11 +94,14 @@ function Content() {
                   <NonFungibleInventory
                     filters={nonFungibles}
                     selectMode='multiple'
-                    onSelection={(items) => {
-                      console.log(items)
+                    onSelection={(_) => {
+                      // console.log(items)
                     }}
                   />
                 </Suspense>
+              )}
+              {tab === 'fungible' && (
+                <FungibleInventory mint_types={fungibles} />
               )}
             </div>
             <div className='absolute inset-0 flex items-center justify-center text-center opacity-50'>

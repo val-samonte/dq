@@ -85,6 +85,7 @@ export const ingredientsAtom = atomFamily((id: string) =>
       ingredients: IngredientData[]
       requirements: IngredientData[]
       nonFungibles: string[]
+      fungibles: string[]
     }>
   >(async (get) => {
     const recipe = await get(recipeAtom(id))
@@ -92,11 +93,14 @@ export const ingredientsAtom = atomFamily((id: string) =>
     const ingredients: IngredientData[] = []
     const requirements: IngredientData[] = []
     const nonFungibles: string[] = []
+    const fungibles: string[] = []
 
     if (recipe) {
       recipe.ingredients.forEach((ingredient) => {
         if (ingredient.assetType === 0) {
           nonFungibles.push(ingredient.asset)
+        } else {
+          fungibles.push(`${ingredient.asset}_${ingredient.assetType}`)
         }
         const data: IngredientData = {
           id: ingredient.asset,
@@ -117,6 +121,7 @@ export const ingredientsAtom = atomFamily((id: string) =>
       ingredients,
       requirements,
       nonFungibles,
+      fungibles,
     }
   })
 )

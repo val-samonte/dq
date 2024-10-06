@@ -77,14 +77,18 @@ export const tokenDataAtom = atomFamily((id: string) =>
 
       const data = await response.json()
 
-      return {
-        id: data.address,
-        name: data.name,
-        symbol: data.symbol,
-        decimals: data.symbols,
-        image: data.logoURI,
-      } as TokenItem
+      if (data) {
+        return {
+          id: data.address,
+          name: data.name,
+          symbol: data.symbol,
+          decimals: data.symbols,
+          image: data.logoURI,
+        } as TokenItem
+      }
     } catch (e) {}
+
+    // todo: get metadata manually
 
     return null
   })
