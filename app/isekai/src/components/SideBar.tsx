@@ -9,7 +9,7 @@ export function SideBar() {
   const { setVisible } = useWalletModal()
 
   return (
-    <div className="fixed inset-y-0 left-0 z-1 w-64 overflow-y-auto transition duration-300 transform bg-stone-900 lg:translate-x-0 lg:static lg:inset-0 h-full flex flex-col justify-between">
+    <div className="fixed inset-y-0 left-0 z-1 w-[320px] overflow-y-auto transition duration-300 transform bg-stone-900 lg:translate-x-0 lg:static lg:inset-0 h-full flex flex-col justify-between">
     <div>
       <div className="flex items-center justify-center mt-8">
           <div className="flex items-center">

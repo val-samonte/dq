@@ -3,17 +3,19 @@ import { SideBar } from "./SideBar"
 import { useState } from "react"
 import { FilePlus } from "@phosphor-icons/react"
 import { CraftStory } from "./CraftStory"
+import sampleStoryAtom from '../atoms/sampleStoryAtom'
+import { useAtomValue } from "jotai"
+import { StoryThumbnail } from "./StoryThumbnail"
 
 export const CreateStoryPage = () => {
   const [showStoryBoard, setShowStoryBoard] = useState(false)
+  const sampleStoryData = useAtomValue(sampleStoryAtom)
+  const sampleArray = [sampleStoryData]
 
   return (<div className="absolute inset-0 h-full flex flex-col overflow-y-auto overflow-x-hidden">
     <div className="content flex h-full">
       <SideBar />
       {showStoryBoard ? <CraftStory /> : <div className="inner-content flex flex-col w-full justify-center items-center gap-4">
-        <span className='opacity-50 text-lg'>
-          You do not have any crafted story yet!
-        </span>
         <button
           className={cn(
             'w-fit',
@@ -28,6 +30,11 @@ export const CreateStoryPage = () => {
           <FilePlus size={24} />
           Create a Story
         </button>
+        <div className="grid grid-cols-4 md:grid-cols-3 gap-6 p-6 w-full">
+          {sampleArray.map((story) => {
+            return <StoryThumbnail key={story.name} name={story.name} />
+          })}
+        </div>
       </div>}
     </div>
   </div>)

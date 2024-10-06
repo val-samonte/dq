@@ -25,10 +25,10 @@ export const DialogStoryForm = ({
   const sampleStoryData = useAtomValue(sampleStoryAtom)
 
   // prefill the form with the sample record
-  const [dialog, setDialog] = useState<string>(sampleStoryData?.[0]?.dialog || '')
-  const [avatar, setAvatar] = useState<string>(sampleStoryData?.[0]?.avatar || '')
-  const [avatarPosition, setAvatarPosition] = useState<string>(sampleStoryData?.[0]?.avatarPosition || '')
-  const [reward, setReward] = useState<string>(sampleStoryData?.[0]?.reward || '')
+  const [dialog, setDialog] = useState<string>(sampleStoryData?.content[0]?.dialog || '')
+  const [avatar, setAvatar] = useState<string>(sampleStoryData?.content[0]?.avatar || '')
+  const [avatarPosition, setAvatarPosition] = useState<string>(sampleStoryData?.content[0]?.avatarPosition || '')
+  const [reward, setReward] = useState<string>(sampleStoryData?.content[0]?.reward || '')
 
   const handleNextStep = (type = 'dialog') => {
     try {
@@ -40,10 +40,10 @@ export const DialogStoryForm = ({
       const newStoryData = [...storyData, newDialog]
       const nextStep = step + 1
       setStoryData(newStoryData)
-      setDialog(sampleStoryData?.[nextStep]?.dialog ?? '')
-      setAvatar(sampleStoryData?.[nextStep]?.avatar ?? '')
-      setAvatarPosition(sampleStoryData?.[nextStep]?.avatarPosition ?? '')
-      setReward(sampleStoryData?.[nextStep]?.reward ?? '')
+      setDialog(sampleStoryData?.content[nextStep]?.dialog ?? '')
+      setAvatar(sampleStoryData?.content[nextStep]?.avatar ?? '')
+      setAvatarPosition(sampleStoryData?.content[nextStep]?.avatarPosition ?? '')
+      setReward(sampleStoryData?.content[nextStep]?.reward ?? '')
       setStep(nextStep)
       setType(type)
     } catch (error) {
