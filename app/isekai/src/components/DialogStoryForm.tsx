@@ -1,6 +1,9 @@
 import { useState } from 'react'
 import { storyDataType } from '../types'
 import cn from 'classnames'
+import { useAtomValue } from 'jotai'
+import sampleStoryAtom from '../atoms/sampleStoryAtom'
+import { redirect } from 'react-router-dom'
 
 export interface DialogStoryFormProps {
   step: number
@@ -19,21 +22,38 @@ export const DialogStoryForm = ({
   storyData,
   setStoryData,
 }: DialogStoryFormProps): JSX.Element => {
-  const [dialog, setDialog] = useState<string>('')
-  const [avatar, setAvatar] = useState<string>('')
-  const [avatarPosition, setAvatarPosition] = useState<string>('')
-  const [reward, setReward] = useState<string>('')
+  // using this as a temporary initial record for demo purpose
+  const sampleStoryData = useAtomValue(sampleStoryAtom)
+
+  // prefill the form with the sample record
+  const [dialog, setDialog] = useState<string>(sampleStoryData?.[0]?.dialog || '')
+  const [avatar, setAvatar] = useState<string>(sampleStoryData?.[0]?.avatar || '')
+  const [avatarPosition, setAvatarPosition] = useState<string>(sampleStoryData?.[0]?.avatarPosition || '')
+  const [reward, setReward] = useState<string>(sampleStoryData?.[0]?.reward || '')
 
   const handleNextStep = (type = 'dialog') => {
-    if (!dialog || !avatar || !avatarPosition) return
+    try {
+      if (!dialog || !avatar || !avatarPosition) return
 
-    // TODO: add validation
-    const newDialog = { dialog, avatar, avatarPosition, type }
+      // TODO: add validation
+      const newDialog = { dialog, avatar, avatarPosition, type }
 
-    const newStoryData = [...storyData, newDialog]
-    setStoryData(newStoryData)
-    setStep(step + 1)
-    setType(type)
+      const newStoryData = [...storyData, newDialog]
+      const nextStep = step + 1
+      setStoryData(newStoryData)
+      setDialog(sampleStoryData?.[nextStep]?.dialog ?? '')
+      setAvatar(sampleStoryData?.[nextStep]?.avatar ?? '')
+      setAvatarPosition(sampleStoryData?.[nextStep]?.avatarPosition ?? '')
+      setReward(sampleStoryData?.[nextStep]?.reward ?? '')
+      setStep(nextStep)
+      setType(type)
+    } catch (error) {
+      console.error('Error in handleNextStep', error)
+    }
+  }
+
+  const handleCreateStory = () => {
+    window.location.reload()
   }
 
   return (
@@ -93,12 +113,13 @@ export const DialogStoryForm = ({
                     'block gap-3',
                     'rounded px-4 py-3 text-lg',
                     'bg-black/20 w-full h-[300px]'
-                  )}value={dialog}
+                  )}
+              value={dialog}
               onChange={(e) => setDialog(e.target.value)}
             />
           </div>
         </div>
-
+        {type === 'reward' && (
         <div className='flex flex-col gap-2'>
           <label className='px-1 text-xs uppercase tracking-wider opacity-50 flex items-center' htmlFor='avatar-position'>
             Reward
@@ -120,22 +141,31 @@ export const DialogStoryForm = ({
               <option value='item_2_address'>Item 2</option>
             </select>
           </div>
-        </div>
+        </div>)
+        }
         <input type='hidden' name='type' value={type} />
-        <div className='flex w-full justify-end gap-4'>
-          <button
-            className='flex w-full items-center gap-4 rounded pr-6 pl-4 py-3 text-lg border-2 border-transparent bg-gray-600/50 text-center justify-center'
-            onClick={() =>  handleNextStep('dialog')}
-          >
-            Add More Dialog
-          </button>
-          <button
-            className='flex w-full items-center gap-4 rounded pr-6 pl-4 py-3 text-lg border-2 border-transparent bg-gray-600/50 text-center justify-center'
-            onClick={() =>  handleNextStep('reward')}
-          >
-            Assign Reward (Final step)
-          </button>
-        </div>
+      {type === 'dialog' && <div className='flex w-full justify-end gap-4'>
+        <button
+          className='flex w-full items-center gap-4 rounded pr-6 pl-4 py-3 text-lg border-2 border-transparent bg-gray-600/50 text-center justify-center'
+          onClick={() => handleNextStep('dialog')}
+        >
+          Add More Dialog
+        </button>
+        <button
+          className='flex w-full items-center gap-4 rounded pr-6 pl-4 py-3 text-lg border-2 border-transparent bg-gray-600/50 text-center justify-center'
+          onClick={() => handleNextStep('reward')}
+        >
+          Assign Reward (Final step)
+        </button>
+      </div>}
+      {type === 'reward' && <div className='flex w-full justify-end gap-4'>
+        <button
+          className='flex w-full items-center gap-4 rounded pr-6 pl-4 py-3 text-lg border-2 border-transparent bg-gray-600/50 text-center justify-center'
+          onClick={handleCreateStory}
+        >
+          Craft Story
+        </button>
+      </div>}
 
       </div>
   )

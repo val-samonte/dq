@@ -1,7 +1,5 @@
 import { useState } from 'react'
 import cn from 'classnames'
-import { useAtomValue } from 'jotai'
-import sampleStoryAtom from '../atoms/sampleStoryAtom'
 import { MenuCardProps, storyDataType } from '../types'
 import { DialogStoryForm } from './DialogStoryForm'
 
@@ -16,7 +14,6 @@ const MenuCard = ({ label, bgImage, onClickHandler = () => {}, disabled = false 
 }
 export const CraftStory = () => {
   // using this as a temporary initial record for demo purpose
-  const sampleStoryData = useAtomValue(sampleStoryAtom)
 
   const [step, setStep] = useState(0)
   const [storyData, setStoryData] = useState<storyDataType[]>([])
