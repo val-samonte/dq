@@ -72,6 +72,7 @@ export function PillExpanded({
                 if (tag.href) {
                   return (
                     <a
+                      key={tag.label}
                       href={tag.href}
                       rel='noreferrer noopener'
                       target='_blank'
@@ -83,6 +84,7 @@ export function PillExpanded({
                 } else if (tag.to) {
                   return (
                     <Link
+                      key={tag.label}
                       to={tag.to}
                       className='flex text-xs  lg:text-sm gap-2'
                     >
@@ -92,6 +94,7 @@ export function PillExpanded({
                 } else if (tag.onClick) {
                   return (
                     <button
+                      key={tag.label}
                       onClick={tag.onClick}
                       className='flex text-xs  lg:text-sm gap-2'
                     >
@@ -100,7 +103,11 @@ export function PillExpanded({
                   )
                 }
 
-                return <div className='flex text-sm gap-2'>{content}</div>
+                return (
+                  <div key={tag.label} className='flex text-sm gap-2'>
+                    {content}
+                  </div>
+                )
               })}
             </div>
           </div>

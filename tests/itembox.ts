@@ -1,404 +1,450 @@
-import { BN, Program } from '@coral-xyz/anchor'
-import { Keypair, PublicKey } from '@solana/web3.js'
 import {
+  AnchorProvider,
+  BN,
+  Program,
+  setProvider,
+  workspace,
+} from '@coral-xyz/anchor'
+import { Itembox } from '../target/types/itembox'
+import { loadKeypair } from './utils'
+import {
+  Keypair,
+  LAMPORTS_PER_SOL,
+  PublicKey,
+  SystemProgram,
+  Transaction,
+} from '@solana/web3.js'
+import { expect } from 'chai'
+import { createUmi } from '@metaplex-foundation/umi-bundle-defaults'
+import {
+  fetchAsset,
+  fetchCollection,
+  mplCore,
+} from '@metaplex-foundation/mpl-core'
+import {
+  signerIdentity,
+  createSignerFromKeypair,
+} from '@metaplex-foundation/umi'
+import { fromWeb3JsPublicKey } from '@metaplex-foundation/umi-web3js-adapters'
+import {
+  createMint,
+  getAccount,
   getAssociatedTokenAddressSync,
+  getMetadataPointerState,
+  getMint,
+  getOrCreateAssociatedTokenAccount,
+  getTokenMetadata,
+  mintTo,
   TOKEN_2022_PROGRAM_ID,
 } from '@solana/spl-token'
-import { Itembox } from '../target/types/itembox'
+import { Ingredient, ItemboxSDK } from './sdk'
+// import { StateWithExtensions, MintExtensionType } from '@solana/spl-token-extensions';
 
-export type ConsumeMethod = 'retain' | 'burn' | 'transfer'
+const TOKEN_METADATA_PROGRAM_ID = new PublicKey(
+  'metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s'
+)
 
-export interface Ingredient {
-  asset: PublicKey
-  amount: BN
-  consumeMethod: ConsumeMethod
-}
+describe('DeezQuest: Itembox Program', () => {
+  setProvider(AnchorProvider.env())
 
-interface RemainingAccount {
-  pubkey: PublicKey
-  isSigner: boolean
-  isWritable: boolean
-}
+  const program = workspace.Itembox as Program<Itembox>
+  const sdk = new ItemboxSDK(program)
+  const authority = loadKeypair('~/.config/solana/id.json')
+  const treasuryKeypair = Keypair.generate()
+  const blueprintTreasuryKeypair = Keypair.generate()
+  const daoTokenMint = Keypair.generate()
 
-export class ItemboxSDK {
-  constructor(public program: Program<Itembox>) {}
+  const umi = createUmi(program.provider.connection.rpcEndpoint, 'confirmed')
+  umi.use(mplCore())
 
-  async createBlueprint(
-    nonFungible: boolean,
-    name: string,
-    uri: string,
-    treasury: PublicKey,
-    mintAuthority: PublicKey
-  ) {
-    const assetSigner = Keypair.generate()
+  const authorityUmiKp = umi.eddsa.createKeypairFromSecretKey(
+    authority.secretKey
+  )
+  umi.use(signerIdentity(createSignerFromKeypair(umi, authorityUmiKp)))
 
-    let signature: string
+  const [mainPda] = PublicKey.findProgramAddressSync(
+    [Buffer.from('main')],
+    program.programId
+  )
 
-    if (nonFungible) {
-      signature = await this.program.methods
-        .createNonfungibleBlueprint({
-          uri,
-          name,
-          treasury,
-          mintAuthority,
-        })
-        .accounts({
-          collection: assetSigner.publicKey,
-          owner: this.program.provider.publicKey,
-        })
-        .signers([assetSigner])
-        .rpc()
-    } else {
-      signature = await this.program.methods
-        .createFungibleBlueprint({
-          name,
-          uri,
-          treasury,
-          mintAuthority,
-          symbol: 'ITMBX',
-        })
-        .accounts({
-          mint: assetSigner.publicKey,
-          owner: this.program.provider.publicKey,
-        })
-        .signers([assetSigner])
-        .rpc()
-    }
+  const commonUri = 'https://example.com/metadata.json'
 
-    const [pda] = PublicKey.findProgramAddressSync(
-      [Buffer.from('blueprint'), assetSigner.publicKey.toBytes()],
-      this.program.programId
+  let splTokenMintIngredient: PublicKey
+  let ownerSplAta: PublicKey
+  let copperSwordBlueprint: PublicKey
+  let hiltBlueprint: PublicKey
+  let refinedCopperBlueprint: PublicKey
+  let copperBlockBlueprint: PublicKey
+  let copperSwordRecipe: PublicKey
+  let copperBlockRecipe: PublicKey
+  let hilt: PublicKey
+  let refinedCopper: PublicKey
+
+  console.log(
+    '======================================================================'
+  )
+  console.log('Itembox Program ID', program.programId.toBase58())
+  console.log('Itembox Main Pda', mainPda.toBase58())
+
+  before(async () => {
+    // fund treasury
+    const tx = new Transaction().add(
+      SystemProgram.transfer({
+        fromPubkey: authority.publicKey,
+        toPubkey: treasuryKeypair.publicKey,
+        lamports: 2 * LAMPORTS_PER_SOL,
+      }),
+      SystemProgram.transfer({
+        fromPubkey: authority.publicKey,
+        toPubkey: blueprintTreasuryKeypair.publicKey,
+        lamports: 2 * LAMPORTS_PER_SOL,
+      })
     )
 
-    return {
-      blueprint: pda,
-      signature,
-    }
-  }
+    await program.provider.sendAndConfirm(tx)
 
-  async createRecipe(
-    blueprint: PublicKey,
-    ingredients: {
-      asset: PublicKey
-      amount: BN
-      consumeMethod: 'retain' | 'burn' | 'transfer'
-    }[],
-    outputAmount = 1
-  ) {
-    const blueprintData = await this.program.account.blueprint.fetch(blueprint)
-    const recipeSigner = Keypair.generate()
+    splTokenMintIngredient = await createMint(
+      program.provider.connection,
+      authority,
+      authority.publicKey,
+      authority.publicKey,
+      9
+    )
 
-    if (blueprintData.nonFungible) {
-      if (outputAmount > 1) {
-        throw new Error(
-          'Recipes cannot produce more than one non-fungible item'
-        )
-      }
-      if (!Number.isInteger(outputAmount)) {
-        throw new Error('Output amount must be an integer')
-      }
-    }
+    ownerSplAta = (
+      await getOrCreateAssociatedTokenAccount(
+        program.provider.connection,
+        authority,
+        splTokenMintIngredient,
+        authority.publicKey
+      )
+    ).address
 
-    const signature = await this.program.methods
-      .createRecipe({
-        outputAmount: new BN(outputAmount),
-        ingredients: ingredients.map(({ amount, consumeMethod }) => ({
-          amount,
-          consumeMethod: { retain: 0, burn: 1, transfer: 2 }[consumeMethod],
-        })),
+    await mintTo(
+      program.provider.connection,
+      authority,
+      splTokenMintIngredient,
+      ownerSplAta,
+      authority,
+      1000 * 10 ** 9
+    )
+  })
+
+  it('initialize main', async () => {
+    await program.methods
+      .init({
+        blueprintMintFee: new BN(0.0002 * LAMPORTS_PER_SOL),
+        tokenMint: daoTokenMint.publicKey,
+        treasury: treasuryKeypair.publicKey,
       })
       .accounts({
-        blueprint,
-        recipeId: recipeSigner.publicKey,
+        authority: authority.publicKey,
       })
-      .remainingAccounts(
-        ingredients.map(({ asset }) => ({
-          pubkey: asset,
-          isSigner: false,
-          isWritable: false,
-        }))
-      )
-      .signers([recipeSigner])
       .rpc()
+    const main = await program.account.main.fetch(mainPda)
+    expect(main.authority.equals(program.provider.publicKey)).eq(true)
+  })
 
-    const [pda] = PublicKey.findProgramAddressSync(
-      [Buffer.from('recipe'), recipeSigner.publicKey.toBytes()],
-      this.program.programId
+  it('creates a non-fungible blueprint', async () => {
+    const { blueprint } = await sdk.createBlueprint(
+      true,
+      'Copper Sword',
+      commonUri,
+      blueprintTreasuryKeypair.publicKey,
+      authority.publicKey
     )
 
-    return {
-      recipe: pda,
-      signature,
-    }
-  }
+    await sleep(500)
 
-  async mintItem(blueprint: PublicKey, receiver: PublicKey, amount = '1') {
-    const blueprintData = await this.program.account.blueprint.fetch(blueprint)
-    const assetSigner = Keypair.generate()
-    let asset: PublicKey
-    let signature: string
-    const amountBN = new BN(amount)
+    const data = await program.account.blueprint.fetch(blueprint)
 
-    if (blueprintData.nonFungible) {
-      if (amountBN.gt(new BN(1))) {
-        throw new Error('Cannot mint more than one non-fungible item')
-      }
+    const metadata = await fetchCollection(umi, fromWeb3JsPublicKey(data.mint))
 
-      signature = await this.program.methods
-        .mintItem({
-          amount: amountBN,
-        })
-        .accounts({
-          assetSigner: assetSigner.publicKey,
-          blueprint,
-          receiver,
-        })
-        .accountsPartial({
-          receiverAta: null,
-        })
-        .signers([assetSigner])
-        .rpc()
+    expect(metadata.name).eq('Copper Sword')
+    expect(metadata.uri).eq(commonUri)
 
-      asset = assetSigner.publicKey
-    } else {
-      const receiverAta = getAssociatedTokenAddressSync(
-        blueprintData.mint,
-        receiver,
-        false,
-        TOKEN_2022_PROGRAM_ID
-      )
-      signature = await this.program.methods
-        .mintItem({
-          amount: amountBN,
-        })
-        .accounts({
-          assetSigner: assetSigner.publicKey,
-          blueprint,
-          receiver,
-        })
-        .signers([assetSigner])
-        .rpc()
+    copperSwordBlueprint = blueprint
+    console.log('Copper Sword Blueprint', copperSwordBlueprint.toBase58())
+  })
 
-      asset = receiverAta
-    }
-
-    return {
-      nonFungible: blueprintData.nonFungible,
-      asset,
-      signature,
-    }
-  }
-
-  async craftItem(
-    recipe: PublicKey,
-    nonFungibleIngredients: { collection: PublicKey; item: PublicKey }[]
-  ) {
-    if (!this.program.provider.publicKey) {
-      throw new Error('Wallet is not connected')
-    }
-
-    const assetSigner = Keypair.generate()
-    const recipeData = await this.program.account.recipe.fetch(recipe)
-    const blueprintData = await this.program.account.blueprint.fetch(
-      recipeData.blueprint
+  it('creates a non-fungible blueprint (resource)', async () => {
+    const { blueprint } = await sdk.createBlueprint(
+      true,
+      'Hilt',
+      commonUri,
+      blueprintTreasuryKeypair.publicKey,
+      authority.publicKey
     )
 
-    const blueprintIngredients = recipeData.ingredients.filter(
-      ({ assetType }) => assetType === 0 || assetType === 1
+    await sleep(500)
+
+    const data = await program.account.blueprint.fetch(blueprint)
+
+    const metadata = await fetchCollection(umi, fromWeb3JsPublicKey(data.mint))
+
+    expect(metadata.name).eq('Hilt')
+    expect(metadata.uri).eq(commonUri)
+
+    hiltBlueprint = blueprint
+    console.log('Hilt Blueprint', hiltBlueprint.toBase58())
+  })
+
+  it('creates a fungible blueprint', async () => {
+    const { blueprint } = await sdk.createBlueprint(
+      false,
+      'Copper Block',
+      commonUri,
+      blueprintTreasuryKeypair.publicKey,
+      authority.publicKey
     )
-    // todo: fetch only slice of the mint address
-    const blueprintIngredientAccounts =
-      await this.program.account.blueprint.fetchMultiple(
-        blueprintIngredients.map(({ asset }) => asset),
-        'confirmed'
-      )
-    const hash = new Map<PublicKey, PublicKey>()
-    const includedList: string[] = []
-    const remainingAccounts: RemainingAccount[] = []
 
-    const addToList = (address: PublicKey) => {
-      const str = address.toBase58()
-      if (!includedList.includes(str)) {
-        includedList.push(str)
-        remainingAccounts.push({
-          pubkey: address,
-          isSigner: false,
-          isWritable: true,
-        })
-      }
-    }
+    await sleep(500)
 
-    blueprintIngredients.forEach((ingredient, index) => {
-      hash.set(ingredient.asset, blueprintIngredientAccounts[index]!.mint)
+    const data = await program.account.blueprint.fetch(blueprint)
+
+    const mintInfo = await getMint(
+      program.provider.connection,
+      data.mint,
+      'confirmed',
+      TOKEN_2022_PROGRAM_ID
+    )
+
+    const metadataPointer = getMetadataPointerState(mintInfo)
+    expect(metadataPointer.metadataAddress.equals(data.mint)).eq(true)
+    const metadata = await getTokenMetadata(
+      program.provider.connection,
+      metadataPointer.metadataAddress
+    )
+    expect(metadata.name).eq('Copper Block')
+    expect(metadata.symbol).eq('ITMBX')
+    expect(metadata.uri).eq(commonUri)
+
+    copperBlockBlueprint = blueprint
+    console.log('Copper Block Blueprint', copperBlockBlueprint.toBase58())
+  })
+
+  it('creates a fungible blueprint (resource)', async () => {
+    const { blueprint } = await sdk.createBlueprint(
+      false,
+      'Refined Copper',
+      commonUri,
+      blueprintTreasuryKeypair.publicKey,
+      authority.publicKey
+    )
+
+    await sleep(500)
+
+    const data = await program.account.blueprint.fetch(blueprint)
+
+    const mintInfo = await getMint(
+      program.provider.connection,
+      data.mint,
+      'confirmed',
+      TOKEN_2022_PROGRAM_ID
+    )
+
+    const metadataPointer = getMetadataPointerState(mintInfo)
+    expect(metadataPointer.metadataAddress.equals(data.mint)).eq(true)
+    const metadata = await getTokenMetadata(
+      program.provider.connection,
+      metadataPointer.metadataAddress
+    )
+    expect(metadata.name).eq('Refined Copper')
+    expect(metadata.symbol).eq('ITMBX')
+    expect(metadata.uri).eq(commonUri)
+
+    refinedCopperBlueprint = blueprint
+    console.log('Refined Copper Blueprint', refinedCopperBlueprint.toBase58())
+  })
+
+  it('mints a non-fungible blueprint', async () => {
+    const { asset } = await sdk.mintItem(hiltBlueprint, authority.publicKey)
+
+    await sleep(500)
+
+    const data = await fetchAsset(umi, fromWeb3JsPublicKey(asset), {
+      skipDerivePlugins: false,
     })
 
-    recipeData.ingredients.forEach((ingredient) => {
-      switch (ingredient.assetType) {
-        // non-fungible
-        case 0: {
-          // include blueprint
-          addToList(ingredient.asset)
+    expect(data.name).eq('Hilt')
+    expect(data.uri).eq(commonUri)
+    expect(data.owner.toString()).eq(authority.publicKey.toString())
 
-          // include core collection
-          const collection = hash.get(ingredient.asset)
-          if (collection) {
-            addToList(collection)
-          } else {
-            throw new Error(
-              `${ingredient.asset} did not return collection address`
-            )
-          }
+    hilt = asset
+    console.log('Hilt', hilt.toBase58())
+  })
 
-          // include the item address
-          const itemEntry = nonFungibleIngredients.find((i) =>
-            i.collection.equals(collection)
-          )
-          if (itemEntry) {
-            addToList(itemEntry.item)
-          } else {
-            throw new Error(
-              `Collection ${collection} was not found in the nonFungibleIngredients`
-            )
-          }
+  it('mints a fungible blueprint', async () => {
+    const { asset } = await sdk.mintItem(
+      refinedCopperBlueprint,
+      authority.publicKey,
+      '1000'
+    )
 
-          // if transfer: add treasury
-          if (ingredient.consumeMethod === 2) {
-            addToList(blueprintData.treasury)
-          }
-          break
-        }
-        // fungible
-        case 1: {
-          // include blueprint
-          addToList(ingredient.asset)
+    await sleep(500)
 
-          // include mint
-          const mint = hash.get(ingredient.asset)
-          if (mint) {
-            addToList(mint)
-          } else {
-            throw new Error(`${ingredient.asset} did not return mint address`)
-          }
+    const tokenAccount = await getAccount(
+      program.provider.connection,
+      asset,
+      'confirmed',
+      TOKEN_2022_PROGRAM_ID
+    )
 
-          // include owner ata of the mint, token2022
-          const ownerAta = getAssociatedTokenAddressSync(
-            mint,
-            this.program.provider.publicKey!,
-            true,
-            TOKEN_2022_PROGRAM_ID
-          )
-          addToList(ownerAta)
+    expect(tokenAccount.amount).eq(1000n)
 
-          // if transfer: add treasury's ata of the mint, token2022
-          if (ingredient.consumeMethod === 2) {
-            const receiverAta = getAssociatedTokenAddressSync(
-              mint,
-              blueprintData.treasury,
-              true,
-              TOKEN_2022_PROGRAM_ID
-            )
-            addToList(receiverAta)
-          }
-          break
-        }
-        // spl token
-        case 2: {
-          // include ingredient.asset (mint)
-          const mint = ingredient.asset
-          addToList(mint)
+    refinedCopper = asset
+    console.log('Refined Copper', refinedCopper.toBase58())
+  })
 
-          // include owner ata
-          const ownerAta = getAssociatedTokenAddressSync(
-            mint,
-            this.program.provider.publicKey!,
-            true
-          )
-          addToList(ownerAta)
+  it('creates a recipe for a non-fungible item', async () => {
+    const ingredients: Ingredient[] = [
+      {
+        asset: splTokenMintIngredient,
+        amount: new BN('10000000000'),
+        consumeMethod: 'transfer',
+      },
+      {
+        asset: refinedCopperBlueprint,
+        amount: new BN(10),
+        consumeMethod: 'burn',
+      },
+      {
+        asset: hiltBlueprint,
+        amount: new BN(1),
+        consumeMethod: 'burn',
+      },
+    ]
 
-          // if transfer: add treasury's ata
-          if (ingredient.consumeMethod === 2) {
-            const receiverAta = getAssociatedTokenAddressSync(
-              mint,
-              blueprintData.treasury,
-              true
-            )
-            addToList(receiverAta)
-          }
-          break
-        }
-        // token2022
-        case 3: {
-          // include ingredient.asset (mint)
-          const mint = ingredient.asset
-          addToList(mint)
+    const { recipe } = await sdk.createRecipe(copperSwordBlueprint, ingredients)
 
-          // include owner ata of the mint, token2022
-          const ownerAta = getAssociatedTokenAddressSync(
-            mint,
-            this.program.provider.publicKey!,
-            true,
-            TOKEN_2022_PROGRAM_ID
-          )
-          addToList(ownerAta)
+    await sleep(500)
 
-          // if transfer: add treasury's ata of the mint, token2022
-          if (ingredient.consumeMethod === 2) {
-            const receiverAta = getAssociatedTokenAddressSync(
-              mint,
-              blueprintData.treasury,
-              true,
-              TOKEN_2022_PROGRAM_ID
-            )
-            addToList(receiverAta)
-          }
-          break
-        }
-      }
+    const data = await program.account.recipe.fetch(recipe)
+    expect(data.blueprint.equals(copperSwordBlueprint)).eq(true)
+
+    ingredients.forEach((ing, i) => {
+      expect(data.ingredients[i].asset.equals(ing.asset)).eq(true)
+      expect(data.ingredients[i].amount.toString()).eq(ing.amount.toString())
+      expect(
+        ['retain', 'burn', 'transfer'][data.ingredients[i].consumeMethod]
+      ).eq(ing.consumeMethod)
     })
 
-    let ix = this.program.methods
-      .craftItem({
-        itemsRef: nonFungibleIngredients,
-      })
-      .accounts({
-        recipe,
-        assetSigner: assetSigner.publicKey,
-        owner: this.program.provider.publicKey,
-      })
-      .remainingAccounts(remainingAccounts)
-      .signers([assetSigner])
+    copperSwordRecipe = recipe
+    console.log('Copper Sword Recipe', copperSwordRecipe.toBase58())
+  })
 
-    let asset: PublicKey
-    if (blueprintData.nonFungible) {
-      ix = ix.accountsPartial({
-        ownerAta: null,
-      })
-      asset = assetSigner.publicKey
-    } else {
-      asset = getAssociatedTokenAddressSync(
-        blueprintData.mint,
-        this.program.provider.publicKey,
-        true,
-        TOKEN_2022_PROGRAM_ID
-      )
-    }
+  it('creates a recipe for a fungible item', async () => {
+    const ingredients: Ingredient[] = [
+      {
+        asset: splTokenMintIngredient,
+        amount: new BN(10000000000),
+        consumeMethod: 'burn',
+      },
+      {
+        asset: refinedCopperBlueprint,
+        amount: new BN(10),
+        consumeMethod: 'retain',
+      },
+    ]
 
-    const signature = await ix.rpc()
+    const { recipe } = await sdk.createRecipe(
+      copperBlockBlueprint,
+      ingredients,
+      10
+    )
 
-    return {
-      nonFungible: blueprintData.nonFungible,
+    await sleep(500)
+
+    const data = await program.account.recipe.fetch(recipe)
+    expect(data.blueprint.equals(copperBlockBlueprint)).eq(true)
+
+    ingredients.forEach((ing, i) => {
+      expect(data.ingredients[i].asset.equals(ing.asset)).eq(true)
+      expect(data.ingredients[i].amount.toString()).eq(ing.amount.toString())
+      expect(
+        ['retain', 'burn', 'transfer'][data.ingredients[i].consumeMethod]
+      ).eq(ing.consumeMethod)
+    })
+
+    copperBlockRecipe = recipe
+    console.log('Copper Block Recipe', copperBlockRecipe.toBase58())
+  })
+
+  it('crafts an non-fungible item', async () => {
+    const hiltBlueprintData = await program.account.blueprint.fetch(
+      hiltBlueprint
+    )
+    const { asset } = await sdk.craftItem(copperSwordRecipe, [
+      {
+        collection: hiltBlueprintData.mint,
+        item: hilt,
+      },
+    ])
+
+    await sleep(500)
+
+    const data = await fetchAsset(umi, fromWeb3JsPublicKey(asset), {
+      skipDerivePlugins: false,
+    })
+
+    expect(data.name).eq('Copper Sword')
+    expect(data.uri).eq(commonUri)
+    expect(data.owner.toString()).eq(authority.publicKey.toString())
+
+    const splTokenAccount = await getAccount(
+      program.provider.connection,
+      ownerSplAta
+    )
+
+    const refinedCopperData = await program.account.blueprint.fetch(
+      refinedCopperBlueprint
+    )
+
+    const refinedCopperAta = getAssociatedTokenAddressSync(
+      refinedCopperData.mint,
+      program.provider.publicKey,
+      true,
+      TOKEN_2022_PROGRAM_ID
+    )
+
+    const refinedCopperTokenAccount = await getAccount(
+      program.provider.connection,
+      refinedCopperAta,
+      'confirmed',
+      TOKEN_2022_PROGRAM_ID
+    )
+
+    expect(splTokenAccount.amount).eq(990000000000n)
+    expect(refinedCopperTokenAccount.amount).eq(990n)
+  })
+
+  it('crafts a fungible item', async () => {
+    const { asset } = await sdk.craftItem(copperBlockRecipe, [])
+
+    await sleep(500)
+
+    const copperBlockTokenAccount = await getAccount(
+      program.provider.connection,
       asset,
-      signature,
-    }
-  }
+      'confirmed',
+      TOKEN_2022_PROGRAM_ID
+    )
 
-  // note: all of these items below can be done on the frontend side
-  // as they need caching of the results, and jotai atoms can do
-  // batch requests anyway if needed
+    expect(copperBlockTokenAccount.amount).eq(10n)
+  })
 
-  // todo: craftItemWithAnyIngredients
-  // todo: given recipe, extract available non-fungible ingredients
-  // - use umi, fetch collection
-  // todo: check if recipe is craftable given owner's wallet
-  // - use umi, fetch collection
+  // ✅ Burn Blueprint Non-Fungible Ingredient
+  // ✅ Burn Blueprint Fungible Ingredient
+  // ✅ Burn SPL Ingredient
+  // Burn Token2022 Ingredient
+  // ✅ Transfer Blueprint Non-Fungible Ingredient
+  // ✅ Transfer Blueprint Fungible Ingredient
+  // ✅ Transfer SPL Ingredient
+  // Transfer Token2022 Ingredient
+  // ✅ Multiple ingredients
+})
+
+function sleep(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms))
 }

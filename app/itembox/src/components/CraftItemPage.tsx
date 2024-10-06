@@ -9,6 +9,21 @@ import { blueprintAtom } from '../atoms/blueprintAtom'
 import { ingredientsAtom, recipeAtom } from '../atoms/recipeAtom'
 import { NumberSquareOne, Stack } from '@phosphor-icons/react'
 import { IngredientExpanded } from './IngredientExpanded'
+// import { userAssetInfoAtom } from '../atoms/userAssetInfoAtom'
+import { userAssetsAtom } from '../atoms/userAssetsAtom'
+
+function Test({ id_type }: { id_type: string }) {
+  const result = useAtomValue(userAssetsAtom)
+  return (
+    <pre>
+      {JSON.stringify(
+        result,
+        (_, value) => (typeof value === 'bigint' ? value.toString() : value), // return everything else unchanged
+        2
+      )}
+    </pre>
+  )
+}
 
 function Content() {
   const { recipeId } = useParams()
@@ -84,7 +99,15 @@ function Content() {
             </button>
           </div>
           <div className='px-5 overflow-y-auto overflow-x-hidden relative flex-auto'>
-            <div className='flex flex-col py-5 gap-5 show-next-when-empty'></div>
+            <div className='flex flex-col py-5 gap-5 show-next-when-empty'>
+              {recipe.ingredients.map((ingredient) => (
+                <Suspense key={ingredient.asset} fallback={null}>
+                  <Test
+                    id_type={`${ingredient.asset}_${ingredient.assetType}`}
+                  />
+                </Suspense>
+              ))}
+            </div>
             <div className='absolute inset-0 flex items-center justify-center text-center opacity-50'>
               <span className='text-center w-[80%]'>
                 I do not have any related ingredients for this recipe

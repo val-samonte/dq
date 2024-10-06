@@ -132,23 +132,21 @@ export class ItemboxSDK {
     }
   }
 
-  async mintItem(blueprint: PublicKey, receiver: PublicKey, amount = 1) {
+  async mintItem(blueprint: PublicKey, receiver: PublicKey, amount = '1') {
     const blueprintData = await this.program.account.blueprint.fetch(blueprint)
     const assetSigner = Keypair.generate()
     let asset: PublicKey
     let signature: string
+    const amountBN = new BN(amount)
 
     if (blueprintData.nonFungible) {
-      if (amount > 1) {
+      if (amountBN.gt(new BN(1))) {
         throw new Error('Cannot mint more than one non-fungible item')
-      }
-      if (!Number.isInteger(amount)) {
-        throw new Error('Amount must be an integer')
       }
 
       signature = await this.program.methods
         .mintItem({
-          amount: new BN(1),
+          amount: amountBN,
         })
         .accounts({
           assetSigner: assetSigner.publicKey,
@@ -171,7 +169,7 @@ export class ItemboxSDK {
       )
       signature = await this.program.methods
         .mintItem({
-          amount: new BN(amount),
+          amount: amountBN,
         })
         .accounts({
           assetSigner: assetSigner.publicKey,
