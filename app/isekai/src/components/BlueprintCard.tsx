@@ -12,7 +12,7 @@ interface BpProps {
 
 function CardSkeleton() {
   return (
-    <div className='overflow-hidden rounded-lg flex flex-col bg-gray-700'>
+    <div className='overflow-hidden rounded-lg flex flex-col bg-stone-700'>
       <div className='bg-black/20 w-full aspect-square flex items-center justify-center p-2'>
         <div className='w-full aspect-square flex items-center justify-center'>
           <CircleNotch size={64} className='opacity-10 animate-spin' />
@@ -53,7 +53,7 @@ function CardWithData({ id, simpleView = false }: BpProps) {
   }
 
   return (
-    <div className='overflow-hidden rounded-lg flex flex-col bg-gray-700'>
+    <div className='overflow-hidden rounded-lg flex flex-col bg-stone-700'>
       <Link
         to={`/${id}/import`}
         className='bg-black/20 w-full aspect-square flex items-center justify-center p-2 relative'

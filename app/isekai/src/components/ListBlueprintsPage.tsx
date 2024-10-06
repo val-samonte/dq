@@ -1,6 +1,5 @@
 import cn from "classnames"
 import { FilePlus } from "@phosphor-icons/react"
-import { Nav } from "./Nav"
 import { SideBar } from "./SideBar"
 import { useState } from "react"
 import { BpModal } from "./BpModal"
@@ -12,7 +11,6 @@ export const ListBlueprintsPage = () => {
   }
   return (<div className="absolute inset-0 h-full flex flex-col overflow-y-auto overflow-x-hidden">
     {showBpList && <BpModal handleClose={hideBpModal} />}
-    <Nav />
     <div className="content flex h-full">
       <SideBar />
       <div className="inner-content flex flex-col w-full justify-center items-center gap-4">

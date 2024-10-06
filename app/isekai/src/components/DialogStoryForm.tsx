@@ -3,7 +3,6 @@ import { storyDataType } from '../types'
 import cn from 'classnames'
 import { useAtomValue } from 'jotai'
 import sampleStoryAtom from '../atoms/sampleStoryAtom'
-import { redirect } from 'react-router-dom'
 
 export interface DialogStoryFormProps {
   step: number
@@ -146,13 +145,13 @@ export const DialogStoryForm = ({
         <input type='hidden' name='type' value={type} />
       {type === 'dialog' && <div className='flex w-full justify-end gap-4'>
         <button
-          className='flex w-full items-center gap-4 rounded pr-6 pl-4 py-3 text-lg border-2 border-transparent bg-gray-600/50 text-center justify-center'
+          className='flex w-full items-center gap-4 rounded pr-6 pl-4 py-3 text-lg border-2 border-transparent bg-stone-600/50 text-center justify-center'
           onClick={() => handleNextStep('dialog')}
         >
           Add More Dialog
         </button>
         <button
-          className='flex w-full items-center gap-4 rounded pr-6 pl-4 py-3 text-lg border-2 border-transparent bg-gray-600/50 text-center justify-center'
+          className='flex w-full items-center gap-4 rounded pr-6 pl-4 py-3 text-lg border-2 border-transparent bg-stone-600/50 text-center justify-center'
           onClick={() => handleNextStep('reward')}
         >
           Assign Reward (Final step)
@@ -160,7 +159,7 @@ export const DialogStoryForm = ({
       </div>}
       {type === 'reward' && <div className='flex w-full justify-end gap-4'>
         <button
-          className='flex w-full items-center gap-4 rounded pr-6 pl-4 py-3 text-lg border-2 border-transparent bg-gray-600/50 text-center justify-center'
+          className='flex w-full items-center gap-4 rounded pr-6 pl-4 py-3 text-lg border-2 border-transparent bg-stone-600/50 text-center justify-center'
           onClick={handleCreateStory}
         >
           Craft Story

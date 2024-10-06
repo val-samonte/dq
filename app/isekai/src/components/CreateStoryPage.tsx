@@ -1,5 +1,4 @@
 import cn from "classnames"
-import { Nav } from "./Nav"
 import { SideBar } from "./SideBar"
 import { useState } from "react"
 import { FilePlus } from "@phosphor-icons/react"
@@ -9,7 +8,6 @@ export const CreateStoryPage = () => {
   const [showStoryBoard, setShowStoryBoard] = useState(false)
 
   return (<div className="absolute inset-0 h-full flex flex-col overflow-y-auto overflow-x-hidden">
-    <Nav />
     <div className="content flex h-full">
       <SideBar />
       {showStoryBoard ? <CraftStory /> : <div className="inner-content flex flex-col w-full justify-center items-center gap-4">

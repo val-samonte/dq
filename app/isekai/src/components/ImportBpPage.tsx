@@ -1,11 +1,10 @@
 import { useParams } from 'react-router-dom'
 import { BlueprintCard } from './BlueprintCard'
-import { Nav } from './Nav'
 import { SideBar } from './SideBar'
 import { Suspense, useState } from 'react'
 import cn from 'classnames'
 import { CaretDown } from '@phosphor-icons/react'
-import { useAtom } from 'jotai'
+import { useAtomValue } from 'jotai'
 import { atomWithStorage } from 'jotai/utils'
 
 interface BlueprintFormState {
@@ -44,9 +43,9 @@ export function ImportBpPage() {
   const [ixCodes, setIxCodes] = useState('')
   const [showOptions, setShowOptions] = useState(false)
   const [selectedType, setSelectedType] = useState('resources')
-  const [state, setState] = useAtom(blueprintFormAtom)
-  const [name, setName] = useState(state.name)
-  const [description, setDescription] = useState(state.description)
+  const state = useAtomValue(blueprintFormAtom)
+  const [name, setName] = useState(state?.name || '')
+  const [description, setDescription] = useState(state?.description || '')
   const [combinations, setCombinations] = useState('')
 
   if (!blueprintAddress) return ''
@@ -57,7 +56,6 @@ export function ImportBpPage() {
   }
 
   return (<div className='absolute inset-0 h-full flex flex-col overflow-y-auto overflow-x-hidden'>
-    <Nav />
     <div className='content flex h-full'>
       <SideBar />
       <div className='inner-content flex flex w-full justify-center items-start gap-4 p-8'>
@@ -68,20 +66,20 @@ export function ImportBpPage() {
         </div>
         <div className='flex flex-col w-lg overflow-hidden gap-4'>
           <div className='flex flex-col gap-2 relative'>
-            <button id='typeDropdown' data-dropdown-toggle='ddOptions' className='text-white px-5 py-2.5 text-start inline-flex items-center rounded pr-6 pl-4 py-3 text-lg border-2 border-transparent bg-gray-600/50 justify-between w-full max-w-full' type='button' onClick={() => setShowOptions(!showOptions)}>
+            <button id='typeDropdown' data-dropdown-toggle='ddOptions' className='text-white px-5 py-2.5 text-start inline-flex items-center rounded pr-6 pl-4 py-3 text-lg border-2 border-transparent bg-stone-600/50 justify-between w-full max-w-full' type='button' onClick={() => setShowOptions(!showOptions)}>
               <span> {(selectedType !== '') ? selectedType.charAt(0).toUpperCase() + selectedType.slice(1) : 'Item Type'}
                 <br />
                 {(selectedType !== '') && <small>Item Type</small>}
               </span>
               <CaretDown size={16} />
             </button>
-            <div id='ddOptions' className={cn({'hidden': !showOptions},'z-10 w-full divide-y rounded-lg shadow w-44 bg-gray-700 divide-gray-600 absolute top-[90px] right-0')}>
+            <div id='ddOptions' className={cn({'hidden': !showOptions},'z-10 w-full divide-y rounded-lg shadow w-44 bg-stone-700 divide-gray-600 absolute top-[90px] right-0')}>
                 <ul className='py-2 text-sm text-gray-200' aria-labelledby='dropdownDividerButton'>
                   <li onClick={() => handleSelectOption('resources')}>
-                  <a className={cn({'bg-gray-100 bg-gray-600 text-white': selectedType=='resources'},'block px-4 py-2 hover:bg-gray-100 hover:bg-gray-600 hover:text-white')}>Resources</a>
+                  <a className={cn({'bg-stone-100 bg-stone-600 text-white': selectedType=='resources'},'block px-4 py-2 hover:bg-stone-100 hover:bg-stone-600 hover:text-white')}>Resources</a>
                   </li>
                   <li onClick={() => handleSelectOption('equipment')}>
-                    <a className={cn({'bg-gray-100 bg-gray-600 text-white': selectedType=='equipment'},'block px-4 py-2 hover:bg-gray-100 hover:bg-gray-600 hover:text-white')}>Equipment</a>
+                    <a className={cn({'bg-stone-100 bg-stone-600 text-white': selectedType=='equipment'},'block px-4 py-2 hover:bg-stone-100 hover:bg-stone-600 hover:text-white')}>Equipment</a>
                   </li>
                 </ul>
             </div>
@@ -101,7 +99,7 @@ export function ImportBpPage() {
               )}
               type='text'
               placeholder='Name'
-              disabled={state.processing}
+              disabled={state?.processing}
             />
           </div>
           <div className='flex flex-col gap-2'>
@@ -119,7 +117,7 @@ export function ImportBpPage() {
               )}
               type='text'
               placeholder='Description'
-              disabled={state.processing}
+              disabled={state?.processing}
             />
           </div>
           {selectedType == 'equipment' && (
@@ -139,7 +137,7 @@ export function ImportBpPage() {
                   )}
                   type='text'
                   placeholder='Combinations'
-                  disabled={state.processing}
+                  disabled={state?.processing}
                 />
               </div>
               <div className='flex flex-col gap-2'>
@@ -164,7 +162,7 @@ export function ImportBpPage() {
           )}
 
           <button
-            className='flex w-full items-center gap-4 rounded pr-6 pl-4 py-3 text-lg border-2 border-transparent bg-gray-600/50 text-center justify-center'
+            className='flex w-full items-center gap-4 rounded pr-6 pl-4 py-3 text-lg border-2 border-transparent bg-stone-600/50 text-center justify-center'
           >
             Submit
           </button>
