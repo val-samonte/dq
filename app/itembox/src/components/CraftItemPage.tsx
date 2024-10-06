@@ -22,6 +22,9 @@ import {
   CraftingItemActionType,
   craftingItemAtom,
 } from '../atoms/craftingItemAtom'
+import { itemboxSdkAtom } from '../atoms/itemboxSdkAtom'
+import { PublicKey } from '@solana/web3.js'
+import { messageAtom } from './dialogs/MessageDialog'
 
 function Content() {
   const { recipeId } = useParams()
@@ -31,14 +34,53 @@ function Content() {
   )
   const blueprint = useAtomValue(blueprintAtom(recipe?.blueprint || ''))
   const [state, stateAction] = useAtom(craftingItemAtom(recipeId || ''))
-  const [busy] = useState(false)
+  const [busy, setBusy] = useState(false)
   const [tab, setTab] = useState('nonfungible')
+  const sdk = useAtomValue(itemboxSdkAtom)
+  const showMessage = useSetAtom(messageAtom)
 
   useEffect(() => {
     setTab(nonFungibles.length > 0 ? 'nonfungible' : 'fungible')
   }, [nonFungibles])
 
-  const onSubmit = () => {}
+  const onSubmit = async () => {
+    if (!state?.passed) return
+    if (!recipeId) return
+
+    setBusy(true)
+
+    try {
+      const result = await sdk.craftItem(
+        new PublicKey(recipeId),
+        state.nonFungibles.map((i) => ({
+          collection: new PublicKey(i.collection),
+          item: new PublicKey(i.selected[0]),
+        }))
+      )
+
+      showMessage({
+        title: 'Item Crafted',
+        message: (
+          <>
+            <p className='max-w-full overflow-auto'>{JSON.stringify(result)}</p>
+          </>
+        ),
+      })
+    } catch (e) {
+      console.log(e)
+      showMessage({
+        title: 'Error Crafting an Item',
+        message: (
+          <>
+            <p>There was an error while trying to craft the item!</p>
+            <p className='max-w-full overflow-auto'>{JSON.stringify(e)}</p>
+          </>
+        ),
+      })
+    }
+
+    setBusy(false)
+  }
 
   if (!recipe || !blueprint) {
     return null
