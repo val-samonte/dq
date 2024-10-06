@@ -19,9 +19,13 @@ const userTokenAccountBaseAtom = atomFamily((_: string) =>
 export const userTokenAccountAtom = atomFamily((id_type: string) =>
   atom(
     (get) => {
-      return get(userTokenAccountBaseAtom(id_type))
+      const wallet = get(userWalletAtom)
+      if (!wallet?.publicKey) return null
+      return get(
+        userTokenAccountBaseAtom(`${wallet.publicKey.toBase58()}_${id_type}`)
+      )
     },
-    async (get, set, force = false) => {
+    async (get, set) => {
       const connection = get(connectionAtom)
 
       const wallet = get(userWalletAtom)
@@ -34,7 +38,11 @@ export const userTokenAccountAtom = atomFamily((id_type: string) =>
 
       if (assetType === '0') return
 
-      if (get(userTokenAccountBaseAtom(id_type)) || !force) return
+      const userAccountAtom = userTokenAccountBaseAtom(
+        `${wallet.publicKey.toBase58()}_${id_type}`
+      )
+
+      // if (get(userAccountAtom) || !force) return
 
       // Blueprint NF [0], Blueprint F [1], SPL [2], Token Extensions [3]. (1)
       switch (assetType) {
@@ -66,7 +74,7 @@ export const userTokenAccountAtom = atomFamily((id_type: string) =>
             TOKEN_2022_PROGRAM_ID
           )
 
-          set(userTokenAccountBaseAtom(id_type), tokenAccount)
+          set(userAccountAtom, tokenAccount)
 
           break
         }
@@ -88,7 +96,7 @@ export const userTokenAccountAtom = atomFamily((id_type: string) =>
               TOKEN_PROGRAM_ID
             )
 
-            set(userTokenAccountBaseAtom(id_type), tokenAccount)
+            set(userAccountAtom, tokenAccount)
           } catch (e) {
             console.log(e)
           }
@@ -111,7 +119,7 @@ export const userTokenAccountAtom = atomFamily((id_type: string) =>
             TOKEN_2022_PROGRAM_ID
           )
 
-          set(userTokenAccountBaseAtom(id_type), tokenAccount)
+          set(userAccountAtom, tokenAccount)
           break
         }
       }

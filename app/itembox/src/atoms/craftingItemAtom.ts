@@ -92,7 +92,7 @@ export const craftingItemAtom = atomFamily((id: string) =>
               const tokenAccountAtom = userTokenAccountAtom(
                 `${item.asset}_${item.assetType}`
               )
-              await set(tokenAccountAtom, true)
+              await set(tokenAccountAtom)
               const account = get(tokenAccountAtom)
 
               fungibles.push({

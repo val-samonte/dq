@@ -25,6 +25,7 @@ import {
 import { itemboxSdkAtom } from '../atoms/itemboxSdkAtom'
 import { PublicKey } from '@solana/web3.js'
 import { messageAtom } from './dialogs/MessageDialog'
+import { userAssetsAtom } from '../atoms/userAssetsAtom'
 
 function Content() {
   const { recipeId } = useParams()
@@ -38,6 +39,7 @@ function Content() {
   const [tab, setTab] = useState('nonfungible')
   const sdk = useAtomValue(itemboxSdkAtom)
   const showMessage = useSetAtom(messageAtom)
+  const reloadAssets = useSetAtom(userAssetsAtom)
 
   useEffect(() => {
     setTab(nonFungibles.length > 0 ? 'nonfungible' : 'fungible')
@@ -57,6 +59,9 @@ function Content() {
           item: new PublicKey(i.selected[0]),
         }))
       )
+
+      stateAction()
+      reloadAssets()
 
       showMessage({
         title: 'Item Crafted',

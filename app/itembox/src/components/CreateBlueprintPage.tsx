@@ -19,7 +19,7 @@ import { CenterWrapper } from './CenterWrapper'
 import { useUserWallet } from '../atoms/userWalletAtom'
 import { PublicKey } from '@solana/web3.js'
 import { trimAddress } from '../utils/trimAddress'
-import { atomWithStorage } from 'jotai/utils'
+import { atomFamily, atomWithStorage } from 'jotai/utils'
 import { useAtom, useAtomValue } from 'jotai'
 import { base64ToFile } from '../utils/base64ToFile'
 import { Link } from 'react-router-dom'
@@ -55,16 +55,20 @@ const defaultForm: BlueprintFormState = {
   blueprintAddress: '',
 }
 
-const blueprintFormAtom = atomWithStorage<BlueprintFormState>(
-  'itembox_blueprint_form',
-  defaultForm
+const blueprintFormAtom = atomFamily((id) =>
+  atomWithStorage<BlueprintFormState>(
+    `itembox_blueprint_form_${id}`,
+    defaultForm
+  )
 )
 
 function BlueprintForm() {
   const wallet = useUserWallet()
   const umi = useAtomValue(umiAtom)
   const itembox = useAtomValue(itemboxSdkAtom)
-  const [state, setState] = useAtom(blueprintFormAtom)
+  const [state, setState] = useAtom(
+    blueprintFormAtom(wallet?.publicKey?.toBase58() ?? '')
+  )
   const [name, setName] = useState(state.name)
   const [description, setDescription] = useState(state.description)
   const fileInputRef = useRef<HTMLInputElement>(null)

@@ -9,6 +9,7 @@ import { Pill } from './Pill'
 import { userTokenAccountAtom } from '../atoms/userTokenAtom'
 import { blueprintAtom } from '../atoms/blueprintAtom'
 import { formatNumberBN } from '../utils/formatNumber'
+import { useUserWallet } from '../atoms/userWalletAtom'
 
 // export const fungibleSelectionsAtom = atom<string[]>([])
 
@@ -78,6 +79,7 @@ function BlueprintContent({ mint_type }: TokenProps) {
 }
 
 function Token({ mint_type }: TokenProps) {
+  const wallet = useUserWallet()
   const [mint, assetType] = mint_type.split('_')
   const reload = useSetAtom(userTokenAccountAtom(mint_type))
   const reloadBp = useSetAtom(blueprintAtom(assetType === '1' ? mint : ''))
@@ -85,7 +87,7 @@ function Token({ mint_type }: TokenProps) {
   useEffect(() => {
     reload()
     reloadBp()
-  }, [mint_type])
+  }, [mint_type, wallet?.publicKey])
 
   return (
     <Suspense fallback={<PillSkeleton />}>

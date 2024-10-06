@@ -10,6 +10,7 @@ import { CircleNotch } from '@phosphor-icons/react'
 import { PillExpanded } from './PillExpanded'
 import { formatNumberBN } from '../utils/formatNumber'
 import { userTokenAccountAtom } from '../atoms/userTokenAtom'
+import { useUserWallet } from '../atoms/userWalletAtom'
 
 export interface IngredientPillProps {
   asset: PublicKey
@@ -118,6 +119,7 @@ function Token({ asset, assetType, amount }: IngredientPillProps) {
 }
 
 export function IngredientExpanded(props: IngredientPillProps) {
+  const wallet = useUserWallet()
   const reload = useSetAtom(
     userTokenAccountAtom(`${props.asset}_${props.assetType}`)
   )
@@ -126,9 +128,9 @@ export function IngredientExpanded(props: IngredientPillProps) {
   )
 
   useEffect(() => {
-    reload(true)
+    reload()
     reloadBp()
-  }, [])
+  }, [wallet?.publicKey])
 
   return (
     <Suspense
