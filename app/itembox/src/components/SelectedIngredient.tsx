@@ -77,7 +77,6 @@ export function SelectedIngredient({ id }: { id: string }) {
               placeholder='Amount'
               value={selected.amount}
               onChange={(e) => {
-                console.log(selected.decimals)
                 setIngredients({
                   ...selected,
                   type: SelectedIngredientActionTypes.UPDATE,

@@ -19,11 +19,13 @@ import {
 import { useUserWallet } from '../atoms/userWalletAtom'
 import { CopyToClipboard } from './CopyToClipboard'
 import { BlueprintRecipes } from './BlueprintRecipes'
+import { mintItemAtom } from './dialogs/MintItem'
 
 function Content() {
   const wallet = useUserWallet()
   const { blueprintId } = useParams()
   const blueprint = useAtomValue(blueprintAtom(blueprintId || ''))
+  const showMint = useSetAtom(mintItemAtom)
 
   if (!blueprint) {
     return null
@@ -106,7 +108,11 @@ function Content() {
           <div className='flex items-center justify-center md:justify-end gap-5 mt-10'>
             {wallet?.publicKey?.toBase58() === blueprint.mintAuthority && (
               <button
-                onClick={() => {}}
+                onClick={() => {
+                  showMint({
+                    blueprintId: blueprint.id,
+                  })
+                }}
                 className={cn(
                   'w-fit',
                   'flex items-center gap-3',

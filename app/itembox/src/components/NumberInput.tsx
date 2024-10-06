@@ -34,7 +34,6 @@ export const NumberInput: React.FC<NumberInputProps> = ({
     let numBN: BN
     try {
       numBN = parseNumberBN(value, decimals)
-      console.log('Parsed BN Value:', numBN.toString()) // Debug point 1
     } catch {
       numBN = new BN(0) // Fallback to 0 if parsing fails
     }
@@ -49,11 +48,9 @@ export const NumberInput: React.FC<NumberInputProps> = ({
       numBN = min
     }
 
-    console.log('BN Value after min/max check:', numBN.toString()) // Debug point 2
-
     // Format the value and update state
     const formattedValue = formatNumberBN(numBN, decimals)
-    console.log('Formatted Value:', formattedValue) // Debug point 3
+
     setDisplayValue(formattedValue)
     onChange(formattedValue)
 

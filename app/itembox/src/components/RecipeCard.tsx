@@ -3,7 +3,7 @@ import { Suspense, useEffect } from 'react'
 import { ingredientsAtom, recipeAtom } from '../atoms/recipeAtom'
 import { IngredientPill } from './IngredientPill'
 import cn from 'classnames'
-import { FilePlus } from '@phosphor-icons/react'
+import { FilePlus, X } from '@phosphor-icons/react'
 import { Link } from 'react-router-dom'
 
 function Content({ id }: { id: string }) {
@@ -14,12 +14,23 @@ function Content({ id }: { id: string }) {
 
   return (
     <div className='overflow-hidden rounded-lg flex flex-col gap-5 bg-gray-700 p-5'>
+      <div className='text-lg flex items-center gap-3'>
+        Produces{' '}
+        <span className='flex items-center'>
+          <X size={14} />
+          {recipe.outputAmount}
+        </span>
+      </div>
       <div className='flex flex-col gap-2'>
-        {ingredients.length > 0 && <div className=''>Ingredients</div>}
+        {ingredients.length > 0 && (
+          <div className='text-gray-400'>Ingredients</div>
+        )}
         {ingredients.map((ingredient) => (
           <IngredientPill key={ingredient.id} {...ingredient} />
         ))}
-        {requirements.length > 0 && <div className=''>Required</div>}
+        {requirements.length > 0 && (
+          <div className='text-gray-400'>Required</div>
+        )}
         {requirements.map((ingredient) => (
           <IngredientPill key={ingredient.id} {...ingredient} />
         ))}

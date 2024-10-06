@@ -1,6 +1,6 @@
 import { atom, useAtom, useAtomValue } from 'jotai'
 import Dialog from '../Dialog'
-import { Suspense } from 'react'
+import { Suspense, useEffect, useState } from 'react'
 import { IdlAccounts } from '@coral-xyz/anchor'
 import { Itembox } from '../../sdk/itembox'
 import { blueprintAtom } from '../../atoms/blueprintAtom'
@@ -9,6 +9,7 @@ import { explorerTransaction } from '../../utils/explorerAddress'
 import cn from 'classnames'
 import { Link } from 'react-router-dom'
 import { IngredientPill } from '../IngredientPill'
+import { DialogCommonPanel } from './DialogCommonPanel'
 export interface RecipeCreatedDialogProps {
   account: IdlAccounts<Itembox>['recipe']
   publicKey: string
@@ -49,69 +50,66 @@ function BlueprintImage({ id, amount }: { id: string; amount: string }) {
 
 function Content() {
   const [data, setData] = useAtom(recipeCreatedAtom)
+  const [lastData, setLastData] = useState(data)
 
-  if (!data) return null
+  useEffect(() => {
+    if (data) {
+      setLastData(data)
+    }
+  }, [data])
 
   return (
-    <div className='px-5 pt-5 w-full overflow-y-auto overflow-x-hidden'>
-      <div className='p-5 rounded-xl bg-gray-700 max-w-sm mx-auto w-full flex flex-col gap-5 items-center'>
-        <div className='flex flex-col gap-2'>
-          <p className='text-xl'>Recipe Created!</p>
-        </div>
-        <Suspense fallback={null}>
-          <BlueprintImage
-            id={data.account.blueprint.toBase58()}
-            amount={data.account.outputAmount.toString()}
-          />
-        </Suspense>
-        <div className='flex flex-col gap-1 w-full'>
-          {data.account.ingredients.map((ingredient) => (
-            <IngredientPill {...ingredient} key={ingredient.asset.toBase58()} />
-          ))}
-        </div>
-        <div className='flex gap-5 w-full'>
-          <a
-            className={cn(
-              'w-full text-center',
-              'flex items-center justify-center gap-3',
-              'rounded px-6 py-3 text-lg',
-              'border-2 border-transparent',
-              'bg-gray-600/50'
-            )}
-            rel='noreferrer noopener'
-            target='_blank'
-            href={explorerTransaction(data.signature)}
-          >
-            Transaction
-          </a>
-          <Link
-            onClick={() => {
-              setData(null)
-            }}
-            to={`/blueprints/${data.account.blueprint.toBase58()}/recipes/${
-              data.publicKey
-            }`}
-            className={cn(
-              'w-full text-center',
-              'flex items-center justify-center gap-3',
-              'rounded px-6 py-3 text-lg',
-              'border-2 border-transparent',
-              'bg-gray-600/50'
-            )}
-          >
-            See Recipe
-          </Link>
-        </div>
+    <DialogCommonPanel
+      title={'Recipe Created!'}
+      onClose={() => {
+        setData(null)
+      }}
+    >
+      <Suspense fallback={null}>
+        <BlueprintImage
+          id={lastData?.account.blueprint.toBase58() || ''}
+          amount={lastData?.account.outputAmount.toString() || '0'}
+        />
+      </Suspense>
+      <div className='flex flex-col gap-1 w-full'>
+        {lastData?.account.ingredients.map((ingredient) => (
+          <IngredientPill {...ingredient} key={ingredient.asset.toBase58()} />
+        ))}
       </div>
-      <button
-        className='text-center py-5 w-full'
-        onClick={() => {
-          setData(null)
-        }}
-      >
-        Close
-      </button>
-    </div>
+      <div className='flex gap-5 w-full'>
+        <a
+          className={cn(
+            'w-full text-center',
+            'flex items-center justify-center gap-3',
+            'rounded px-6 py-3 text-lg',
+            'border-2 border-transparent',
+            'bg-gray-600/50'
+          )}
+          rel='noreferrer noopener'
+          target='_blank'
+          href={explorerTransaction(lastData?.signature || '')}
+        >
+          Transaction
+        </a>
+        <Link
+          onClick={() => {
+            setData(null)
+          }}
+          to={`/blueprints/${lastData?.account.blueprint.toBase58()}/recipes/${
+            lastData?.publicKey
+          }`}
+          className={cn(
+            'w-full text-center',
+            'flex items-center justify-center gap-3',
+            'rounded px-6 py-3 text-lg',
+            'border-2 border-transparent',
+            'bg-gray-600/50'
+          )}
+        >
+          See Recipe
+        </Link>
+      </div>
+    </DialogCommonPanel>
   )
 }
 
