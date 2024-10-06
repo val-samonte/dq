@@ -1,18 +1,16 @@
 import cn from "classnames"
 import { FilePlus } from "@phosphor-icons/react"
-import { Nav } from "./Nav"
 import { SideBar } from "./SideBar"
 import { useState } from "react"
 import { BpModal } from "./BpModal"
 
-export const BlueprintPage = () => {
-  const [showBpList, setShowBpList] = useState(true)
+export const ListBlueprintsPage = () => {
+  const [showBpList, setShowBpList] = useState(false)
   const hideBpModal = () => {
     setShowBpList(false)
   }
   return (<div className="absolute inset-0 h-full flex flex-col overflow-y-auto overflow-x-hidden">
     {showBpList && <BpModal handleClose={hideBpModal} />}
-    <Nav />
     <div className="content flex h-full">
       <SideBar />
       <div className="inner-content flex flex-col w-full justify-center items-center gap-4">
@@ -31,9 +29,9 @@ export const BlueprintPage = () => {
           data-modal-target="bp-modal" data-modal-toggle="bp-modal"
         >
         <FilePlus size={24} />
-        Create a Blueprint
+        Import a Blueprint
         </button>
       </div>
     </div>
   </div>)
-};
+}

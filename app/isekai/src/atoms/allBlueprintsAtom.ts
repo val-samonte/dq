@@ -11,11 +11,9 @@ export const allBlueprintsAtom = atom(
   async (get, set) => {
     const program = get(programAtom)
 
-    // todo: set new Promise to show suspense loading
-
-    const blueprintDiscriminator = await getDiscriminator('Blueprint')
-
     if (program) {
+      const blueprintDiscriminator = await getDiscriminator('Blueprint')
+
       const accounts = await program.provider.connection.getProgramAccounts(
         program.programId,
         {
@@ -36,6 +34,5 @@ export const allBlueprintsAtom = atom(
         accounts.slice(0, 100).map((a) => a.pubkey.toBase58())
       )
     }
-
   }
 )

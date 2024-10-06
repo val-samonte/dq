@@ -10,7 +10,7 @@ export function Nav() {
   const { setVisible } = useWalletModal()
 
   return (
-    <div className={cn('bg-gray-700 w-full h-16 sticky top-0 z-10 flex-none')}>
+    <div className={cn('bg-stone-700 w-full h-16 sticky top-0 z-10 flex-none')}>
       <div
         className={cn(
           'px-2 gap-2 md:px-5',
@@ -43,7 +43,7 @@ export function Nav() {
               'w-fit',
               'flex items-center gap-3',
               'rounded pr-4 pl-4 py-3 text-lg',
-              'bg-gray-600/50'
+              'bg-stone-600/50'
             )}
           >
             <FilePlus size={28} />
@@ -56,7 +56,7 @@ export function Nav() {
               'w-fit',
               'flex items-center gap-3',
               'rounded pr-4 pl-4 py-3 text-lg',
-              'bg-gray-600/50'
+              'bg-stone-600/50'
             )}
           >
             <HouseLine size={28} />
@@ -75,7 +75,7 @@ export function Nav() {
               'w-fit',
               'flex items-center gap-3',
               'rounded pr-4 md:pr-6 pl-4 py-3 text-lg',
-              'bg-gray-600/50'
+              'bg-stone-600/50'
             )}
           >
             <Wallet size={28} />
