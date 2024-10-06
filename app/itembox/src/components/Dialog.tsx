@@ -9,10 +9,11 @@ import cn from 'classnames'
 export interface DialogProps {
   show: boolean
   children: React.ReactNode
+  dark?: boolean
   onClose?: () => void
 }
 
-export default function Dialog({ show, children, onClose }: DialogProps) {
+export default function Dialog({ show, children, dark, onClose }: DialogProps) {
   return (
     <Transition show={show} as={Fragment}>
       <UiDialog onClose={onClose ?? (() => {})} className='relative z-50'>
@@ -33,7 +34,8 @@ export default function Dialog({ show, children, onClose }: DialogProps) {
               onClick={onClose}
               className={cn(
                 'cursor-default',
-                'backdrop-grayscale backdrop-opacity-80 bg-black/60 w-full h-full'
+                'backdrop-grayscale backdrop-opacity-80  w-full h-full',
+                dark ? 'bg-black/90' : 'bg-black/60'
               )}
             />
           </div>

@@ -26,6 +26,7 @@ import { itemboxSdkAtom } from '../atoms/itemboxSdkAtom'
 import { PublicKey } from '@solana/web3.js'
 import { messageAtom } from './dialogs/MessageDialog'
 import { userAssetsAtom } from '../atoms/userAssetsAtom'
+import { itemCraftedAtom } from './dialogs/ItemCrafted'
 
 function Content() {
   const { recipeId } = useParams()
@@ -40,6 +41,7 @@ function Content() {
   const sdk = useAtomValue(itemboxSdkAtom)
   const showMessage = useSetAtom(messageAtom)
   const reloadAssets = useSetAtom(userAssetsAtom)
+  const showSuccess = useSetAtom(itemCraftedAtom)
 
   useEffect(() => {
     setTab(nonFungibles.length > 0 ? 'nonfungible' : 'fungible')
@@ -48,6 +50,7 @@ function Content() {
   const onSubmit = async () => {
     if (!state?.passed) return
     if (!recipeId) return
+    if (!recipe) return
 
     setBusy(true)
 
@@ -63,13 +66,10 @@ function Content() {
       stateAction()
       reloadAssets()
 
-      showMessage({
-        title: 'Item Crafted',
-        message: (
-          <>
-            <p className='max-w-full overflow-auto'>{JSON.stringify(result)}</p>
-          </>
-        ),
+      showSuccess({
+        blueprintId: recipe.blueprint,
+        signature: result.signature,
+        amount: recipe.outputAmount,
       })
     } catch (e) {
       console.log(e)

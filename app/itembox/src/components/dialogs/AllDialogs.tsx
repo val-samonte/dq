@@ -1,3 +1,4 @@
+import { ItemCrafted } from './ItemCrafted'
 import { MessageDialog } from './MessageDialog'
 import { MintItem } from './MintItem'
 import { RecipeCreated } from './RecipeCreated'
@@ -8,6 +9,7 @@ export function AllDialogs() {
       <RecipeCreated />
       <MintItem />
       <MessageDialog />
+      <ItemCrafted />
     </>
   )
 }
