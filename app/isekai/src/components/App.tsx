@@ -1,4 +1,3 @@
-import { Nav } from "./Nav"
 import { SideBar } from "./SideBar"
 
 function App() {

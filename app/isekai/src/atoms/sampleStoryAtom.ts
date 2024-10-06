@@ -4,27 +4,27 @@ import { atom } from 'jotai'
 const sampleStoryAtom = atom([
   {
     dialog: 'Hello adventurer welcome to smithy city.',
-    avatar: '/images/blacksmith.png',
+    avatar: '/images/npc_gabranth.png',
     avatarPosition: 'left',
     type: 'dialog'
   },{
     dialog: 'Here is your requested item.',
-    avatar: '/images/male.png',
+    avatar: '/images/char_male.png',
     avatarPosition: 'right',
     type: 'dialog'
   },{
     dialog: 'Thanks for delivering my hammer.',
-    avatar: '/images/blacksmith.png',
+    avatar: '/images/npc_gabranth.png',
     avatarPosition: 'left',
     type: 'dialog'
   },{
     dialog: 'You are welcome smithy chad.',
-    avatar: '/images/blacksmith.png',
+    avatar: '/images/char_male.png',
     avatarPosition: 'right',
     type: 'dialog'
   },{
     dialog: 'Pls recieve this reward for your efforts.',
-    avatar: '/images/blacksmith.png',
+    avatar: '/images/npc_gabranth.png',
     avatarPosition: 'left',
     type: 'reward',
     reward: '5SVG3T9CNQsm2kEwzbRq6hASqh1oGfjqTtLXYUibpump'
