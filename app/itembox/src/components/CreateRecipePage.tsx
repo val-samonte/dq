@@ -35,6 +35,7 @@ import { programAtom } from '../atoms/programAtom'
 import { recipeCreatedAtom } from './dialogs/RecipeCreated'
 import { BlueprintHeader } from './BlueprintHeader'
 import { PleaseConnect } from './PleaseConnect'
+import { messageAtom } from './dialogs/MessageDialog'
 
 function Content() {
   const wallet = useUserWallet()
@@ -54,6 +55,7 @@ function Content() {
   const [state, setState] = useAtom(createRecipeStateAtom)
   const showDialog = useSetAtom(recipeCreatedAtom)
   const navigate = useNavigate()
+  const showMessage = useSetAtom(messageAtom)
 
   useEffect(() => {
     if (
@@ -113,6 +115,18 @@ function Content() {
       })
     } catch (e) {
       console.error(e)
+      showMessage({
+        title: 'Error Creating a Recipe',
+        message: (
+          <>
+            <p>There was an error while creating a recipe for this item!</p>
+            <p>
+              (Note that on Devnet some of the tokens might not have their
+              counterpart on Mainnet which might be the reason for the error)
+            </p>
+          </>
+        ),
+      })
     }
 
     setState(0)

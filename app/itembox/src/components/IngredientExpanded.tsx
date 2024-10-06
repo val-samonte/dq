@@ -93,7 +93,10 @@ function Token({ asset, assetType, amount }: IngredientPillProps) {
           label: token.symbol,
         },
       ]}
-      amount={`${formatNumberBN(balance, 0)} / ${formatNumberBN(amount, 0)}`}
+      amount={`${formatNumberBN(balance, token.decimals)} / ${formatNumberBN(
+        amount,
+        token.decimals
+      )}`}
     />
   )
 }

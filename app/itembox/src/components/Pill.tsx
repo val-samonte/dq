@@ -1,4 +1,3 @@
-import { X } from '@phosphor-icons/react'
 import cn from 'classnames'
 import { ReactNode } from 'react'
 import { Link } from 'react-router-dom'
@@ -108,8 +107,7 @@ export function Pill({
             })}
           </div>
           {amount && (
-            <div className='flex items-center justify-end w-full text-xs'>
-              <X size={10} />
+            <div className='flex items-center justify-end w-full text-sm'>
               {amount.toString()}
             </div>
           )}
