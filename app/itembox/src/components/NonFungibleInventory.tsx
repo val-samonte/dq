@@ -1,10 +1,9 @@
 import { atom, useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { userAssetsAtom } from '../atoms/userAssetsAtom'
-import { Suspense, useEffect, useMemo, useState } from 'react'
+import { Suspense, useEffect, useMemo } from 'react'
 import { Pill } from './Pill'
 import { useUserWallet } from '../atoms/userWalletAtom'
 import { PillSkeleton } from './PillSkeleton'
-import { useParams } from 'react-router-dom'
 import { atomFamily } from 'jotai/utils'
 
 export interface NonFungibleInventoryProps {
@@ -14,9 +13,7 @@ export interface NonFungibleInventoryProps {
   onSelection?: (selectedItems: any[]) => void
 }
 
-export const nonFungibleSelectionsAtom = atomFamily((recipeId) =>
-  atom<string[]>([])
-)
+export const nonFungibleSelectionsAtom = atomFamily((_) => atom<string[]>([]))
 
 export function Content({
   filters,

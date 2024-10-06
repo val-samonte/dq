@@ -31,7 +31,7 @@ function Content() {
   )
   const blueprint = useAtomValue(blueprintAtom(recipe?.blueprint || ''))
   const [state, stateAction] = useAtom(craftingItemAtom(recipeId || ''))
-  const [busy, setBusy] = useState(false)
+  const [busy] = useState(false)
   const [tab, setTab] = useState('nonfungible')
 
   useEffect(() => {
