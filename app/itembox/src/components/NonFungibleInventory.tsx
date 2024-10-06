@@ -1,25 +1,33 @@
 import { atom, useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { userAssetsAtom } from '../atoms/userAssetsAtom'
-import { Suspense, useEffect, useMemo } from 'react'
+import { Suspense, useEffect, useMemo, useState } from 'react'
 import { Pill } from './Pill'
 import { useUserWallet } from '../atoms/userWalletAtom'
 import { PillSkeleton } from './PillSkeleton'
+import { useParams } from 'react-router-dom'
+import { atomFamily } from 'jotai/utils'
 
 export interface NonFungibleInventoryProps {
+  recipeId: string
   selectMode: 'none' | 'single' | 'multiple'
   filters?: string[]
   onSelection?: (selectedItems: any[]) => void
 }
 
-export const nonFungibleSelectionsAtom = atom<string[]>([])
+export const nonFungibleSelectionsAtom = atomFamily((recipeId) =>
+  atom<string[]>([])
+)
 
 export function Content({
   filters,
   selectMode,
+  recipeId,
   onSelection,
 }: NonFungibleInventoryProps) {
   const list = useAtomValue(userAssetsAtom)
-  const [selectedItems, setSelectedItems] = useAtom(nonFungibleSelectionsAtom)
+  const [selectedItems, setSelectedItems] = useAtom(
+    nonFungibleSelectionsAtom(recipeId)
+  )
 
   const filteredList = useMemo(() => {
     if (!filters) return list

@@ -63,12 +63,9 @@ export const craftingItemAtom = atomFamily((id: string) =>
     async (get, set, action?: CraftingItemAction) => {
       if (!id) return null
 
-      const state = get(craftingItemBaseAtom(id))
+      let state = get(craftingItemBaseAtom(id))
 
-      if (
-        (!action && !state) ||
-        action?.type === CraftingItemActionType.FORCE_RELOAD
-      ) {
+      {
         await set(recipeAtom(id))
         const recipe = await get(recipeAtom(id))
 
@@ -119,7 +116,11 @@ export const craftingItemAtom = atomFamily((id: string) =>
           nonFungibles,
           passed,
         })
-      } else if (action && state) {
+      }
+
+      state = get(craftingItemBaseAtom(id))
+
+      if (state && action) {
         let nonFungibles = [...state.nonFungibles]
         switch (action.type) {
           case CraftingItemActionType.ADD: {

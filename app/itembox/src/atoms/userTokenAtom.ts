@@ -71,23 +71,27 @@ export const userTokenAccountAtom = atomFamily((id_type: string) =>
           break
         }
         case '2': {
-          const mint = id
+          try {
+            const mint = id
 
-          const ata = getAssociatedTokenAddressSync(
-            new PublicKey(mint),
-            wallet.publicKey,
-            true,
-            TOKEN_PROGRAM_ID
-          )
+            const ata = getAssociatedTokenAddressSync(
+              new PublicKey(mint),
+              wallet.publicKey,
+              true,
+              TOKEN_PROGRAM_ID
+            )
 
-          const tokenAccount = await getAccount(
-            connection,
-            ata,
-            'confirmed',
-            TOKEN_PROGRAM_ID
-          )
+            const tokenAccount = await getAccount(
+              connection,
+              ata,
+              'confirmed',
+              TOKEN_PROGRAM_ID
+            )
 
-          set(userTokenAccountBaseAtom(id_type), tokenAccount)
+            set(userTokenAccountBaseAtom(id_type), tokenAccount)
+          } catch (e) {
+            console.log(e)
+          }
           break
         }
         case '3': {

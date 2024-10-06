@@ -7,7 +7,12 @@ import { useParams } from 'react-router-dom'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { blueprintAtom } from '../atoms/blueprintAtom'
 import { ingredientsAtom, recipeAtom } from '../atoms/recipeAtom'
-import { NumberSquareOne, Stack } from '@phosphor-icons/react'
+import {
+  FilePlus,
+  NumberSquareOne,
+  Signature,
+  Stack,
+} from '@phosphor-icons/react'
 import { IngredientExpanded } from './IngredientExpanded'
 import { NonFungibleInventory } from './NonFungibleInventory'
 import { useUserWallet } from '../atoms/userWalletAtom'
@@ -26,12 +31,14 @@ function Content() {
   )
   const blueprint = useAtomValue(blueprintAtom(recipe?.blueprint || ''))
   const [state, stateAction] = useAtom(craftingItemAtom(recipeId || ''))
-
+  const [busy, setBusy] = useState(false)
   const [tab, setTab] = useState('nonfungible')
 
   useEffect(() => {
     setTab(nonFungibles.length > 0 ? 'nonfungible' : 'fungible')
   }, [nonFungibles])
+
+  const onSubmit = () => {}
 
   if (!recipe || !blueprint) {
     return null
@@ -94,20 +101,23 @@ function Content() {
           </div>
           <div className='px-5 overflow-y-auto overflow-x-hidden relative flex-auto'>
             <div className='grid grid-cols-1 lg:grid-cols-2 py-5 gap-5 show-next-when-empty'>
-              {tab === 'nonfungible' && (
+              {recipeId && tab === 'nonfungible' && (
                 <Suspense fallback={null}>
                   <NonFungibleInventory
+                    recipeId={recipeId}
                     filters={nonFungibles}
                     selectMode='multiple'
                     onSelection={(items) => {
-                      stateAction({
-                        type: CraftingItemActionType.MAP,
-                        data: items.map((i) => ({
-                          blueprintId: i.blueprintId,
-                          collectionId: i.collectionId,
-                          assetId: i.id,
-                        })),
-                      })
+                      if (!busy) {
+                        stateAction({
+                          type: CraftingItemActionType.MAP,
+                          data: items.map((i) => ({
+                            blueprintId: i.blueprintId,
+                            collectionId: i.collectionId,
+                            assetId: i.id,
+                          })),
+                        })
+                      }
                     }}
                   />
                 </Suspense>
@@ -192,7 +202,37 @@ function Content() {
           </div>
         </div>
       </div>
-      {JSON.stringify(state)}
+      <div className='flex-none mx-auto flex flex-col items-center gap-5 portrait:flex-col lg:py-5'>
+        {state?.passed ? (
+          <button
+            onClick={onSubmit}
+            className={cn(
+              'w-fit',
+              'flex items-center gap-3',
+              'rounded pr-6 pl-4 py-3 text-lg',
+              'bg-gradient-to-t',
+              busy ? 'opacity-50 cursor-wait' : 'opacity-100 cursor-pointer',
+              'border-2 border-amber-300/50',
+              'from-amber-800 to-yellow-800'
+            )}
+            disabled={busy}
+          >
+            {!busy ? (
+              <>
+                <FilePlus size={24} />
+                Craft Item
+              </>
+            ) : (
+              <>
+                <Signature size={24} />
+                Please Sign
+              </>
+            )}
+          </button>
+        ) : (
+          <div className='text-lg'>Required ingredients not met</div>
+        )}
+      </div>
     </div>
   )
 }
