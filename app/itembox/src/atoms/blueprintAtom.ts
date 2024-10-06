@@ -50,6 +50,7 @@ export const blueprintAtom = atomFamily((id: string) =>
       return (await idb.get('blueprints', id)) || null
     },
     async (get, set, force = false) => {
+      if (!id) return null
       const rpc = get(rpcEndpointAtom)
       const idb = await get(idbAtom('records'))
       if (!idb) return

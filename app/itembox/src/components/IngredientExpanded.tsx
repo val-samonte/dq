@@ -1,6 +1,6 @@
 import { BN } from '@coral-xyz/anchor'
-import { Suspense, useEffect } from 'react'
-import { useAtom, useAtomValue } from 'jotai'
+import { Suspense, useEffect, useMemo } from 'react'
+import { useAtomValue, useSetAtom } from 'jotai'
 import { blueprintAtom } from '../atoms/blueprintAtom'
 import { tokenDataAtom } from '../atoms/tokensListAtom'
 import { trimAddress } from '../utils/trimAddress'
@@ -9,6 +9,7 @@ import { PublicKey } from '@solana/web3.js'
 import { CircleNotch } from '@phosphor-icons/react'
 import { PillExpanded } from './PillExpanded'
 import { formatNumberBN } from '../utils/formatNumber'
+import { userTokenAccountAtom } from '../atoms/userTokenAtom'
 
 export interface IngredientPillProps {
   asset: PublicKey
@@ -17,13 +18,21 @@ export interface IngredientPillProps {
   consumeMethod: number
 }
 
-function Blueprint({ asset, amount }: IngredientPillProps) {
+function Blueprint({ asset, assetType, amount }: IngredientPillProps) {
   const id = asset.toBase58()
-  const [blueprint, reload] = useAtom(blueprintAtom(id))
+  const blueprint = useAtomValue(blueprintAtom(id))
+  const account = useAtomValue(
+    userTokenAccountAtom(assetType === 1 ? `${asset}_${assetType}` : '')
+  )
 
-  useEffect(() => {
-    reload()
-  }, [])
+  const balance = useMemo(() => {
+    if (!account) return new BN(0)
+    return new BN(account.amount.toString())
+  }, [account])
+
+  const hasEnoughBalance = useMemo(() => {
+    return balance.gte(amount)
+  }, [balance, amount])
 
   if (!blueprint) {
     return null
@@ -31,6 +40,7 @@ function Blueprint({ asset, amount }: IngredientPillProps) {
 
   return (
     <PillExpanded
+      selected={hasEnoughBalance}
       name={blueprint.name}
       image={blueprint.image}
       tags={[
@@ -45,14 +55,24 @@ function Blueprint({ asset, amount }: IngredientPillProps) {
           to: `/user/${blueprint.authority}`,
         },
       ]}
-      amount={formatNumberBN(amount, 0)}
+      amount={`${formatNumberBN(balance, 0)} / ${formatNumberBN(amount, 0)}`}
     />
   )
 }
 
-function Token({ asset, amount }: IngredientPillProps) {
+function Token({ asset, assetType, amount }: IngredientPillProps) {
   const id = asset.toBase58()
   const token = useAtomValue(tokenDataAtom(id))
+  const account = useAtomValue(userTokenAccountAtom(`${asset}_${assetType}`))
+
+  const balance = useMemo(() => {
+    if (!account) return new BN(0)
+    return new BN(account.amount.toString())
+  }, [account])
+
+  const hasEnoughBalance = useMemo(() => {
+    return balance.gte(amount)
+  }, [balance, amount])
 
   if (!token) {
     return null
@@ -60,6 +80,7 @@ function Token({ asset, amount }: IngredientPillProps) {
 
   return (
     <PillExpanded
+      selected={hasEnoughBalance}
       name={token.name}
       image={token.image}
       tags={[
@@ -72,12 +93,24 @@ function Token({ asset, amount }: IngredientPillProps) {
           label: token.symbol,
         },
       ]}
-      amount={formatNumberBN(amount, token.decimals)}
+      amount={`${formatNumberBN(balance, 0)} / ${formatNumberBN(amount, 0)}`}
     />
   )
 }
 
 export function IngredientExpanded(props: IngredientPillProps) {
+  const reload = useSetAtom(
+    userTokenAccountAtom(`${props.asset}_${props.assetType}`)
+  )
+  const reloadBp = useSetAtom(
+    blueprintAtom(props.assetType < 2 ? props.asset.toBase58() : '')
+  )
+
+  useEffect(() => {
+    reload(true)
+    reloadBp()
+  }, [])
+
   return (
     <Suspense
       fallback={

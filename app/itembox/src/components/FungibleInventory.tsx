@@ -1,3 +1,4 @@
+import { BN } from '@coral-xyz/anchor'
 import { Suspense, useEffect } from 'react'
 import { PillSkeleton } from './PillSkeleton'
 import { tokenDataAtom } from '../atoms/tokensListAtom'
@@ -5,8 +6,9 @@ import { useAtomValue, useSetAtom } from 'jotai'
 import { trimAddress } from '../utils/trimAddress'
 import { explorerAddress } from '../utils/explorerAddress'
 import { Pill } from './Pill'
-import { userTokenBalanceAtom } from '../atoms/userTokenAtom'
+import { userTokenAccountAtom } from '../atoms/userTokenAtom'
 import { blueprintAtom } from '../atoms/blueprintAtom'
+import { formatNumberBN } from '../utils/formatNumber'
 
 // export const fungibleSelectionsAtom = atom<string[]>([])
 
@@ -17,7 +19,7 @@ interface TokenProps {
 function TokenContent({ mint_type }: TokenProps) {
   const [mint] = mint_type.split('_')
   const token = useAtomValue(tokenDataAtom(mint))
-  const balance = useAtomValue(userTokenBalanceAtom(mint_type))
+  const account = useAtomValue(userTokenAccountAtom(mint_type))
 
   if (!token) {
     return null
@@ -37,7 +39,10 @@ function TokenContent({ mint_type }: TokenProps) {
           label: token.symbol,
         },
       ]}
-      // amount={formatNumberBN(balance, token.decimals)}
+      amount={formatNumberBN(
+        new BN(account?.amount.toString() || '0'),
+        token.decimals
+      )}
     />
   )
 }
@@ -45,7 +50,7 @@ function TokenContent({ mint_type }: TokenProps) {
 function BlueprintContent({ mint_type }: TokenProps) {
   const [mint] = mint_type.split('_')
   const blueprint = useAtomValue(blueprintAtom(mint))
-  const balance = useAtomValue(userTokenBalanceAtom(mint_type))
+  const account = useAtomValue(userTokenAccountAtom(mint_type))
 
   if (!blueprint) {
     return null
@@ -67,14 +72,14 @@ function BlueprintContent({ mint_type }: TokenProps) {
           to: `/user/${blueprint.authority}`,
         },
       ]}
-      // amount={formatNumberBN(amount, 0)}
+      amount={formatNumberBN(new BN(account?.amount.toString() || '0'), 0)}
     />
   )
 }
 
 function Token({ mint_type }: TokenProps) {
   const [mint, assetType] = mint_type.split('_')
-  const reload = useSetAtom(userTokenBalanceAtom(mint_type))
+  const reload = useSetAtom(userTokenAccountAtom(mint_type))
   const reloadBp = useSetAtom(blueprintAtom(assetType === '1' ? mint : ''))
 
   useEffect(() => {

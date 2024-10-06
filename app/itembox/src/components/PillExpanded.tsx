@@ -113,7 +113,7 @@ export function PillExpanded({
           </div>
           {amount && (
             <div className='flex items-center justify-end w-full flex-wrap'>
-              <span>/ {amount.toString()}</span>
+              <span>{amount}</span>
             </div>
           )}
         </div>
