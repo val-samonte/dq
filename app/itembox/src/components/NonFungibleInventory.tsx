@@ -38,9 +38,9 @@ export function Content({
     <>
       {filteredList.map((asset) => (
         <Pill
+          selected={selectedItems.includes(asset.id)}
           key={asset.id}
           {...asset}
-          selected={selectedItems.includes(asset.id)}
           onClick={() => {
             const included = selectedItems.includes(asset.id)
 

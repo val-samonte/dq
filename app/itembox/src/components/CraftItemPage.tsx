@@ -4,7 +4,7 @@ import { CenterWrapper } from './CenterWrapper'
 import { BlueprintHeader } from './BlueprintHeader'
 import cn from 'classnames'
 import { useParams } from 'react-router-dom'
-import { useAtomValue, useSetAtom } from 'jotai'
+import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { blueprintAtom } from '../atoms/blueprintAtom'
 import { ingredientsAtom, recipeAtom } from '../atoms/recipeAtom'
 import { NumberSquareOne, Stack } from '@phosphor-icons/react'
@@ -13,6 +13,10 @@ import { NonFungibleInventory } from './NonFungibleInventory'
 import { useUserWallet } from '../atoms/userWalletAtom'
 import { PleaseConnect } from './PleaseConnect'
 import { FungibleInventory } from './FungibleInventory'
+import {
+  CraftingItemActionType,
+  craftingItemAtom,
+} from '../atoms/craftingItemAtom'
 
 function Content() {
   const { recipeId } = useParams()
@@ -21,6 +25,7 @@ function Content() {
     ingredientsAtom(recipeId || '')
   )
   const blueprint = useAtomValue(blueprintAtom(recipe?.blueprint || ''))
+  const [state, stateAction] = useAtom(craftingItemAtom(recipeId || ''))
 
   const [tab, setTab] = useState('nonfungible')
 
@@ -94,8 +99,15 @@ function Content() {
                   <NonFungibleInventory
                     filters={nonFungibles}
                     selectMode='multiple'
-                    onSelection={(_) => {
-                      // console.log(items)
+                    onSelection={(items) => {
+                      stateAction({
+                        type: CraftingItemActionType.MAP,
+                        data: items.map((i) => ({
+                          blueprintId: i.blueprintId,
+                          collectionId: i.collectionId,
+                          assetId: i.id,
+                        })),
+                      })
                     }}
                   />
                 </Suspense>
@@ -123,9 +135,26 @@ function Content() {
                 {blueprint.name} Ingredients
               </div>
               <div className='flex flex-col gap-5 p-5'>
-                {ingredients.map((ingredient) => (
-                  <IngredientExpanded key={ingredient.id} {...ingredient} />
-                ))}
+                {ingredients.map((ingredient) => {
+                  if (ingredient.assetType === 0) {
+                    const item = state?.nonFungibles.find(
+                      (i) => i.asset === ingredient.asset.toBase58()
+                    )
+                    if (item && item.selected.length > 0) {
+                      return (
+                        <IngredientExpanded
+                          key={ingredient.id}
+                          {...ingredient}
+                          selectedAssets={item.selected}
+                        />
+                      )
+                    }
+                  }
+
+                  return (
+                    <IngredientExpanded key={ingredient.id} {...ingredient} />
+                  )
+                })}
               </div>
               {requirements.length > 0 && (
                 <>
@@ -133,9 +162,29 @@ function Content() {
                     Required Assets
                   </div>
                   <div className='flex flex-col gap-5 p-5'>
-                    {requirements.map((ingredient) => (
-                      <IngredientExpanded key={ingredient.id} {...ingredient} />
-                    ))}
+                    {requirements.map((ingredient) => {
+                      if (ingredient.assetType === 0) {
+                        const item = state?.nonFungibles.find(
+                          (i) => i.asset === ingredient.asset.toBase58()
+                        )
+                        if (item && item.selected.length > 0) {
+                          return (
+                            <IngredientExpanded
+                              key={ingredient.id}
+                              {...ingredient}
+                              selectedAssets={item.selected}
+                            />
+                          )
+                        }
+                      }
+
+                      return (
+                        <IngredientExpanded
+                          key={ingredient.id}
+                          {...ingredient}
+                        />
+                      )
+                    })}
                   </div>
                 </>
               )}
@@ -143,6 +192,7 @@ function Content() {
           </div>
         </div>
       </div>
+      {JSON.stringify(state)}
     </div>
   )
 }
@@ -150,10 +200,12 @@ function Content() {
 export function CraftItemPage() {
   const wallet = useUserWallet()
   const { recipeId } = useParams()
-  const reload = useSetAtom(recipeAtom(recipeId || ''))
+  const reloadRecipe = useSetAtom(recipeAtom(recipeId || ''))
+  const reloadCraftingState = useSetAtom(craftingItemAtom(recipeId || ''))
 
   useEffect(() => {
-    reload()
+    reloadRecipe()
+    reloadCraftingState()
   }, [])
 
   return (

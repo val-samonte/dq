@@ -16,9 +16,15 @@ export interface IngredientPillProps {
   assetType: number
   amount: BN
   consumeMethod: number
+  selectedAssets?: string[]
 }
 
-function Blueprint({ asset, assetType, amount }: IngredientPillProps) {
+function Blueprint({
+  asset,
+  assetType,
+  amount,
+  selectedAssets,
+}: IngredientPillProps) {
   const id = asset.toBase58()
   const blueprint = useAtomValue(blueprintAtom(id))
   const account = useAtomValue(
@@ -38,9 +44,19 @@ function Blueprint({ asset, assetType, amount }: IngredientPillProps) {
     return null
   }
 
+  const amountDisplay =
+    assetType === 0
+      ? selectedAssets && selectedAssets.length > 0
+        ? trimAddress(selectedAssets[0])
+        : 'No Asset Selected'
+      : `${formatNumberBN(balance, 0)} / ${formatNumberBN(amount, 0)}`
+
+  const highlight =
+    assetType === 0 ? (selectedAssets?.length ?? 0) > 0 : hasEnoughBalance
+
   return (
     <PillExpanded
-      selected={hasEnoughBalance}
+      selected={highlight}
       name={blueprint.name}
       image={blueprint.image}
       tags={[
@@ -55,7 +71,7 @@ function Blueprint({ asset, assetType, amount }: IngredientPillProps) {
           to: `/user/${blueprint.authority}`,
         },
       ]}
-      amount={`${formatNumberBN(balance, 0)} / ${formatNumberBN(amount, 0)}`}
+      amount={amountDisplay}
     />
   )
 }
