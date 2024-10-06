@@ -34,6 +34,7 @@ import { PublicKey } from '@solana/web3.js'
 import { programAtom } from '../atoms/programAtom'
 import { recipeCreatedAtom } from './dialogs/RecipeCreated'
 import { BlueprintHeader } from './BlueprintHeader'
+import { PleaseConnect } from './PleaseConnect'
 
 function Content() {
   const wallet = useUserWallet()
@@ -324,6 +325,7 @@ function Content() {
 }
 
 export function CreateRecipePage() {
+  const wallet = useUserWallet()
   const { blueprintId } = useParams()
   const reloadBlueprint = useSetAtom(blueprintAtom(blueprintId || ''))
   const reloadBlueprints = useSetAtom(allBlueprintsAtom)
@@ -337,11 +339,15 @@ export function CreateRecipePage() {
     <div className='absolute inset-0 flex flex-col'>
       <Nav />
       <CenterWrapper>
-        <div className='min-h-[calc(100vh-4rem)]'>
-          <Suspense fallback={null}>
-            <Content />
-          </Suspense>
-        </div>
+        {wallet?.publicKey ? (
+          <div className='min-h-[calc(100vh-4rem)]'>
+            <Suspense fallback={null}>
+              <Content />
+            </Suspense>
+          </div>
+        ) : (
+          <PleaseConnect />
+        )}
       </CenterWrapper>
     </div>
   )

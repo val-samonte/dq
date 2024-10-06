@@ -95,7 +95,6 @@ export const ingredientsAtom = atomFamily((id: string) =>
 
     if (recipe) {
       recipe.ingredients.forEach((ingredient) => {
-        console.log(ingredient)
         if (ingredient.assetType === 0) {
           nonFungibles.push(ingredient.asset)
         }

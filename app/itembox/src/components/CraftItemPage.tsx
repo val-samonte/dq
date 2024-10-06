@@ -10,6 +10,8 @@ import { ingredientsAtom, recipeAtom } from '../atoms/recipeAtom'
 import { NumberSquareOne, Stack } from '@phosphor-icons/react'
 import { IngredientExpanded } from './IngredientExpanded'
 import { NonFungibleInventory } from './NonFungibleInventory'
+import { useUserWallet } from '../atoms/userWalletAtom'
+import { PleaseConnect } from './PleaseConnect'
 
 function Content() {
   const { recipeId } = useParams()
@@ -86,15 +88,17 @@ function Content() {
           </div>
           <div className='px-5 overflow-y-auto overflow-x-hidden relative flex-auto'>
             <div className='grid grid-cols-1 lg:grid-cols-2 py-5 gap-5 show-next-when-empty'>
-              <Suspense fallback={null}>
-                <NonFungibleInventory
-                  filters={nonFungibles}
-                  selectMode='multiple'
-                  onSelection={(items) => {
-                    console.log(items)
-                  }}
-                />
-              </Suspense>
+              {tab === 'nonfungible' && (
+                <Suspense fallback={null}>
+                  <NonFungibleInventory
+                    filters={nonFungibles}
+                    selectMode='multiple'
+                    onSelection={(items) => {
+                      console.log(items)
+                    }}
+                  />
+                </Suspense>
+              )}
             </div>
             <div className='absolute inset-0 flex items-center justify-center text-center opacity-50'>
               <span className='text-center w-[80%]'>
@@ -140,6 +144,7 @@ function Content() {
 }
 
 export function CraftItemPage() {
+  const wallet = useUserWallet()
   const { recipeId } = useParams()
   const reload = useSetAtom(recipeAtom(recipeId || ''))
 
@@ -151,11 +156,15 @@ export function CraftItemPage() {
     <div className='absolute inset-0 flex flex-col'>
       <Nav />
       <CenterWrapper>
-        <div className='min-h-[calc(100vh-4rem)]'>
-          <Suspense fallback={null}>
-            <Content />
-          </Suspense>
-        </div>
+        {wallet?.publicKey ? (
+          <div className='min-h-[calc(100vh-4rem)]'>
+            <Suspense fallback={null}>
+              <Content />
+            </Suspense>
+          </div>
+        ) : (
+          <PleaseConnect />
+        )}
       </CenterWrapper>
     </div>
   )

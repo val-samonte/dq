@@ -69,6 +69,7 @@ export function Pill({
               if (tag.href) {
                 return (
                   <a
+                    key={tag.label}
                     href={tag.href}
                     rel='noreferrer noopener'
                     target='_blank'
@@ -79,19 +80,31 @@ export function Pill({
                 )
               } else if (tag.to) {
                 return (
-                  <Link to={tag.to} className='flex text-xs gap-2'>
+                  <Link
+                    key={tag.label}
+                    to={tag.to}
+                    className='flex text-xs gap-2'
+                  >
                     {content}
                   </Link>
                 )
               } else if (tag.onClick) {
                 return (
-                  <button onClick={tag.onClick} className='flex text-xs gap-2'>
+                  <button
+                    key={tag.label}
+                    onClick={tag.onClick}
+                    className='flex text-xs gap-2'
+                  >
                     {content}
                   </button>
                 )
               }
 
-              return <div className='flex text-xs gap-2'>{content}</div>
+              return (
+                <div key={tag.label} className='flex text-xs gap-2'>
+                  {content}
+                </div>
+              )
             })}
           </div>
           {amount && (

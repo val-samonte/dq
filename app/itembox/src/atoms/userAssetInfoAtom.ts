@@ -3,9 +3,6 @@
 import { atom } from 'jotai'
 import { atomFamily } from 'jotai/utils'
 import { userWalletAtom } from './userWalletAtom'
-import { das } from '@metaplex-foundation/mpl-core-das'
-import { umiAtom } from './umiAtom'
-import { publicKey } from '@metaplex-foundation/umi'
 import { blueprintAtom } from './blueprintAtom'
 
 const refresher = atomFamily((_: string) => atom(Date.now()))
@@ -29,24 +26,10 @@ export const userAssetInfoAtom = atomFamily((id_type: string) =>
 
       // Blueprint NF [0], Blueprint F [1], SPL [2], Token Extensions [3]. (1)
       switch (assetType) {
-        case '0': {
-          const umi = get(umiAtom)
+        case '1': {
           const blueprint = await get(blueprintAtom(id))
 
           if (!blueprint) return null
-
-          // better to use assets by owner
-          // might need to migrate this as well to an atom
-          const result = await das.getAssetsByOwner(umi, {
-            // collection: publicKey(blueprint.mint),
-            owner: publicKey(wallet.publicKey.toBase58()),
-            skipDerivePlugins: true,
-          })
-          console.log(blueprint.mint, blueprint.id)
-          return result
-          break
-        }
-        case '1': {
           break
         }
         case '2': {

@@ -1,7 +1,9 @@
-import { useAtom } from 'jotai'
+import { atom, useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { userAssetsAtom } from '../atoms/userAssetsAtom'
-import { useEffect, useMemo, useState } from 'react'
+import { Suspense, useEffect, useMemo } from 'react'
 import { Pill } from './Pill'
+import { useUserWallet } from '../atoms/userWalletAtom'
+import { PillSkeleton } from './PillSkeleton'
 
 export interface NonFungibleInventoryProps {
   selectMode: 'none' | 'single' | 'multiple'
@@ -9,17 +11,15 @@ export interface NonFungibleInventoryProps {
   onSelection?: (selectedItems: any[]) => void
 }
 
-export function NonFungibleInventory({
+export const nonFungibleSelectionsAtom = atom<string[]>([])
+
+export function Content({
   filters,
   selectMode,
   onSelection,
 }: NonFungibleInventoryProps) {
-  const [list, reload] = useAtom(userAssetsAtom)
-  const [selectedItems, setSelectedItems] = useState<string[]>([])
-
-  useEffect(() => {
-    reload()
-  }, [filters])
+  const list = useAtomValue(userAssetsAtom)
+  const [selectedItems, setSelectedItems] = useAtom(nonFungibleSelectionsAtom)
 
   const filteredList = useMemo(() => {
     if (!filters) return list
@@ -55,5 +55,28 @@ export function NonFungibleInventory({
         />
       ))}
     </>
+  )
+}
+
+export function NonFungibleInventory(props: NonFungibleInventoryProps) {
+  const reload = useSetAtom(userAssetsAtom)
+  const wallet = useUserWallet()
+
+  useEffect(() => {
+    reload()
+  }, [props.filters, wallet])
+
+  if (!wallet?.publicKey) {
+    return (
+      <>
+        <PillSkeleton />
+      </>
+    )
+  }
+
+  return (
+    <Suspense fallback={<PillSkeleton />}>
+      <Content {...props} />
+    </Suspense>
   )
 }

@@ -12,7 +12,6 @@ import {
   Play,
   RadioButton,
   Signature,
-  Smiley,
   Square,
 } from '@phosphor-icons/react'
 import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
@@ -28,6 +27,7 @@ import { createGenericFileFromBrowserFile } from '@metaplex-foundation/umi'
 import { umiAtom } from '../atoms/umiAtom'
 import { itemboxSdkAtom } from '../atoms/itemboxSdkAtom'
 import { PageHeader } from './PageHeader'
+import { PleaseConnect } from './PleaseConnect'
 
 interface BlueprintFormState {
   name: string
@@ -526,14 +526,7 @@ export function CreateBlueprintPage() {
     <div className='absolute inset-0 flex flex-col'>
       <Nav />
       <CenterWrapper>
-        {wallet?.publicKey ? (
-          <BlueprintForm />
-        ) : (
-          <div className='flex flex-col gap-5 items-center justify-center text-center min-h-[calc(100vh-4rem)]'>
-            <Smiley size={32} />
-            <div>Please connect your wallet to continue</div>
-          </div>
-        )}
+        {wallet?.publicKey ? <BlueprintForm /> : <PleaseConnect />}
       </CenterWrapper>
     </div>
   )
