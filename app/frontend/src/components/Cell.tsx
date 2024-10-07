@@ -76,19 +76,19 @@ export function Cell({ index }: { index: number }) {
           )}
         >
           <img
-            src={`/${name}.png`}
+            src={`/skinned/${name}.png`}
             alt={name}
             className={cn(
-              'object-contain absolute select-none pointer-events-none'
+              'object-contain absolute select-none pointer-events-none scale-150'
             )}
           />
           {showAura && (
             <img
-              src={`/${name}.png`}
+              src={`/skinned/${name}.png`}
               alt={name}
               className={cn(
                 'mix-blend-hard-light animate-pulse',
-                'object-contain absolute select-none pointer-events-none blur-lg'
+                'object-contain absolute select-none pointer-events-none blur-sm scale-150'
               )}
             />
           )}

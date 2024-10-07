@@ -425,19 +425,6 @@ export function TutorialBasic() {
       >
         <div
           className={cn(
-            'col-span-7 bg-stone-950/80 h-full overflow-hidden transition-all',
-            script[step].disableBoard && 'pointer-events-none',
-            script[step].boardOpacity === 0 && 'opacity-0',
-            script[step].boardOpacity === 0.5 && 'opacity-30',
-            (typeof script[step].boardOpacity === 'undefined' ||
-              script[step].boardOpacity === 1) &&
-              'opacity-100'
-          )}
-        >
-          <Board />
-        </div>
-        <div
-          className={cn(
             'col-span-5 relative transition-all',
             script[step].disableCommand && 'pointer-events-none',
             script[step].commandOpacity === 0 && 'opacity-0',
@@ -450,6 +437,19 @@ export function TutorialBasic() {
           <div className='absolute inset-0 overflow-x-hidden overflow-y-auto bg-stone-950'>
             <CommandList checklist={checklist} />
           </div>
+        </div>
+        <div
+          className={cn(
+            'col-span-7 bg-stone-950/80 h-full overflow-hidden transition-all',
+            script[step].disableBoard && 'pointer-events-none',
+            script[step].boardOpacity === 0 && 'opacity-0',
+            script[step].boardOpacity === 0.5 && 'opacity-30',
+            (typeof script[step].boardOpacity === 'undefined' ||
+              script[step].boardOpacity === 1) &&
+              'opacity-100'
+          )}
+        >
+          <Board />
         </div>
       </div>
     </div>

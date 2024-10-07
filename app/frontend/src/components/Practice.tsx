@@ -146,6 +146,11 @@ export function Practice() {
           'relative flex-none grid grid-cols-12 max-h-[50%] transition-all'
         )}
       >
+        <div className={cn('col-span-5 relative transition-all')}>
+          <div className='absolute inset-0 overflow-x-hidden overflow-y-auto bg-stone-950'>
+            <CommandList />
+          </div>
+        </div>
         <div
           className={cn(
             'col-span-7 bg-stone-950/80 h-full overflow-hidden transition-all'
@@ -165,11 +170,6 @@ export function Practice() {
               }
             }}
           />
-        </div>
-        <div className={cn('col-span-5 relative transition-all')}>
-          <div className='absolute inset-0 overflow-x-hidden overflow-y-auto bg-stone-950'>
-            <CommandList />
-          </div>
         </div>
       </div>
     </div>

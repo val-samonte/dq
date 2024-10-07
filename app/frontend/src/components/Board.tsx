@@ -33,8 +33,15 @@ export function Board({
   }, [random])
 
   return (
-    <div className='aspect-[3/4] h-full mx-auto relative'>
-      <div className='grid grid-cols-3 grid-rows-4 w-full h-full'>
+    <div
+      className='aspect-[3/4] h-full mx-auto relative flex items-center justify-center'
+      style={{
+        backgroundImage: 'url("/frame.png")',
+        backgroundSize: 'contain',
+        backgroundRepeat: 'no-repeat',
+      }}
+    >
+      <div className='grid grid-cols-3 grid-rows-4 w-full h-full scale-[0.98]'>
         {board.map((_, i) => (
           <Cell key={i} index={i} />
         ))}
