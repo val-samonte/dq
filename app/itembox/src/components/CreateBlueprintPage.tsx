@@ -414,13 +414,22 @@ function BlueprintForm() {
                         className='opacity-50 animate-spin'
                       />
                     ) : (
-                      <PauseCircle size={32} className='opacity-50' />
+                      <PauseCircle
+                        size={32}
+                        className='opacity-50 text-amber-400'
+                      />
                     )}
                     {message}
                   </Fragment>
                 )
               }
-              return <CheckCircle key={i} size={32} className='opacity-100' />
+              return (
+                <CheckCircle
+                  key={i}
+                  size={32}
+                  className='opacity-100 text-green-400'
+                />
+              )
             })}
           {blueprint && (
             <div className='text-center flex items-center justify-center'>

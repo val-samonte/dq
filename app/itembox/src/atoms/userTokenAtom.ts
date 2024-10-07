@@ -47,35 +47,38 @@ export const userTokenAccountAtom = atomFamily((id_type: string) =>
       // Blueprint NF [0], Blueprint F [1], SPL [2], Token Extensions [3]. (1)
       switch (assetType) {
         case '1': {
-          const blueprint = await get(blueprintAtom(id))
+          try {
+            const blueprint = await get(blueprintAtom(id))
 
-          if (!blueprint) return
+            if (!blueprint) return
 
-          const mint = blueprint.mint
+            const mint = blueprint.mint
 
-          // const mintInfo = await getMint(
-          //   connection,
-          //   new PublicKey(mint),
-          //   'confirmed',
-          //   TOKEN_2022_PROGRAM_ID
-          // )
+            // const mintInfo = await getMint(
+            //   connection,
+            //   new PublicKey(mint),
+            //   'confirmed',
+            //   TOKEN_2022_PROGRAM_ID
+            // )
 
-          const ata = getAssociatedTokenAddressSync(
-            new PublicKey(mint),
-            wallet.publicKey,
-            true,
-            TOKEN_2022_PROGRAM_ID
-          )
+            const ata = getAssociatedTokenAddressSync(
+              new PublicKey(mint),
+              wallet.publicKey,
+              true,
+              TOKEN_2022_PROGRAM_ID
+            )
 
-          const tokenAccount = await getAccount(
-            connection,
-            ata,
-            'confirmed',
-            TOKEN_2022_PROGRAM_ID
-          )
+            const tokenAccount = await getAccount(
+              connection,
+              ata,
+              'confirmed',
+              TOKEN_2022_PROGRAM_ID
+            )
 
-          set(userAccountAtom, tokenAccount)
-
+            set(userAccountAtom, tokenAccount)
+          } catch (e) {
+            console.log(e)
+          }
           break
         }
         case '2': {
@@ -103,23 +106,27 @@ export const userTokenAccountAtom = atomFamily((id_type: string) =>
           break
         }
         case '3': {
-          const mint = id
+          try {
+            const mint = id
 
-          const ata = getAssociatedTokenAddressSync(
-            new PublicKey(mint),
-            wallet.publicKey,
-            true,
-            TOKEN_2022_PROGRAM_ID
-          )
+            const ata = getAssociatedTokenAddressSync(
+              new PublicKey(mint),
+              wallet.publicKey,
+              true,
+              TOKEN_2022_PROGRAM_ID
+            )
 
-          const tokenAccount = await getAccount(
-            connection,
-            ata,
-            'confirmed',
-            TOKEN_2022_PROGRAM_ID
-          )
+            const tokenAccount = await getAccount(
+              connection,
+              ata,
+              'confirmed',
+              TOKEN_2022_PROGRAM_ID
+            )
 
-          set(userAccountAtom, tokenAccount)
+            set(userAccountAtom, tokenAccount)
+          } catch (e) {
+            console.log(e)
+          }
           break
         }
       }

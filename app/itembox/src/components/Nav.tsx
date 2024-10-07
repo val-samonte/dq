@@ -4,6 +4,13 @@ import cn from 'classnames'
 import { useUserWallet } from '../atoms/userWalletAtom'
 import { trimAddress } from '../utils/trimAddress'
 import { Link } from 'react-router-dom'
+import {
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuItems,
+  MenuSeparator,
+} from '@headlessui/react'
 
 export function Nav() {
   const wallet = useUserWallet()
@@ -67,30 +74,64 @@ export function Nav() {
           </>
         )}
         <div className='flex-none'>
-          <button
-            onClick={() => {
-              if (!wallet?.publicKey) {
+          {!wallet?.publicKey ? (
+            <button
+              onClick={() => {
                 setVisible(true)
-              } else {
-                wallet.disconnect()
-              }
-            }}
-            className={cn(
-              'w-fit',
-              'flex items-center gap-3',
-              'rounded pr-4 md:pr-6 pl-4 py-3 text-lg',
-              'bg-gray-600/50'
-            )}
-          >
-            <Wallet size={28} />
-            {wallet?.publicKey ? (
-              <span className='text-sm'>
-                {trimAddress(wallet.publicKey.toBase58())}
-              </span>
-            ) : (
+              }}
+              className={cn(
+                'w-fit',
+                'flex items-center gap-3',
+                'rounded pr-4 md:pr-6 pl-4 py-3 text-lg',
+                'bg-gray-600/50'
+              )}
+            >
+              <Wallet size={28} />
+
               <span className='hidden md:inline'>Connect Wallet</span>
-            )}
-          </button>
+            </button>
+          ) : (
+            <Menu>
+              <MenuButton
+                className={cn(
+                  'w-full',
+                  'flex items-center gap-3',
+                  'rounded pr-4 md:pr-6 pl-4 py-3 text-lg',
+                  'bg-gray-600/50'
+                )}
+              >
+                <Wallet size={28} />
+                <span className='text-sm'>
+                  {trimAddress(wallet.publicKey.toBase58())}
+                </span>
+              </MenuButton>
+              <MenuItems
+                anchor='bottom'
+                className={cn(
+                  'flex flex-col bg-gray-700 rounded overflow-hidden',
+                  'shadow-lg border border-black/5'
+                )}
+              >
+                <MenuItem>
+                  <button
+                    onClick={() => setVisible(true)}
+                    className='text-left flex flex-col px-3 py-2 gap-2 min-w-36 data-[focus]:bg-gray-600/50'
+                  >
+                    Change Wallet
+                  </button>
+                </MenuItem>
+                <MenuSeparator className={'border-b border-black/5'} />
+                <MenuItem>
+                  <button
+                    onClick={() => wallet.disconnect()}
+                    className='text-left flex flex-col px-3 py-2 gap-2 min-w-36 data-[focus]:bg-gray-600/50'
+                  >
+                    Disconnect
+                  </button>
+                </MenuItem>
+              </MenuItems>
+            </Menu>
+          )}
         </div>
       </div>
     </div>
