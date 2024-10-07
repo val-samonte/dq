@@ -79,7 +79,7 @@ export function Cell({ index }: { index: number }) {
             src={`/skinned/${name}.png`}
             alt={name}
             className={cn(
-              'object-contain absolute select-none pointer-events-none scale-150'
+              'object-contain absolute select-none pointer-events-none scale-[1.6]'
             )}
           />
           {showAura && (
@@ -88,7 +88,7 @@ export function Cell({ index }: { index: number }) {
               alt={name}
               className={cn(
                 'mix-blend-hard-light animate-pulse',
-                'object-contain absolute select-none pointer-events-none blur-sm scale-150'
+                'object-contain absolute select-none pointer-events-none blur-md scale-125'
               )}
             />
           )}

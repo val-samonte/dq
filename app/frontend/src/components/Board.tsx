@@ -41,7 +41,7 @@ export function Board({
         backgroundRepeat: 'no-repeat',
       }}
     >
-      <div className='grid grid-cols-3 grid-rows-4 w-full h-full scale-[0.98]'>
+      <div className='grid grid-cols-3 grid-rows-4 w-full h-full scale-[0.99]'>
         {board.map((_, i) => (
           <Cell key={i} index={i} />
         ))}
