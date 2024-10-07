@@ -23,13 +23,16 @@ export const CraftStory = () => {
     setStep(1)
   }
 
-  return (<div className="content flex h-full w-full justify-center items-start">
+  return (<div className="content flex flex-col h-full w-full justify-start items-center">
     {
-      step === 0 && <div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-6 w-full">
-      <MenuCard label="Dialog" bgImage="/images/dialog.webp" onClickHandler={() => initializeStory()} />
-      <MenuCard label="Puzzle" bgImage="/images/puzzle.webp" disabled={true} />
-      <MenuCard label="Combat" bgImage="/images/combat.jpg" disabled={true} />
-    </div>
+      step === 0 && <>
+      <h1 className='text-2xl font-bold mt-4'>Select Type of Story to craft.</h1>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-6 w-full">
+        <MenuCard label="Dialog" bgImage="/images/dialog.webp" onClickHandler={() => initializeStory()} />
+        <MenuCard label="Puzzle" bgImage="/images/puzzle.webp" disabled={true} />
+        <MenuCard label="Combat" bgImage="/images/combat.jpg" disabled={true} />
+        </div>
+      </>
     }
     {
       step !== 0 && <div className="flex flex-col">
