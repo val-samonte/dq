@@ -16,6 +16,38 @@ export interface PillProps {
   selected?: boolean
   children?: ReactNode
   onClick?: () => void
+  href?: string
+}
+
+function Clickable({
+  children,
+  className,
+  href,
+  onClick,
+}: {
+  children: ReactNode
+  className?: string
+  href?: string
+  onClick?: () => void
+}) {
+  if (href) {
+    return (
+      <a
+        className={className}
+        href={href}
+        target={'_blank'}
+        rel={'noreferrer noopener'}
+      >
+        {children}
+      </a>
+    )
+  }
+
+  return (
+    <button className={className} onClick={onClick}>
+      {children}
+    </button>
+  )
 }
 
 export function Pill({
@@ -25,6 +57,7 @@ export function Pill({
   selected,
   tags,
   amount,
+  href,
   onClick,
 }: PillProps) {
   return (
@@ -39,10 +72,7 @@ export function Pill({
       )}
     >
       <div className='flex p-2 gap-5'>
-        <button
-          onClick={onClick}
-          className='flex-none rounded w-20 h-20 overflow-hidden'
-        >
+        <Clickable className='flex-none rounded w-20 h-20 overflow-hidden' onClick={onClick} href={href}>
           {image && (
             <img
               src={image}
@@ -50,11 +80,11 @@ export function Pill({
               className='w-full h-full aspect-square object-contain'
             />
           )}
-        </button>
+        </Clickable>
         <div className='flex-auto pr-3 flex flex-col gap-2 justify-center'>
-          <button className='text-left' onClick={onClick}>
+          <Clickable className='text-left' onClick={onClick} href={href}>
             {name}
-          </button>
+          </Clickable>
           <div className='flex flex-wrap gap-x-3'>
             {tags.map((tag) => {
               let content = (

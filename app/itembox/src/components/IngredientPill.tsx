@@ -58,7 +58,6 @@ function Blueprint({ asset, amount }: IngredientPillProps) {
 function Token({ asset, amount }: IngredientPillProps) {
   const id = asset.toBase58()
   const token = useAtomValue(tokenDataAtom(id))
-  const navigate = useNavigate()
 
   if (!token) {
     return null
@@ -66,9 +65,7 @@ function Token({ asset, amount }: IngredientPillProps) {
 
   return (
     <Pill
-      onClick={() => {
-        navigate(`/blueprints/${id}`)
-      }}
+      href={explorerAddress(id)}
       name={token.name}
       image={token.image}
       tags={[
