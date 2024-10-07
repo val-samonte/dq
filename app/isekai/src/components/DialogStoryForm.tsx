@@ -58,7 +58,7 @@ export const DialogStoryForm = ({
       <div className='flex gap-4'>
         <div className='flex flex-col gap-4 pt-6'><StoryPreview sampleStoryData={previewData} label="Dialog Preview" /></div>
         <div className='flex flex-col gap-4'>
-            <h2 className='text-xl font-bold text-center mt-4'>ADD A {type.toUpperCase()}</h2>
+            <h2 className='text-xl font-bold text-center mt-6'>Add a {type.charAt(0).toUpperCase() + type.slice(1)}</h2>
             <div className='flex flex-col gap-4'>
               <div className='flex flex-col gap-2'>
                 <label className='px-1 text-xs uppercase tracking-wider opacity-50 flex items-center' htmlFor='avatar'>
