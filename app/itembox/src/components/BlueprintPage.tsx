@@ -13,6 +13,7 @@ import {
   FilePlus,
   LinkSimple,
   NumberSquareOne,
+  PlugsConnected,
   Shapes,
   Stack,
 } from '@phosphor-icons/react'
@@ -20,12 +21,14 @@ import { useUserWallet } from '../atoms/userWalletAtom'
 import { CopyToClipboard } from './CopyToClipboard'
 import { BlueprintRecipes } from './BlueprintRecipes'
 import { mintItemAtom } from './dialogs/MintItem'
+import { messageAtom } from './dialogs/MessageDialog'
 
 function Content() {
   const wallet = useUserWallet()
   const { blueprintId } = useParams()
   const blueprint = useAtomValue(blueprintAtom(blueprintId || ''))
   const showMint = useSetAtom(mintItemAtom)
+  const showMessage = useSetAtom(messageAtom)
 
   if (!blueprint) {
     return null
@@ -105,7 +108,52 @@ function Content() {
               {blueprint.description}
             </Markdown>
           </div>
-          <div className='flex items-center justify-center md:justify-end gap-5 mt-10'>
+          <div
+            className={cn(
+              'flex flex-col md:flex-row items-center justify-center md:justify-end gap-5 mt-10'
+            )}
+          >
+            {owner && (
+              <button
+                onClick={() => {
+                  showMessage({
+                    title: `Integrate ${blueprint.name}`,
+                    message: (
+                      <>
+                        <p className='text-center'>
+                          Integrate your item into one of the following games:
+                        </p>
+                        <ul className='flex flex-col gap-5'>
+                          <li>
+                            <a
+                              target='_blank'
+                              rel='noreferrer noopener'
+                              href={`https://isekai.deez.quest/${blueprint.id}/import`}
+                            >
+                              <img
+                                src='/trinexus-banner.png'
+                                alt='TriNexus'
+                                className='w-full object-contain rounded'
+                              />
+                            </a>
+                          </li>
+                        </ul>
+                      </>
+                    ),
+                  })
+                }}
+                className={cn(
+                  'w-full md:w-fit',
+                  'flex items-center justify-center gap-3',
+                  'rounded pr-6 pl-4 py-3 text-lg text-center text-nowrap',
+                  'border-2 border-transparent',
+                  'bg-gray-600/50'
+                )}
+              >
+                <PlugsConnected size={24} />
+                Integrate
+              </button>
+            )}
             {wallet?.publicKey?.toBase58() === blueprint.mintAuthority && (
               <button
                 onClick={() => {
@@ -114,9 +162,9 @@ function Content() {
                   })
                 }}
                 className={cn(
-                  'w-fit',
-                  'flex items-center gap-3',
-                  'rounded pr-6 pl-4 py-3 text-lg',
+                  'w-full md:w-fit',
+                  'flex items-center justify-center gap-3',
+                  'rounded pr-6 pl-4 py-3 text-lg text-center text-nowrap',
                   'border-2 border-transparent',
                   'bg-gray-600/50'
                 )}
@@ -129,7 +177,7 @@ function Content() {
               <Link
                 to={'new-recipe'}
                 className={cn(
-                  'md:w-fit portrait:flex-auto',
+                  'w-full md:w-fit',
                   'flex items-center justify-center gap-3',
                   'rounded pr-6 pl-4 py-3 text-lg text-center text-nowrap',
                   'border-2 border-amber-300/50',
