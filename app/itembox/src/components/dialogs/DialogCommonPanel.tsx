@@ -15,7 +15,7 @@ export function DialogCommonPanel({
 }: DialogCommonPanel) {
   return (
     <div className='px-5 pt-5 w-full overflow-y-auto overflow-x-hidden'>
-      <div className='p-5 rounded-xl bg-gray-700 max-w-sm mx-auto w-full flex flex-col gap-5 items-center'>
+      <div className='pointer-events-auto p-5 rounded-xl bg-gray-700 max-w-sm mx-auto w-full flex flex-col gap-5 items-center'>
         {title && (
           <div className='flex flex-col gap-2'>
             <p className='text-xl'>{title}</p>
@@ -23,14 +23,16 @@ export function DialogCommonPanel({
         )}
         {children}
       </div>
-      <button
-        className='text-center py-5 w-full'
-        onClick={() => {
-          onClose(null)
-        }}
-      >
-        {closeLabel || 'Close'}
-      </button>
+      <div className='w-full flex items-center justify-center'>
+        <button
+          className='pointer-events-auto text-center p-5'
+          onClick={() => {
+            onClose(null)
+          }}
+        >
+          {closeLabel || 'Close'}
+        </button>
+      </div>
     </div>
   )
 }

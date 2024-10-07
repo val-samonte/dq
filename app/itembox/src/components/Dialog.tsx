@@ -57,9 +57,7 @@ export default function Dialog({ show, children, dark, onClose }: DialogProps) {
                     'w-full h-full flex flex-col items-center justify-center'
                   }
                 >
-                  <Suspense fallback={null}>
-                    <div className='pointer-events-auto w-full'>{children}</div>
-                  </Suspense>
+                  <Suspense fallback={null}>{children}</Suspense>
                 </div>
               </div>
             </div>

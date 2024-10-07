@@ -94,9 +94,6 @@ export class ItemboxSDK {
           'Recipes cannot produce more than one non-fungible item'
         )
       }
-      if (!Number.isInteger(outputAmount)) {
-        throw new Error('Output amount must be an integer')
-      }
     }
 
     const signature = await this.program.methods

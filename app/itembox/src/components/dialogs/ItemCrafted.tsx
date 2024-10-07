@@ -68,7 +68,7 @@ function Content() {
 
   return (
     <div className='px-5 pt-5 w-full overflow-visible'>
-      <div className='p-5 max-w-sm mx-auto w-full flex flex-col gap-5 items-center'>
+      <div className='pointer-events-auto p-5 max-w-sm mx-auto w-full flex flex-col gap-5 items-center'>
         <div className='flex flex-col gap-2'>
           <p className='text-xl'>Item Crafted!</p>
         </div>
@@ -100,7 +100,7 @@ function Content() {
         </div>
       </div>
       <button
-        className='text-center py-5 w-full'
+        className='pointer-events-auto text-center py-5 w-full'
         onClick={() => {
           setData(null)
         }}
