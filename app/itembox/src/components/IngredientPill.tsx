@@ -9,6 +9,7 @@ import { trimAddress } from '../utils/trimAddress'
 import { explorerAddress } from '../utils/explorerAddress'
 import { PublicKey } from '@solana/web3.js'
 import { formatNumberBN } from '../utils/formatNumber'
+import { useNavigate } from 'react-router-dom'
 
 export interface IngredientPillProps {
   asset: PublicKey
@@ -20,6 +21,7 @@ export interface IngredientPillProps {
 function Blueprint({ asset, amount }: IngredientPillProps) {
   const id = asset.toBase58()
   const [blueprint, reload] = useAtom(blueprintAtom(id))
+  const navigate = useNavigate()
 
   useEffect(() => {
     reload()
@@ -31,6 +33,9 @@ function Blueprint({ asset, amount }: IngredientPillProps) {
 
   return (
     <Pill
+      onClick={() => {
+        navigate(`/blueprints/${id}`)
+      }}
       name={blueprint.name}
       image={blueprint.image}
       tags={[
@@ -53,6 +58,7 @@ function Blueprint({ asset, amount }: IngredientPillProps) {
 function Token({ asset, amount }: IngredientPillProps) {
   const id = asset.toBase58()
   const token = useAtomValue(tokenDataAtom(id))
+  const navigate = useNavigate()
 
   if (!token) {
     return null
@@ -60,6 +66,9 @@ function Token({ asset, amount }: IngredientPillProps) {
 
   return (
     <Pill
+      onClick={() => {
+        navigate(`/blueprints/${id}`)
+      }}
       name={token.name}
       image={token.image}
       tags={[
