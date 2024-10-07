@@ -39,6 +39,9 @@ export function HomeScreenV2() {
               className='w-full h-full object-cover scale-125'
               alt='Arena'
             />
+            <div className='absolute inset-0 flex items-center justify-center'>
+              <h2 className='text-3xl stroked font-serif font-bold'>Arena</h2>
+            </div>
           </div>
         </button>
         <Link
@@ -54,7 +57,7 @@ export function HomeScreenV2() {
               />
               <img
                 src='/buildings/library.png'
-                className='w-full h-full object-contain absolute inset-0 scale-125'
+                className='w-full h-full object-contain absolute inset-0 scale-125 hover:scale-110 transition-all'
                 alt='Library'
               />
               <img
@@ -69,6 +72,9 @@ export function HomeScreenV2() {
                 className='w-full h-full object-contain absolute inset-0 translate-x-[20%]'
                 alt='Trees'
               />
+            </div>
+            <div className='absolute inset-0 flex items-center justify-center'>
+              <h2 className='text-3xl stroked font-serif font-bold'>Library</h2>
             </div>
           </div>
         </Link>
@@ -100,6 +106,11 @@ export function HomeScreenV2() {
                 className='w-full h-full object-contain absolute inset-0'
                 alt='Bush'
               />
+            </div>
+            <div className='absolute inset-0 flex items-center justify-center'>
+              <h2 className='text-3xl stroked font-serif font-bold'>
+                Practice
+              </h2>
             </div>
           </div>
         </Link>
@@ -133,6 +144,9 @@ export function HomeScreenV2() {
               />
             </div>
           </div>
+          <div className='absolute inset-0 flex items-center justify-center'>
+            <h2 className='text-3xl stroked font-serif font-bold'>Tavern</h2>
+          </div>
         </Link>
         <Link
           to={'/barracks'}
@@ -163,9 +177,13 @@ export function HomeScreenV2() {
                 alt='Bush'
               />
             </div>
+            <div className='absolute inset-0 flex items-center justify-center'>
+              <h2 className='text-3xl stroked font-serif font-bold'>
+                Barracks
+              </h2>
+            </div>
           </div>
         </Link>
-
         <div className='aspect-[2/1] w-full pointer-events-none' />
       </div>
       <Suspense fallback={null}>
