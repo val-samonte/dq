@@ -40,7 +40,15 @@ export function HomeScreenV2() {
               alt='Arena'
             />
             <div className='absolute inset-0 flex items-center justify-center'>
-              <h2 className='text-3xl stroked font-serif font-bold'>Arena</h2>
+              <h2
+                className={cn(
+                  'text-2xl font-serif',
+                  'px-12 py-3 bg-gradient-to-r from-black/20 via-black/80 to-black/20',
+                  'border-y border-amber-300 w-full'
+                )}
+              >
+                Arena
+              </h2>
             </div>
           </div>
         </button>
@@ -49,7 +57,7 @@ export function HomeScreenV2() {
           className='w-full aspect-[2/1] overflow-visible relative'
         >
           <div className='absolute inset-0 grid grid-cols-2 pointer-events-none'>
-            <div className='relative scale-[1.5]'>
+            <div className='relative scale-[1.5] z-[2]'>
               <img
                 src='/buildings/trees3.png'
                 className='w-full h-full object-contain absolute inset-0 -translate-y-[10%]'
@@ -73,8 +81,17 @@ export function HomeScreenV2() {
                 alt='Trees'
               />
             </div>
-            <div className='absolute inset-0 flex items-center justify-center'>
-              <h2 className='text-3xl stroked font-serif font-bold'>Library</h2>
+            <div className='absolute inset-0 flex items-center justify-center z-[1]'>
+              <h2
+                className={cn(
+                  'text-2xl font-serif',
+                  'px-12 py-3 bg-gradient-to-l from-black/80 to-black/20',
+                  'border-y border-amber-300',
+                  'absolute right-0 w-full text-right'
+                )}
+              >
+                Library
+              </h2>
             </div>
           </div>
         </Link>
@@ -90,6 +107,18 @@ export function HomeScreenV2() {
                 alt='Trees'
               />
             </div>
+            <div className='absolute inset-0 flex items-center justify-center'>
+              <h2
+                className={cn(
+                  'text-2xl font-serif',
+                  'px-12 py-3 bg-gradient-to-r from-black/80 to-black/20',
+                  'border-y border-amber-300',
+                  'absolute left-0 w-full'
+                )}
+              >
+                Practice
+              </h2>
+            </div>
             <div className='relative scale-[1.5]'>
               <img
                 src='/buildings/trees1.png'
@@ -99,18 +128,13 @@ export function HomeScreenV2() {
               <img
                 src='/buildings/practice.png'
                 className='w-full h-full object-contain absolute inset-0 scale-125'
-                alt='Library'
+                alt='Practice'
               />
               <img
                 src='/buildings/bush2.png'
                 className='w-full h-full object-contain absolute inset-0'
                 alt='Bush'
               />
-            </div>
-            <div className='absolute inset-0 flex items-center justify-center'>
-              <h2 className='text-3xl stroked font-serif font-bold'>
-                Practice
-              </h2>
             </div>
           </div>
         </Link>
@@ -119,7 +143,7 @@ export function HomeScreenV2() {
           className='w-full aspect-[2/1] overflow-visible relative'
         >
           <div className='absolute inset-0 grid grid-cols-2 pointer-events-none'>
-            <div className='relative scale-[1.5]'>
+            <div className='relative scale-[1.5] z-[2]'>
               <img
                 src='/buildings/trees2.png'
                 className='w-full h-full object-contain absolute inset-0 -translate-y-[10%]'
@@ -128,13 +152,25 @@ export function HomeScreenV2() {
               <img
                 src='/buildings/tavern.png'
                 className='w-full h-full object-contain absolute inset-0 scale-125'
-                alt='Library'
+                alt='Tavern'
               />
               <img
                 src='/buildings/bush3.png'
                 className='w-full h-full object-contain absolute inset-0'
                 alt='Bush'
               />
+            </div>
+            <div className='absolute inset-0 flex items-center justify-center z-[1]'>
+              <h2
+                className={cn(
+                  'text-2xl font-serif',
+                  'px-12 py-3 bg-gradient-to-l from-black/80 to-black/20',
+                  'border-y border-amber-300',
+                  'absolute right-0 w-full text-right'
+                )}
+              >
+                Tavern
+              </h2>
             </div>
             <div className='relative scale-[1.5]'>
               <img
@@ -143,9 +179,6 @@ export function HomeScreenV2() {
                 alt='Trees'
               />
             </div>
-          </div>
-          <div className='absolute inset-0 flex items-center justify-center'>
-            <h2 className='text-3xl stroked font-serif font-bold'>Tavern</h2>
           </div>
         </Link>
         <Link
@@ -160,6 +193,18 @@ export function HomeScreenV2() {
                 alt='Trees'
               />
             </div>
+            <div className='absolute inset-0 flex items-center justify-center'>
+              <h2
+                className={cn(
+                  'text-2xl font-serif',
+                  'px-12 py-3 bg-gradient-to-r from-black/80 to-black/20',
+                  'border-y border-amber-300',
+                  'absolute left-0 w-full'
+                )}
+              >
+                Barracks
+              </h2>
+            </div>
             <div className='relative scale-[1.5]'>
               <img
                 src='/buildings/trees3.png'
@@ -169,18 +214,13 @@ export function HomeScreenV2() {
               <img
                 src='/buildings/barracks.png'
                 className='w-full h-full object-contain absolute inset-0 scale-125'
-                alt='Library'
+                alt='Barracks'
               />
               <img
                 src='/buildings/bush3.png'
                 className='w-full h-full object-contain absolute inset-0'
                 alt='Bush'
               />
-            </div>
-            <div className='absolute inset-0 flex items-center justify-center'>
-              <h2 className='text-3xl stroked font-serif font-bold'>
-                Barracks
-              </h2>
             </div>
           </div>
         </Link>
@@ -204,7 +244,7 @@ function CharacterPreview() {
         'animate-fade-in',
         'absolute bottom-0 inset-x-0 mt-auto',
         'bg-gradient-to-t from-sky-100 to-white/0',
-        'flex items-end'
+        'flex items-end z-[3]'
       )}
     >
       <div className='flex flex-col flex-auto items-end py-5 gap-5'>
