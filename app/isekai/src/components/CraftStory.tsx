@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import cn from 'classnames'
-import { MenuCardProps, storyDataType } from '../types'
+import { MenuCardProps } from '../types'
 import { DialogStoryForm } from './DialogStoryForm'
 
 const MenuCard = ({ label, bgImage, onClickHandler = () => {}, disabled = false }: MenuCardProps) => {
@@ -13,19 +13,19 @@ const MenuCard = ({ label, bgImage, onClickHandler = () => {}, disabled = false 
       </div>
 }
 export const CraftStory = () => {
-  // using this as a temporary initial record for demo purpose
+  const [step, setStep] = useState(-1)
 
-  const [step, setStep] = useState(0)
-  const [storyData, setStoryData] = useState<storyDataType[]>([])
+  // not used and working for now
+  // const [storyData, setStoryData] = useState<StoryDataType[]>([])
   const [type, setType] = useState('dialog')
 
   const initializeStory = () => {
-    setStep(1)
+    setStep(0)
   }
 
   return (<div className="content flex flex-col h-full w-full justify-start items-center">
     {
-      step === 0 && <>
+      step < 0 && <>
       <h1 className='text-2xl font-bold mt-4'>Select Type of Story to craft.</h1>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-6 w-full">
         <MenuCard label="Dialog" bgImage="/images/dialog.webp" onClickHandler={() => initializeStory()} />
@@ -35,12 +35,10 @@ export const CraftStory = () => {
       </>
     }
     {
-      step !== 0 && <div className="flex flex-col">
+      step >= 0 && <div className="flex flex-col">
         <DialogStoryForm
           step={step}
           setStep={setStep}
-          storyData={storyData}
-          setStoryData={setStoryData}
           type={type}
           setType={setType}
         />
