@@ -16,13 +16,13 @@ All of these sub-projects are completely open source, supporting a collaborative
 
 We aim to make genuine interoperability in gaming a reality, unlocking new possibilities for both developers and players.
 
-|------------------|--------------------|--------------------|
+
 | Project Name     | Program            | Frontend           |
 |------------------|--------------------|--------------------|
 | Itembox          | /programs/itembox  | /app/itembox       |
 | Isekai Crossover | n/a                | /app/isekai        |
 | TriNexus         | /programs/dq       | /app/frontend      |
-|------------------|--------------------|--------------------|
+
 
 
 
