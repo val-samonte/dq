@@ -1,23 +1,23 @@
-import { useAtomValue, useSetAtom } from 'jotai'
+import { useAtomValue } from 'jotai'
 import { Link } from 'react-router-dom'
-import { solBalanceAtom } from '../atoms/solBalanceAtom'
-import { Dialogs, showDialogAtom } from '../atoms/showDialogAtom'
+// import { solBalanceAtom } from '../atoms/solBalanceAtom'
+// import { Dialogs, showDialogAtom } from '../atoms/showDialogAtom'
 import { Suspense } from 'react'
 import cn from 'classnames'
 import { selectedCharacterAtom } from '../atoms/selectedCharacterAtom'
 
 export function HomeScreenV2() {
-  const balance = useAtomValue(solBalanceAtom)
-  const insufficientArena = (balance ?? 0) < 0.01
-  const showDialog = useSetAtom(showDialogAtom)
+  // const balance = useAtomValue(solBalanceAtom)
+  // const insufficientArena = (balance ?? 0) < 0.01
+  // const showDialog = useSetAtom(showDialogAtom)
 
   // arena: check balance, check character, check pvp PDA
-  const handleArenaNavigation = () => {
-    if (insufficientArena) {
-      showDialog(Dialogs.NOT_ENOUGH_BALANCE)
-      return
-    }
-  }
+  // const handleArenaNavigation = () => {
+  //   if (insufficientArena) {
+  //     showDialog(Dialogs.NOT_ENOUGH_BALANCE)
+  //     return
+  //   }
+  // }
 
   return (
     <div className='w-full h-full flex flex-col overflow-y-auto overflow-x-hidden'>
@@ -29,8 +29,9 @@ export function HomeScreenV2() {
           backgroundRepeat: 'repeat-y',
         }}
       >
-        <button
-          onClick={handleArenaNavigation}
+        <Link
+          to={'/arena'}
+          // onClick={handleArenaNavigation}
           className='w-full aspect-[2/1] overflow-visible relative'
         >
           <div className='absolute inset-0 pointer-events-none'>
@@ -44,14 +45,14 @@ export function HomeScreenV2() {
                 className={cn(
                   'text-2xl font-serif',
                   'px-12 py-3 bg-gradient-to-r from-black/20 via-black/80 to-black/20',
-                  'border-y border-amber-300 w-full'
+                  'border-y border-amber-300 w-full text-center'
                 )}
               >
                 Arena
               </h2>
             </div>
           </div>
-        </button>
+        </Link>
         <Link
           to={'/tutorial'}
           className='w-full aspect-[2/1] overflow-visible relative'

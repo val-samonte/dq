@@ -1,5 +1,5 @@
 import { MenuItem, MenuItems, MenuSeparator } from '@headlessui/react'
-import { CheckFat, Fire, HandDeposit } from '@phosphor-icons/react'
+import { CheckFat, Fire, Gift, HandDeposit } from '@phosphor-icons/react'
 import cn from 'classnames'
 
 export function ConsumptionMethodMenuItems({
@@ -43,6 +43,23 @@ export function ConsumptionMethodMenuItems({
           </div>
           <p className='text-xs text-gray-400'>
             Ingredient will be burned / discarded.
+          </p>
+        </button>
+      </MenuItem>
+      <MenuSeparator className={'border-b border-black/5'} />
+      <MenuItem>
+        <button
+          onClick={() => {}}
+          disabled
+          className='opacity-50 text-left flex flex-col px-3 py-2 gap-2 min-w-36 bg-black/20'
+        >
+          <div className='flex items-center gap-2'>
+            <Gift size={20} />
+            Wrap
+          </div>
+          <p className='text-xs text-gray-400'>
+            (Soon) Attach the ingredient to the item. <br />
+            Owner will receive the item after deconstruction.
           </p>
         </button>
       </MenuItem>
