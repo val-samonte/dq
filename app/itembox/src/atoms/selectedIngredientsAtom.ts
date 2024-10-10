@@ -10,11 +10,6 @@ interface SelectedIngredient extends Omit<TokenItem, 'symbol'> {
   authority?: string
 }
 
-export const createRecipeStateAtom = atomWithStorage(
-  'itembox_create_recipe_state',
-  0
-)
-
 export const createRecipeTabAtom = atom('blueprints')
 
 const selectedIngredientsBaseAtom = atomFamily((id: string) =>
@@ -61,9 +56,6 @@ export const selectedIngredientsAtom = atomFamily((id: string) =>
       return get(selectedIngredientsBaseAtom(id))
     },
     (get, set, action: SelectedIngredientAction) => {
-      const state = get(createRecipeStateAtom)
-      if (state !== 0) return
-
       const listAtom = selectedIngredientsBaseAtom(id)
       const list = get(listAtom)
 

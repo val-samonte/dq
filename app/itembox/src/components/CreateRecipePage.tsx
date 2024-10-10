@@ -18,7 +18,6 @@ import {
 import { allBlueprintsAtom } from '../atoms/allBlueprintsAtom'
 import { SelectedIngredient } from './SelectedIngredient'
 import {
-  createRecipeStateAtom,
   createRecipeTabAtom,
   SelectedIngredientActionTypes,
   selectedIngredientsAtom,
@@ -52,7 +51,7 @@ function Content() {
   const [outputAmount, setOutputAmount] = useState('1')
   const [tab, setTab] = useAtom(createRecipeTabAtom)
   const [search, setSearch] = useAtom(assetSearchAtom)
-  const [state, setState] = useAtom(createRecipeStateAtom)
+  const [busy, setBusy] = useState(false)
   const showDialog = useSetAtom(recipeCreatedAtom)
   const navigate = useNavigate()
   const showMessage = useSetAtom(messageAtom)
@@ -80,7 +79,7 @@ function Content() {
       return
     }
 
-    setState(1)
+    setBusy(true)
 
     try {
       const ingredients = selectedIngredients.map((ingredient) => {
@@ -101,7 +100,7 @@ function Content() {
 
       const recipeData = await program.account.recipe.fetch(result.recipe)
 
-      setState(0)
+      setBusy(false)
 
       setIngredients({
         type: SelectedIngredientActionTypes.CLEAR,
@@ -130,7 +129,7 @@ function Content() {
       })
     }
 
-    setState(0)
+    setBusy(false)
   }
 
   return (
@@ -212,7 +211,7 @@ function Content() {
           <div className='h-full flex flex-col overflow-y-auto overflow-x-hidden relative'>
             <div className='p-3 lg:p-5 bg-gray-700 sticky top-0'>
               <input
-                disabled={state !== 0}
+                disabled={busy}
                 className={cn(
                   'z-10',
                   'items-center gap-3',
@@ -270,9 +269,11 @@ function Content() {
               )}
             </div>
             <button
-              onClick={() =>
-                setIngredients({ type: SelectedIngredientActionTypes.CLEAR })
-              }
+              onClick={() => {
+                if (!busy) {
+                  setIngredients({ type: SelectedIngredientActionTypes.CLEAR })
+                }
+              }}
               className='rounded p-2 flex items-center justify-center'
             >
               <Trash size={20} />
@@ -297,7 +298,7 @@ function Content() {
             <span>x1</span>
           ) : (
             <NumberInput
-              disabled={state !== 0}
+              disabled={busy}
               min={new BN(1)}
               decimals={0}
               className='w-full max-w-14 bg-black/10 rounded px-3 py-2 text-center'
@@ -314,15 +315,13 @@ function Content() {
             'flex items-center gap-3',
             'rounded pr-6 pl-4 py-3 text-lg',
             'bg-gradient-to-t',
-            state !== 0
-              ? 'opacity-50 cursor-wait'
-              : 'opacity-100 cursor-pointer',
+            busy ? 'opacity-50 cursor-wait' : 'opacity-100 cursor-pointer',
             'border-2 border-amber-300/50',
             'from-amber-800 to-yellow-800'
           )}
-          disabled={state !== 0}
+          disabled={busy}
         >
-          {state === 0 ? (
+          {!busy ? (
             <>
               <FilePlus size={24} />
               Create Recipe
