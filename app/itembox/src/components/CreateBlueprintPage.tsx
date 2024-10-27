@@ -28,6 +28,7 @@ import { umiAtom } from '../atoms/umiAtom'
 import { itemboxSdkAtom } from '../atoms/itemboxSdkAtom'
 import { PageHeader } from './PageHeader'
 import { PleaseConnect } from './PleaseConnect'
+import { getIrysUri } from '../utils/getIrysUri'
 
 interface BlueprintFormState {
   name: string
@@ -185,6 +186,8 @@ function BlueprintForm() {
 
     setBusy(true)
 
+    const rpcEndpoint = umi.rpc.getEndpoint()
+
     if (!form.image) {
       try {
         const file = selectedFile ?? base64ToFile(form.file, name)
@@ -195,7 +198,7 @@ function BlueprintForm() {
           throw Error('Missing image uri ' + imgUri)
         }
 
-        form.image = imgUri
+        form.image = getIrysUri(rpcEndpoint, imgUri)
         setState((s) => ({ ...s, image: form.image }))
       } catch (e) {
         console.error(e)
@@ -212,7 +215,7 @@ function BlueprintForm() {
           image: form.image,
         })
 
-        form.metadata = uri
+        form.metadata = getIrysUri(rpcEndpoint, uri)
         setState((s) => ({ ...s, metadata: form.metadata }))
       } catch (e) {
         console.error(e)
